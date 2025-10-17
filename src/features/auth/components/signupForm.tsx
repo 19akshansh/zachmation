@@ -29,7 +29,7 @@ import { authClient } from "@/lib/authClient";
 const signupSchema = z.object({
   name: z.string().min(1, "Please enter your Full name."),
   email: z.email("Please enter a valid email address."),
-  password: z.string().min(6, "Password should be of minimum 6 letters.").max(10, "Password can't exceed 10 letters"),
+  password: z.string().min(6, "Password should be of minimum 6 letters."),
   confirmPassword: z.string(),
 })
 .refine((data) => data.password === data.confirmPassword, {
