@@ -16,4 +16,8 @@ export const auth = betterAuth({
       clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
     },
   },
+  trustedOrigins: [
+    "https://scarlett-semipictorial-liliana.ngrok-free.dev",
+    "http://localhost:3000",
+  ]
 });
