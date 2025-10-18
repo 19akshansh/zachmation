@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -64,7 +65,7 @@ export const SigninForm = () => {
   const isPending = form.formState.isSubmitting;
 
   return (
-    <div className="flex flex-col gap-6">
+    <div>
       <Card>
         <CardHeader className="text-center">
           <CardTitle>
@@ -82,18 +83,20 @@ export const SigninForm = () => {
                 <div className="flex flex-col gap-4">
                   <Button
                     variant={"outline"}
-                    className="w-full"
+                    className="w-full bg-white"
                     type="button"
                     disabled={isPending}
                   >
+                    <FaGithub />
                     Continue with Github 
                   </Button>
                   <Button
                     variant={"outline"}
-                    className="w-full"
+                    className="w-full bg-white"
                     type="button"
                     disabled={isPending}
                   >
+                    <FaGoogle />
                     Continue with Google 
                   </Button>
                 </div>
