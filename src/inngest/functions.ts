@@ -13,9 +13,7 @@ const anthropic = createAnthropic();
 export const execute = inngest.createFunction(
   { id: "execute-ai" },
   { event: "exec/ai" },
-  async ({ event, step }) => {
-    
-    Sentry.logger.info('User triggered execute-ai log', { log_source: 'execute-ai' })
+  async ({ event, step }) => {    
     const { steps: geminiSteps } = await step.ai.wrap(
       "gemini-generate-text", 
       generateText, 

@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/authClient";
+import { useHasActiveSubscription } from "@/features/auth/subscriptions/hooks/useSubscription";
 
 const menuItems = [
   {
@@ -33,6 +34,7 @@ const menuItems = [
 export const AppSidebar = () => {
   const router = useRouter()
   const pathname = usePathname()
+  const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
 
 
   return (
@@ -80,21 +82,25 @@ export const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip={"Upgrade to PRO"}
-              className="gap-z-4 h-10 px-4"
-              onClick={() => {}}
-            >
-              <StarIcon className="h-4 w-4" />
-              <span>Upgrade to PRO</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {!hasActiveSubscription && !isLoading && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={"Upgrade to PRO"}
+                className="gap-z-4 h-10 px-4"
+                onClick={() => authClient.checkout({
+                  slug: "pro"
+                })}
+              >
+                <StarIcon className="h-4 w-4" />
+                <span>Upgrade to PRO</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={"Billing Portal"}
               className="gap-z-4 h-10 px-4"
-              onClick={() => {}}
+              onClick={() => authClient.customer.portal()}
             >
               <CreditCardIcon className="h-4 w-4" />
               <span>Billing Portal</span>
