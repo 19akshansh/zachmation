@@ -3,7 +3,7 @@ import { authClient } from "@/lib/authClient";
 
 export const useSubscription = () => {
   return useQuery({
-    queryKey: ["subsciption"],
+    queryKey: ["subscription"],
     queryFn: async () => {
       const { data } = await authClient.customer.state();
       return data;
