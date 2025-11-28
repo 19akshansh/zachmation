@@ -15,7 +15,7 @@ export const useSuspenseWorkflows = () => {
   };
 
   return useSuspenseQuery(
-    trpc.workflows.getMany.queryOptions(params)
+    trpc.workflows.getMany.queryOptions(normalized)
   );
 };
 
