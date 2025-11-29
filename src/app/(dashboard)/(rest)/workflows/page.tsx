@@ -1,4 +1,4 @@
-// http://localhost:3000/workflows
+// http://localhost:3000/workflows/
 
 import { WorkflowsContainer, WorkflowsError, WorkflowsList, WorkflowsLoading } from "@/features/workflows/components/workflows";
 import { workflowsParamsLoader } from "@/features/workflows/server/paramsLoader";
