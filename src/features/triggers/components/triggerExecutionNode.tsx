@@ -37,7 +37,10 @@ export const BaseTriggerNode = memo(
         onDelete={handleDelete}
         onSettings={onSettings}
       >
-        <BaseNode onDoubleClick={onDoubleClick} className="rounded-l-2xl relative group">
+        <BaseNode
+          onDoubleClick={onDoubleClick}
+          className="rounded-l-2xl relative group"
+        >
           <BaseNodeContent>
             {typeof Icon === "string" ? (
               <Image src={Icon} alt={name} width={16} height={16} />
@@ -46,8 +49,8 @@ export const BaseTriggerNode = memo(
             )}
             {children}
             <BaseHandle
-              id={"source-2"}
-              type="target"
+              id={"source-1"}
+              type="source"
               position={Position.Right}
             />
           </BaseNodeContent>
