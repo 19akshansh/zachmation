@@ -54,7 +54,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   );
 
   return (
-    <div className="size-full bg-background text-primary-foreground">
+    <div className="size-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -62,6 +62,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeComponents}
+        colorMode={"dark"}
         fitView
       >
         <Background />
