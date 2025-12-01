@@ -52,7 +52,7 @@ export const BaseExecutionNode = memo(
             />
             <BaseHandle
               id={"source-1"}
-              type="target"
+              type="source"
               position={Position.Right}
             />
           </BaseNodeContent>

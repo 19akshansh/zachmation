@@ -68,6 +68,7 @@ export function NodeSelector({
 
         if (hasManualTrigger) {
           toast.error("Only one Manual Trigger is allowed per Workflow.");
+          return;
         }
       }
 
