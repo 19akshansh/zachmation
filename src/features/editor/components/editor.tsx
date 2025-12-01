@@ -54,11 +54,11 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   );
 
   return (
-    <div className="size-full text-black">
+    <div className="size-full bg-background text-primary-foreground">
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
+        onNodesChange={onNodesChange} 
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeComponents}
@@ -66,7 +66,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
       >
         <Background />
         <Controls />
-        <MiniMap />
+        <MiniMap className="bg-background" />
         <Panel position="top-right">
           <AddNodeButton />
         </Panel>

@@ -1,7 +1,24 @@
 "use client";
 
-import { CreditCardIcon, FolderOpenIcon, HistoryIcon, KeyIcon, LogOutIcon, StarIcon } from "lucide-react";
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
+import {
+  CreditCardIcon,
+  FolderOpenIcon,
+  HistoryIcon,
+  KeyIcon,
+  LogOutIcon,
+  StarIcon,
+} from "lucide-react";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "./ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -28,14 +45,13 @@ const menuItems = [
         url: "/executions",
       },
     ],
-  },  
-]
+  },
+];
 
 export const AppSidebar = () => {
-  const router = useRouter()
-  const pathname = usePathname()
+  const router = useRouter();
+  const pathname = usePathname();
   const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
-
 
   return (
     <Sidebar collapsible="icon">
@@ -44,7 +60,12 @@ export const AppSidebar = () => {
           <SidebarMenuItem className="outline-none list-none">
             <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
               <Link prefetch href={"/wokflows"}>
-                <Image src="logo.svg" alt="Zachmation" width={30} height={30} />
+                <Image
+                  src="/logo.svg"
+                  alt="Zachmation"
+                  width={30}
+                  height={30}
+                />
                 <span className="font-semibold text-sm">Zachmation</span>
               </Link>
             </SidebarMenuButton>
@@ -57,17 +78,20 @@ export const AppSidebar = () => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {group.items.map((item) => (
-                  <SidebarMenuItem className="outline-none list-none pb-2" key={item.title}>
+                  <SidebarMenuItem
+                    className="outline-none list-none pb-2"
+                    key={item.title}
+                  >
                     <SidebarMenuButton
                       tooltip={item.title}
                       isActive={
                         item.url === "/"
-                        ? pathname === "/"
-                        : pathname.startsWith(item.url)
+                          ? pathname === "/"
+                          : pathname.startsWith(item.url)
                       }
                       asChild
                       className="gap-x-4 h-10 px-4"
-                      >
+                    >
                       <Link href={item.url} prefetch>
                         <item.icon className="size-6" />
                         <span>{item.title}</span>
@@ -87,9 +111,11 @@ export const AppSidebar = () => {
               <SidebarMenuButton
                 tooltip={"Upgrade to PRO"}
                 className="gap-z-4 h-10 px-4"
-                onClick={() => authClient.checkout({
-                  slug: "pro"
-                })}
+                onClick={() =>
+                  authClient.checkout({
+                    slug: "pro",
+                  })
+                }
               >
                 <StarIcon className="h-4 w-4" />
                 <span>Upgrade to PRO</span>
@@ -110,13 +136,15 @@ export const AppSidebar = () => {
             <SidebarMenuButton
               tooltip={"Sign out"}
               className="gap-z-4 h-10 px-4"
-              onClick={() => authClient.signOut({
-                fetchOptions: {
-                  onSuccess: () => {
-                    router.push("/signin")
-                  }
-                }
-              })}
+              onClick={() =>
+                authClient.signOut({
+                  fetchOptions: {
+                    onSuccess: () => {
+                      router.push("/signin");
+                    },
+                  },
+                })
+              }
             >
               <LogOutIcon className="h-4 w-4" />
               <span>Sign out</span>
@@ -125,5 +153,5 @@ export const AppSidebar = () => {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
-}
+  );
+};
