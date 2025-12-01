@@ -59,7 +59,7 @@ export const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem className="outline-none list-none">
             <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
-              <Link prefetch href={"/wokflows"}>
+              <Link prefetch href={"/workflows"}>
                 <Image
                   src="/logo.svg"
                   alt="Zachmation"
