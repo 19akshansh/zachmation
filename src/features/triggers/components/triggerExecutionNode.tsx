@@ -5,7 +5,7 @@ import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { memo, type ReactNode } from "react";
 import { BaseNode, BaseNodeContent } from "@/components/reactFlow/base-node";
-import { BaseHandle } from "@/components/base-handle";
+import { BaseHandle } from "@/components/reactFlow/base-handle";
 import { WorkflowNode } from "@/components/workflowNode";
 
 interface BaseTriggerNodeProps extends NodeProps {

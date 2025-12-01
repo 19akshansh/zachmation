@@ -105,7 +105,7 @@ export function NodeSelector({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto">
+      <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto p-4">
         <SheetHeader>
           <SheetTitle>What triggers this {"WORKFLOW"} ?</SheetTitle>
           <SheetDescription>
@@ -118,7 +118,7 @@ export function NodeSelector({
             return (
               <div
                 key={nodeType.type}
-                className="w-full justify-start h-auto py-5 ox-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
+                className="w-full justify-start h-auto py-5 px-4 rounded cursor-pointer border-l-4 border-transparent hover:border-l-primary"
                 onClick={() => handleNodeSelect(nodeType)}
               >
                 <div className="flex items-center gap-6 w-full overflow-hidden">
@@ -151,7 +151,7 @@ export function NodeSelector({
             return (
               <div
                 key={nodeType.type}
-                className="w-full justify-start h-auto py-5 ox-4 rounded-none cursor-pointer border-l-2 border-transparent hover:border-l-primary"
+                className="w-full justify-start h-auto py-5 px-4 rounded cursor-pointer border-l-4 border-transparent hover:border-l-primary"
                 onClick={() => handleNodeSelect(nodeType)}
               >
                 <div className="flex items-center gap-6 w-full overflow-hidden">
