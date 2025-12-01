@@ -1,4 +1,12 @@
-import { AlertTriangleIcon, Loader2Icon, MoreVerticalIcon, PackageOpenIcon, PlusIcon, SearchIcon, TrashIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  Loader2Icon,
+  MoreVerticalIcon,
+  PackageOpenIcon,
+  PlusIcon,
+  SearchIcon,
+  TrashIcon,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import React, { ReactNode } from "react";
@@ -10,10 +18,15 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "./ui/empty"
+} from "./ui/empty";
 import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "./ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 type EntityHeaderProps = {
   title: string;
@@ -22,14 +35,19 @@ type EntityHeaderProps = {
   disabled?: boolean;
   isCreating?: boolean;
 } & (
-  {
-    onNew: () => void; newButtonHref?: never
-  } | {
-    newButtonHref: string; onNew?: never
-  } | {
-    onNew?: never; newButtonHref?: never
-  }
-)
+  | {
+      onNew: () => void;
+      newButtonHref?: never;
+    }
+  | {
+      newButtonHref: string;
+      onNew?: never;
+    }
+  | {
+      onNew?: never;
+      newButtonHref?: never;
+    }
+);
 
 export const EntityHeader = ({
   title,
@@ -43,9 +61,7 @@ export const EntityHeader = ({
   return (
     <div className="flex flex-row items-center justify-between gap-x-4">
       <div className="flex flex-col">
-        <h1 className="text-lg md:text-xl font-semibold">
-          {title}
-        </h1>
+        <h1 className="text-lg md:text-xl font-semibold">{title}</h1>
         {description && (
           <p className="text-sm md:text-sm text-muted-foreground">
             {description}
@@ -53,29 +69,22 @@ export const EntityHeader = ({
         )}
       </div>
       {onNew && !newButtonHref && (
-        <Button 
-          disabled={isCreating || disabled} 
-          size="sm" 
-          onClick={onNew}
-        >
+        <Button disabled={isCreating || disabled} size="sm" onClick={onNew}>
           <PlusIcon className="size-4" />
           {newButtonLabel}
         </Button>
       )}
       {newButtonHref && !onNew && (
-        <Button  
-          size="sm" 
-          asChild
-        >
+        <Button size="sm" asChild>
           <Link href={newButtonHref} prefetch>
             <PlusIcon className="size-4" />
             {newButtonLabel}
-          </Link>  
+          </Link>
         </Button>
       )}
     </div>
-  )
-}
+  );
+};
 
 interface EntityContainerProps {
   children: ReactNode;
@@ -113,20 +122,20 @@ interface EntitySearchProps {
 export const EntitySearch = ({
   value,
   onChange,
-  placeholder = "Search"
+  placeholder = "Search",
 }: EntitySearchProps) => {
   return (
     <div className="relative ml-auto">
       <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-      <Input 
+      <Input
         className="max-w-[200px] bg-background shadow-none border-border pl-8"
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>
-  )
-}
+  );
+};
 
 interface EntityPaginationProps {
   page: number;
@@ -165,53 +174,40 @@ export const EntityPagination = ({
         </Button>
       </div>
     </div>
-  )
-}
+  );
+};
 
 interface StateViewProps {
   message?: string;
 }
 
-export const LoadingView = ({
-  message,
-}: StateViewProps) => {
+export const LoadingView = ({ message }: StateViewProps) => {
   return (
     <div className="flex justify-center items-center h-full flex-col gap-y-4">
       <Loader2Icon className="size-6 animate-spin text-primary" />
-      {!!message && (
-        <p className="text-sm text-muted-foreground">
-          {message}
-        </p>
-      )}
+      {!!message && <p className="text-sm text-muted-foreground">{message}</p>}
     </div>
-  )
-}
+  );
+};
 
-export const ErrorView = ({
-  message,
-}: StateViewProps) => {
+export const ErrorView = ({ message }: StateViewProps) => {
   return (
     <div className="flex justify-center items-center h-full flex-col gap-y-4">
       <AlertTriangleIcon className="size-6 text-red-600" />
       {!!message && (
-        <p className="text-sm text-red-600 font-extrabold">
-          {message}
-        </p>
+        <p className="text-sm text-red-600 font-extrabold">{message}</p>
       )}
     </div>
-  )
-}
+  );
+};
 
 interface EmptyViewProps extends StateViewProps {
   onNew?: () => void;
   entity?: string;
+  msg?: React.ReactNode;
 }
 
-export const EmptyView = ({
-  message,
-  entity = "item",
-  onNew
-}: EmptyViewProps) => {
+export const EmptyView = ({ msg, entity = "item", onNew }: EmptyViewProps) => {
   return (
     <Empty className="border border-dashed bg-background">
       <EmptyHeader>
@@ -219,20 +215,16 @@ export const EmptyView = ({
           <PackageOpenIcon />
         </EmptyMedia>
       </EmptyHeader>
-      <EmptyTitle>
-        No {entity}
-      </EmptyTitle>
-      {!!message && (<EmptyDescription>
-        {message}
-      </EmptyDescription>)}
-      {!!onNew && (<EmptyContent>
-        <Button onClick={onNew}>
-          Add a new {entity}
-        </Button>
-      </EmptyContent>)}
+      <EmptyTitle>No {entity}</EmptyTitle>
+      {!!msg && <EmptyDescription>{msg}</EmptyDescription>}
+      {!!onNew && (
+        <EmptyContent>
+          <Button onClick={onNew}>Add a new {entity}</Button>
+        </EmptyContent>
+      )}
     </Empty>
-  )
-}
+  );
+};
 
 interface EntityListProps<T> {
   items: T[];
@@ -252,27 +244,20 @@ export function EntityList<T>({
   if (items.length === 0 && emptyView) {
     return (
       <div className="flex-1 flex justify-center items-center">
-        <div className="max-w-sm mx-auto">
-          {emptyView}
-        </div>
+        <div className="max-w-sm mx-auto">{emptyView}</div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className={
-      cn(
-        "flex flex-col gap-y-4",
-        className
-      )
-    }>
+    <div className={cn("flex flex-col gap-y-4", className)}>
       {items.map((item, index) => (
         <div key={getKey ? getKey(item, index) : index}>
           {renderItem(item, index)}
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 interface EntityItemProps {
@@ -297,8 +282,8 @@ export const EntityItem = ({
   className,
 }: EntityItemProps) => {
   const handleRemove = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
 
     if (isRemoving) {
       return;
@@ -307,8 +292,7 @@ export const EntityItem = ({
     if (onRemove) {
       await onRemove();
     }
-  }
-
+  };
 
   return (
     <Link href={href} prefetch>
@@ -316,16 +300,14 @@ export const EntityItem = ({
         className={cn(
           "p-4 shadow-none hover:shadow cursor-pointer",
           isRemoving && "opacity-50 cursor-not-allowed",
-          className,
+          className
         )}
       >
         <CardContent className="flex flex-row items-center justify-between p-0">
           <div className="flex items-center gap-3">
             {image}
             <div>
-              <CardTitle className="text-base font-medium">
-                {title}
-              </CardTitle>
+              <CardTitle className="text-base font-medium">{title}</CardTitle>
               {!!subtitle && (
                 <CardDescription className="text-xs">
                   {subtitle}
@@ -351,7 +333,10 @@ export const EntityItem = ({
                     align="end"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <DropdownMenuItem onClick={handleRemove} className="text-red-600">
+                    <DropdownMenuItem
+                      onClick={handleRemove}
+                      className="text-red-600"
+                    >
                       <TrashIcon className="size-4 text-red-600" />
                       Delete
                     </DropdownMenuItem>
@@ -363,5 +348,5 @@ export const EntityItem = ({
         </CardContent>
       </Card>
     </Link>
-  )
-}
+  );
+};
