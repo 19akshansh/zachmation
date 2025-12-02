@@ -20,11 +20,14 @@ export const HttpReqNode = memo((props: NodeProps<HttpReqNodeType>) => {
     ? `${nodeData.method || "GET"}: ${nodeData.endpoint}`
     : "Not configured";
 
+  const nodeStatus = "initial";
+
   return (
     <>
       <BaseExecutionNode
         {...props}
         id={props.id}
+        status={nodeStatus}
         icon={GlobeIcon}
         name="HTTP Request"
         description={desc}
