@@ -41,7 +41,7 @@ export const HttpReqNode = memo((props: NodeProps<HttpReqNodeType>) => {
     );
   };
 
-  const nodeData = props.data as HttpReqNodeData;
+  const nodeData = props.data;
   const desc = nodeData?.endpoint
     ? `${nodeData.method || "GET"}: ${nodeData.endpoint}`
     : "Not configured";

@@ -42,11 +42,11 @@ export const BaseTriggerNode = memo(
       });
 
       setEdges((currentEdges) => {
-        const updateEdges = currentEdges.filter(
+        const updatedEdges = currentEdges.filter(
           (edge) => edge.source !== id && edge.target !== id
         );
 
-        return updateEdges;
+        return updatedEdges;
       });
     };
     return (
