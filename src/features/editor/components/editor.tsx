@@ -22,6 +22,8 @@ import "@xyflow/react/dist/style.css";
 import { useCallback, useState } from "react";
 import { nodeComponents } from "@/config/nodeComponents";
 import { AddNodeButton } from "./addNodeButton";
+import { useSetAtom } from "jotai";
+import { editorAtom } from "../store/atoms";
 
 export const EditorLoading = () => {
   return <LoadingView message="Loading Editor" />;
@@ -33,6 +35,8 @@ export const EditorError = () => {
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
+
+  const setEditor = useSetAtom(editorAtom);
 
   const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
   const [edges, setEdges] = useState<Edge[]>(workflow.edges);
@@ -58,11 +62,12 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange} 
+        onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         nodeTypes={nodeComponents}
         colorMode={"dark"}
+        onInit={setEditor}
         fitView
       >
         <Background />
