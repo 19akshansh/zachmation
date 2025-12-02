@@ -33,6 +33,7 @@ export const BaseExecutionNode = memo(
     onSettings,
     onDoubleClick,
   }: BaseExecutionNodeProps) => {
+
     const { setNodes, setEdges } = useReactFlow();
 
     const handleDelete = () => {
