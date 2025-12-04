@@ -62,7 +62,7 @@ export const HTTPReqDialog = ({
     resolver: zodResolver(formSchema),
     defaultValues: {
       endpoint: defaultEndpoint,
-      method: defaultMethod,
+    method: defaultMethod,
       body: defaultBody,
     },
   });

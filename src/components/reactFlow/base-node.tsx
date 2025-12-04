@@ -8,28 +8,38 @@ interface BaseNodeProps extends HTMLAttributes<HTMLDivElement> {
   status?: NodeStatus;
 }
 
-export function BaseNode({ className, status, ...props }: BaseNodeProps) {
+export function BaseNode({
+  className,
+  status,
+  children,
+  ...props
+}: BaseNodeProps) {
   return (
     <div
       className={cn(
-        "bg-card text-card-foreground relative rounded-sm border-muted-foreground border hover:bg-accent",
-        className
+        "bg-card relative rounded-md",
+        className,
+        status === "initial" && "border"
       )}
       tabIndex={0}
       {...props}
     >
-      {status === "error" && (
-        <XCircleIcon className="absolute right-0.5 size-2 bottom-0.5 text-emerald-600 stroke-3" />
-      )}
-      {status === "error" && (
-        <CheckCircle2Icon className="absolute right-0.5 size-2 bottom-0.5 text-red-400 stroke-3" />
-      )}
-      {status === "error" && (
-        <Loader2Icon className="absolute -right-0.5 size-2 -bottom-0.5 text-blue-700 stroke-3 animate-spin" />
-      )}
+      <div className="flex flex-col">{children}</div>
+      <div className="absolute bottom-0.5 right-0.5 pointer-events-none w-2 h-2">
+        {status === "error" && (
+          <XCircleIcon className="text-red-400 w-full h-full stroke-3" />
+        )}
+        {status === "success" && (
+          <CheckCircle2Icon className="text-emerald-600 w-full h-full stroke-3" />
+        )}
+        {status === "loading" && (
+          <Loader2Icon className="text-blue-700 w-full h-full stroke-3 animate-spin" />
+        )}
+      </div>
     </div>
   );
 }
+
 
 /**
  * A container for a consistent header layout intended to be used inside the
