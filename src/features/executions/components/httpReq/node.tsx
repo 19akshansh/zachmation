@@ -4,24 +4,23 @@ import { Node, NodeProps, useReactFlow } from "@xyflow/react";
 import { GlobeIcon } from "lucide-react";
 import { memo, useState } from "react";
 import { BaseExecutionNode } from "../baseExecutionNode";
-import { FormType, HTTPReqDialog } from "./dialog";
+import { HTTPReqFormValues, HTTPReqDialog } from "./dialog";
 
-type HttpReqNodeData = {
+type HTTPReqNodeData = {
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
-  [key: string]: unknown;
 };
 
-type HttpReqNodeType = Node<HttpReqNodeData>;
+type HTTPReqNodeType = Node<HTTPReqNodeData>;
 
-export const HttpReqNode = memo((props: NodeProps<HttpReqNodeType>) => {
+export const HTTPReqNode = memo((props: NodeProps<HTTPReqNodeType>) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { setNodes } = useReactFlow();
 
   const handleOpenSettings = () => setDialogOpen(true);
 
-  const handleSubmit = (values: FormType) => {
+  const handleSubmit = (values: HTTPReqFormValues) => {
     setNodes((nodes) =>
       nodes.map((node) => {
         if (node.id === props.id) {
@@ -29,9 +28,7 @@ export const HttpReqNode = memo((props: NodeProps<HttpReqNodeType>) => {
             ...node,
             data: {
               ...node.data,
-              endpoint: values.endpoint,
-              method: values.method,
-              body: values.body,
+              ...values,
             },
           };
         }
@@ -54,9 +51,7 @@ export const HttpReqNode = memo((props: NodeProps<HttpReqNodeType>) => {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit}
-        defaultEndpoint={nodeData.endpoint}
-        defaultMethod={nodeData.method}
-        defaultBody={nodeData.body}
+        defaultValues={nodeData}
       />
       <BaseExecutionNode
         {...props}
@@ -72,4 +67,4 @@ export const HttpReqNode = memo((props: NodeProps<HttpReqNodeType>) => {
   );
 });
 
-HttpReqNode.displayName = "HttpReqNode";
+HTTPReqNode.displayName = "HTTPReqNode";
