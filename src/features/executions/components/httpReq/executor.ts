@@ -3,6 +3,7 @@ import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 
 type HTTPReqTriggerData = {
+  variableName?: string;
   endpoint?: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
@@ -18,7 +19,11 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     throw new NonRetriableError("HTTP Request node: No endpoint configured");
   }
 
-  const result = await step.run(`httpTrigger-${nodeId}`, async () => {
+  if (!data.variableName) {
+    throw new NonRetriableError("No variable name configured");
+  }
+
+  const result = await step.run(`httpTrigger`, async () => {
     const endpoint = data.endpoint!;
     const method = data.method || "GET";
 
@@ -39,14 +44,25 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
       ? await response.json()
       : await response.text();
 
-    return {
-      ...context,
+    const responsePayload = {
       httpResponse: {
         status: response.status,
         statusText: response.statusText,
         data: responseData,
       },
     };
+
+    if (data.variableName) {
+      return {
+        ...context,
+        [data.variableName]: responsePayload,
+      };
+    }
+
+    return {
+      ...context,
+      ...responsePayload,
+    }
   });
 
   return result;
