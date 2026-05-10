@@ -18,7 +18,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     throw new NonRetriableError("HTTP Request node: No endpoint configured");
   }
 
-  const result = await step.run("httpTrigger", async () => {
+  const result = await step.run(`httpTrigger-${nodeId}`, async () => {
     const endpoint = data.endpoint!;
     const method = data.method || "GET";
 
@@ -27,6 +27,9 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     if (["POST", "PUT", "PATCH"].includes(method)) {
       if (data.body) {
         options.body = data.body;
+        options.headers = {
+          "Content-Type": "application/json",
+        };
       }
     }
 
