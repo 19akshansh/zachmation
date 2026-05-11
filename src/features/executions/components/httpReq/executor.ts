@@ -1,11 +1,19 @@
+import Handlebars from "handlebars";
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import ky, { type Options as KyOptions } from "ky";
 
+Handlebars.registerHelper("json", (context) => {
+  const stringified = JSON.stringify(context, null, 2);
+  const safeString = new Handlebars.SafeString(stringified);
+
+  return safeString;
+});
+
 type HTTPReqTriggerData = {
-  variableName?: string;
-  endpoint?: string;
-  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  variableName: string;
+  endpoint: string;
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: string;
 };
 
@@ -23,19 +31,25 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     throw new NonRetriableError("No variable name configured");
   }
 
+  if (!data.method) {
+    throw new NonRetriableError("HTTP Request node: No Method configured");
+  }
+
   const result = await step.run(`httpTrigger`, async () => {
-    const endpoint = data.endpoint!;
+    const endpoint = Handlebars.compile(data.endpoint)(context);
+    console.log("ENDPOINT:", { endpoint });
     const method = data.method || "GET";
 
     const options: KyOptions = { method };
 
     if (["POST", "PUT", "PATCH"].includes(method)) {
-      if (data.body) {
-        options.body = data.body;
-        options.headers = {
-          "Content-Type": "application/json",
-        };
-      }
+      const resolved = Handlebars.compile(data.body || "{}")(context);
+      JSON.parse(resolved);
+
+      options.body = resolved;
+      options.headers = {
+        "Content-Type": "application/json",
+      };
     }
 
     const response = await ky(endpoint, options);
@@ -52,17 +66,10 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
       },
     };
 
-    if (data.variableName) {
-      return {
-        ...context,
-        [data.variableName]: responsePayload,
-      };
-    }
-
     return {
       ...context,
-      ...responsePayload,
-    }
+      [data.variableName]: responsePayload,
+    };
   });
 
   return result;
