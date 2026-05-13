@@ -1,20 +1,13 @@
 "use client";
 
 import { Node, NodeProps, useReactFlow } from "@xyflow/react";
-
 import { GlobeIcon } from "lucide-react";
-
-import { useCallback, useEffect, useState } from "react";
-
-import { useRealtime } from "inngest/react";
-
+import { useState } from "react";
 import { BaseExecutionNode } from "../baseExecutionNode";
-
 import { HTTPReqDialog, HTTPReqFormValues } from "./dialog";
-
 import { httpTriggerChannel } from "@/inngest/channels/httpTrigger";
-
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
+import { useNodeStatus } from "../../hooks/useNodeStatus";
 
 type HTTPReqNodeData = {
   variableName?: string;
@@ -62,62 +55,11 @@ export const HTTPReqNode = (props: NodeProps<HTTPReqNodeType>) => {
     ? `${nodeData.method || "GET"}: ${nodeData.endpoint}`
     : "Not configured";
 
-  const refreshToken = useCallback(async () => {
-    const res = await fetch("/api/inngest/realtimeToken");
-
-    return res.json();
-  }, []);
-
-  const { messages } = useRealtime({
+  useNodeStatus({
+    nodeId: props.id,
     channel: httpTriggerChannel.name,
-
     topics: ["status"],
-
-    token: refreshToken,
-
-    bufferInterval: 100,
   });
-
-  useEffect(() => {
-    const message = messages.byTopic.status;
-
-    if (!message || message.kind !== "data") {
-      return;
-    }
-
-    const data = message.data as {
-      nodeId: string;
-      status: NodeStatus;
-    };
-
-    if (data.nodeId !== props.id) {
-      return;
-    }
-
-    // CRITICAL:
-    // prevents infinite rerender loops
-    if (props.data.status === data.status) {
-      return;
-    }
-
-    setNodes((nodes) =>
-      nodes.map((node) => {
-        if (node.id !== props.id) {
-          return node;
-        }
-
-        return {
-          ...node,
-
-          data: {
-            ...node.data,
-
-            status: data.status,
-          },
-        };
-      }),
-    );
-  }, [messages.byTopic.status, props.id, props.data.status, setNodes]);
 
   return (
     <>
