@@ -1,9 +1,9 @@
 import { headers } from "next/headers";
-import { getClientSubscriptionToken } from "inngest/react";
-import { inngest } from "@/inngest/client";
 import { auth } from "@/lib/auth";
+import { inngest } from "@/inngest/client";
+import { getClientSubscriptionToken } from "inngest/react";
 
-const ALLOWED_CHANNELS = ["httpTriggerExec", "manualTriggerExec"] as const;
+const ALLOWED_CHANNELS = ["httpTriggerExec", "manualTriggerExec"];
 
 export async function GET(request: Request) {
   const session = await auth.api.getSession({
@@ -11,23 +11,19 @@ export async function GET(request: Request) {
   });
 
   if (!session) {
-    return new Response("Unauthorized", {
-      status: 401,
-    });
+    return new Response("Unauthorized", { status: 401 });
   }
 
   const { searchParams } = new URL(request.url);
+
   const channel = searchParams.get("channel");
 
-  if (
-    !channel ||
-    !ALLOWED_CHANNELS.includes(
-      channel as "httpTriggerExec" | "manualTriggerExec",
-    )
-  ) {
-    return new Response("Invalid channel", {
-      status: 400,
-    });
+  if (!channel) {
+    return new Response("Missing channel", { status: 400 });
+  }
+
+  if (!ALLOWED_CHANNELS.includes(channel)) {
+    return new Response("Invalid channel", { status: 400 });
   }
 
   const token = await getClientSubscriptionToken(inngest, {
@@ -35,11 +31,9 @@ export async function GET(request: Request) {
     topics: ["status"],
   });
 
-  return new Response(JSON.stringify(token), {
+  return Response.json(token, {
     headers: {
-      "Content-Type": "application/json",
       "Cache-Control": "no-store",
-      Pragma: "no-cache",
     },
   });
 }
