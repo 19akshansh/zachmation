@@ -6,41 +6,62 @@ import { NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/executions/lib/executorRegistry";
 
 export const executeWorkflow = inngest.createFunction(
-  { id: "executeWorkflow" },
-  { event: "workflows/workflow.exec" },
+  {
+    id: "executeWorkflow",
+    triggers: {
+      event: "workflows/workflow.exec",
+    },
+    retries: 2,
+  },
+  
+
   async ({ event, step }) => {
-    const workflowId = event.data.workflowId;
+    const data = event.data as {
+      workflowId: string;
+      initialData?: Record<string, unknown>;
+    };
+
+    const workflowId = data.workflowId;
 
     if (!workflowId) {
       throw new NonRetriableError("Workflow ID is missing");
     }
 
-    const sortedNodes = await step.run("prepareWorkflow", async () => {
-      const workflow = await prisma.workflow.findUniqueOrThrow({
-        where: {
-          id: workflowId,
-        },
-        include: {
-          nodes: true,
-          connections: true,
-        },
-      });
+    const sortedNodes = await step.run(
+      "prepareWorkflow",
 
-      return topologicalSort(workflow.nodes, workflow.connections);
-    });
+      async () => {
+        const workflow = await prisma.workflow.findUniqueOrThrow({
+          where: {
+            id: workflowId,
+          },
 
-    let context = event.data.initialData || {};
+          include: {
+            nodes: true,
+            connections: true,
+          },
+        });
+
+        return topologicalSort(workflow.nodes, workflow.connections);
+      },
+    );
+
+    let context = data.initialData || {};
 
     for (const node of sortedNodes) {
       const executor = getExecutor(node.type as NodeType);
+
       context = await executor({
         data: node.data as Record<string, unknown>,
         nodeId: node.id,
         context,
         step,
-      })
+      });
     }
 
-    return { workflowId, result: context };
-  }
+    return {
+      workflowId,
+      result: context,
+    };
+  },
 );
