@@ -1,31 +1,26 @@
 import { useCallback, useEffect } from "react";
+import { useReactFlow } from "@xyflow/react";
 import { useRealtime } from "inngest/react";
 import type { ClientSubscriptionToken } from "inngest/react";
-import { useReactFlow } from "@xyflow/react";
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 
 interface UseNodeStatusOptions {
   nodeId: string;
-  channel: string;
-  topics: string[];
 }
 
-export function useNodeStatus({
-  nodeId,
-  channel,
-  topics,
-}: UseNodeStatusOptions) {
+export function useNodeStatus({ nodeId }: UseNodeStatusOptions) {
   const { setNodes } = useReactFlow();
-
   const refreshToken = useCallback(async () => {
-    const res = await fetch(`/api/inngest/realtimeToken?channel=${channel}`);
+    const res = await fetch(
+      "/api/inngest/realtimeToken?channel=manualTriggerExec",
+    );
 
     return res.json() as Promise<ClientSubscriptionToken>;
   }, []);
 
   const { messages } = useRealtime({
-    channel,
-    topics,
+    channel: "manualTriggerExec",
+    topics: ["status"],
     token: refreshToken,
     bufferInterval: 100,
   });

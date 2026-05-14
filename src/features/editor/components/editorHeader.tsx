@@ -25,19 +25,42 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
   const editor = useAtomValue(editorAtom);
   const saveWorkflow = useUpdateWorkflow();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!editor) {
       return;
     }
 
-    const nodes = editor.getNodes();
-    const edges = editor.getEdges();
+    try {
+      const rawNodes = editor.getNodes?.() ?? [];
+      const rawEdges = editor.getEdges?.() ?? [];
 
-    saveWorkflow.mutate({
-      id: workflowId,
-      nodes,
-      edges,
-    });
+      // Clean runtime/transient state before saving
+      const cleanedNodes = rawNodes.map((node) => ({
+        ...node,
+        data: {
+          ...node.data,
+          status: undefined,
+          isRunning: false,
+        },
+      }));
+
+      const cleanedEdges = rawEdges.map((edge) => ({
+        ...edge,
+        animated: false,
+      }));
+
+      await saveWorkflow.mutateAsync({
+        id: workflowId,
+        nodes: cleanedNodes,
+        edges: cleanedEdges,
+      });
+
+      // Reset visual state after successful save
+      editor.setNodes(cleanedNodes);
+      editor.setEdges(cleanedEdges);
+    } catch (error) {
+      console.error("Failed to save workflow:", error);
+    }
   };
 
   return (
@@ -52,7 +75,9 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
 
 export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
   const { data: workflow } = useSuspenseWorkflow(workflowId);
+
   const updateWorkflowName = useUpdateWorkflowName();
+
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(workflow.name);
 
@@ -133,7 +158,9 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
             </Link>
           </BreadcrumbLink>
         </BreadcrumbItem>
+
         <BreadcrumbSeparator />
+
         <EditorNameInput workflowId={workflowId} />
       </BreadcrumbList>
     </Breadcrumb>
@@ -144,8 +171,10 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
       <SidebarTrigger />
+
       <div className="flex flex-row items-center justify-between gap-x-4 w-full">
         <EditorBreadcrumbs workflowId={workflowId} />
+
         <EditorSaveButton workflowId={workflowId} />
       </div>
     </header>
