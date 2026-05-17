@@ -22,11 +22,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Zachmation",
     description: "The power of n8n, now in your hands!",
-    url: process.env.NEXT_PUBLIC_SITE_URL,
+    url: process.env.NEXT_PUBLIC_APP_URL,
     siteName: "Zachmation",
     images: [
       {
-        url: process.env.NEXT_PUBLIC_SITE_URL + "/logo.svg",
+        url: process.env.NEXT_PUBLIC_APP_URL + "/logo.svg",
         width: 1200,
         height: 630,
         alt: "Zachmation Logo",

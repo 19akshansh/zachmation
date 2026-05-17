@@ -10,13 +10,14 @@ import z from "zod";
 import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/enums";
 import { inngest } from "@/inngest/client";
+import { sendWorkflowExecution } from "@/inngest/utils";
 
 export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
     .input(
       z.object({
         id: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       const workflow = await prisma.workflow.findUniqueOrThrow({
@@ -26,12 +27,9 @@ export const workflowsRouter = createTRPCRouter({
         },
       });
 
-      await inngest.send({
-        name: "workflows/workflow.exec",
-        data: {
-          workflowId: workflow.id,
-        },
-      });
+      await sendWorkflowExecution({
+        workflowId: input.id
+      })
 
       return workflow;
     }),
@@ -84,7 +82,7 @@ export const workflowsRouter = createTRPCRouter({
               y: z.number(),
             }),
             data: z.record(z.string(), z.any()).optional(),
-          })
+          }),
         ),
         edges: z.array(
           z.object({
@@ -92,9 +90,9 @@ export const workflowsRouter = createTRPCRouter({
             target: z.string(),
             sourceHandle: z.string().nullish(),
             targetHandle: z.string().nullish(),
-          })
+          }),
         ),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
       const { id, nodes, edges } = input;
@@ -185,7 +183,7 @@ export const workflowsRouter = createTRPCRouter({
           .max(PAGINATION.MAX_PAGE_SIZE)
           .default(PAGINATION.DEFAULT_PAGE_SIZE),
         search: z.string().default(""),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;

@@ -3,7 +3,11 @@ import { auth } from "@/lib/auth";
 import { inngest } from "@/inngest/client";
 import { getClientSubscriptionToken } from "inngest/react";
 
-const ALLOWED_CHANNELS = ["httpTriggerExec", "manualTriggerExec"];
+const ALLOWED_CHANNELS = [
+  "httpTriggerExec",
+  "manualTriggerExec",
+  "googleFormTriggerExec",
+];
 
 export async function GET(request: Request) {
   const session = await auth.api.getSession({
