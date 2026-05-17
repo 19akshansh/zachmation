@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     console.log("gForms webhook error:", error);
     return NextResponse.json(
       {
-        succes: false,
+        success: false,
         error: "Failed to process Google form submission",
       },
       {
