@@ -24,6 +24,7 @@ export const ManualTriggerNode = memo(
 
     useNodeStatus({
       nodeId: props.id,
+      channel: "manualTriggerExec",
     });
 
     return (
