@@ -31,9 +31,15 @@ export type NodeTypeOption = {
 const triggerNodes: NodeTypeOption[] = [
   {
     type: NodeType.MANUAL_TRIGGER,
-    label: "Trigger Manually",
+    label: "Execute Workflow Manually",
     description: "Runs the flow on clicking a button, Good for first start",
     icon: MousePointerIcon,
+  },
+  {
+    type: NodeType.GOOGLE_FORM_TRIGGER,
+    label: "Google Form Trigger",
+    description: "Triggers a Google Form Submission",
+    icon: "/gforms.svg",
   },
 ];
 
@@ -64,7 +70,7 @@ export function NodeSelector({
       if (selection.type === NodeType.MANUAL_TRIGGER) {
         const nodes = getNodes();
         const hasManualTrigger = nodes.some(
-          (node) => node.type === NodeType.MANUAL_TRIGGER
+          (node) => node.type === NodeType.MANUAL_TRIGGER,
         );
 
         if (hasManualTrigger) {
@@ -75,7 +81,7 @@ export function NodeSelector({
 
       setNodes((nodes) => {
         const hasInitialTrigger = nodes.some(
-          (node) => node.type === NodeType.INITIAL
+          (node) => node.type === NodeType.INITIAL,
         );
 
         const centerX = window.innerWidth / 2;
@@ -101,7 +107,7 @@ export function NodeSelector({
 
       onOpenChange(false);
     },
-    [setNodes, getNodes, onOpenChange, screenToFlowPosition]
+    [setNodes, getNodes, onOpenChange, screenToFlowPosition],
   );
 
   return (
@@ -134,7 +140,7 @@ export function NodeSelector({
                       className="size-5 object-contain rounded-sm"
                     />
                   ) : (
-                    <Icon className="size-5" />
+                    <Icon className="size-5 background-transparent" />
                   )}
                   <div className="flex flex-col items-start text-left">
                     <span className="font-medium text-sm">
