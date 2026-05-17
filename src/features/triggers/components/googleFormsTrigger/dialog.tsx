@@ -104,7 +104,9 @@ export const GoogleFormDialogTrigger = ({ open, onOpenChange }: Props) => {
           </div>
 
           <div className="rounded-lg bg-muted p-4 space-y-2">
-            <h4 className="font-medoum text-sm">Available Variables</h4>
+            <h4 className="font-medoum text-sm">
+              Available Variables
+            </h4>
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
