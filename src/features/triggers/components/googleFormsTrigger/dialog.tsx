@@ -113,7 +113,8 @@ export const GoogleFormDialogTrigger = ({ open, onOpenChange }: Props) => {
                   {"{{googleForm.respondentEmail}}"}
                 </code>
                 - Respondent's Email
-              </li><li>
+              </li>
+              <li>
                 <code className="bg-background px-1 py-0.5 rounded">
                   {"{{googleForm.responses['Question Name']}}"}
                 </code>

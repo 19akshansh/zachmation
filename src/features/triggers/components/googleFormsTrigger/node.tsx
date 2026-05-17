@@ -23,6 +23,7 @@ export const GoogleFormTriggerNode = memo(
 
     useNodeStatus({
       nodeId: props.id,
+      channel: "googleFormTriggerExec",
     });
 
     return (
