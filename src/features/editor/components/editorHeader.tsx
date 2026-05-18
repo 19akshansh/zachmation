@@ -39,7 +39,7 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
         ...node,
         data: {
           ...node.data,
-          status: undefined,
+          status: "initial",
           isRunning: false,
         },
       }));

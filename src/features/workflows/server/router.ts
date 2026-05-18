@@ -28,7 +28,7 @@ export const workflowsRouter = createTRPCRouter({
 
       await sendWorkflowExecution({
         workflowId: input.id,
-      })
+      });
 
       return workflow;
     }),
@@ -106,6 +106,10 @@ export const workflowsRouter = createTRPCRouter({
         await tx.node.deleteMany({
           where: { workflowId: id },
         });
+
+        console.log(JSON.stringify(nodes, null, 2));
+
+        console.log(NodeType);
 
         await tx.node.createMany({
           data: nodes.map((node) => ({

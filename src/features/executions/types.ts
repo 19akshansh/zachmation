@@ -1,4 +1,4 @@
-import type { GetStepTools, Inngest, Realtime } from "inngest";
+import type { GetStepTools, Inngest } from "inngest";
 
 export type WorkflowContext = Record<string, unknown>;
 export type StepTools = GetStepTools<Inngest.Any>;
