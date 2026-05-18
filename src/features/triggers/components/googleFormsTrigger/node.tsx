@@ -21,6 +21,11 @@ export const GoogleFormTriggerNode = memo(
 
     const handleOpenSettings = () => setDialogOpen(true);
 
+    useNodeStatus({
+      nodeId: props.id,
+      channel: "googleFormTriggerExec",
+    });
+
     return (
       <>
         <GoogleFormDialogTrigger
