@@ -36,7 +36,19 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
 
       // Clean runtime/transient state before saving
       const cleanedNodes = rawNodes.map((node) => ({
-        ...node,
+        id: node.id,
+
+        type: node.type as
+          | "INITIAL"
+          | "MANUAL_TRIGGER"
+          | "HTTP_REQ"
+          | "GOOGLE_FORM_TRIGGER",
+
+        position: {
+          x: node.position.x,
+          y: node.position.y,
+        },
+
         data: {
           ...node.data,
           status: "initial",

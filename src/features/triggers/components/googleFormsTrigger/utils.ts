@@ -1,14 +1,40 @@
 export const generateGoogleFormScript = (
   webhookUrl: string,
-) => `function onFormSubmit(e) {
+) => `function setupTrigger() {
+  const form = FormApp.openById(
+    "workflowID"
+  );
+
+  // Delete existing triggers first
+  const triggers = ScriptApp.getProjectTriggers();
+
+  for (const trigger of triggers) {
+    if (trigger.getHandlerFunction() === "onFormSubmit") {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  }
+
+  // Create fresh trigger
+  ScriptApp.newTrigger("onFormSubmit")
+    .forForm(form)
+    .onFormSubmit()
+    .create();
+
+  Logger.log("Fresh trigger installed.");
+}
+
+function onFormSubmit(e) {
   var formResponse = e.response;
   var itemResponses = formResponse.getItemResponses();
 
   // Build responses object
   var responses = {};
+
   for (var i = 0; i < itemResponses.length; i++) {
     var itemResponse = itemResponses[i];
-    responses[itemResponse.getItem().getTitle()] = itemResponse.getResponse();
+
+    responses[itemResponse.getItem().getTitle()] =
+      itemResponse.getResponse();
   }
 
   // Prepare webhook payload
@@ -21,18 +47,23 @@ export const generateGoogleFormScript = (
     responses: responses
   };
 
-  // Send to webhook
+  // Webhook URL
+  var WEBHOOK_URL =
+    "webhookURL";
+
+  // Send webhook
   var options = {
-    'method': 'post',
-    'contentType': 'application/json',
-    'payload': JSON.stringify(payload)
+    method: "post",
+    contentType: "application/json",
+    payload: JSON.stringify(payload)
   };
 
-  var WEBHOOK_URL = '${webhookUrl}';
-
   try {
-    UrlFetchApp.fetch(WEBHOOK_URL, options);
-  } catch(error) {
-    console.error('Webhook failed:', error);
+    var response = UrlFetchApp.fetch(WEBHOOK_URL, options);
+
+    Logger.log(response.getContentText());
+
+  } catch (error) {
+    Logger.log("Webhook failed: " + error);
   }
 }`;

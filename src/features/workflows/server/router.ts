@@ -75,7 +75,7 @@ export const workflowsRouter = createTRPCRouter({
         nodes: z.array(
           z.object({
             id: z.string(),
-            type: z.string().nullish(),
+            type: z.nativeEnum(NodeType),
             position: z.object({
               x: z.number(),
               y: z.number(),
@@ -111,16 +111,20 @@ export const workflowsRouter = createTRPCRouter({
 
         console.log(NodeType);
 
-        await tx.node.createMany({
-          data: nodes.map((node) => ({
-            id: node.id,
-            workflowId: id,
-            name: node.type || "unknown",
-            type: node.type as NodeType,
-            position: node.position,
-            data: node.data || {},
-          })),
-        });
+        for (const node of nodes) {
+          console.log("CREATING NODE:", node);
+
+          await tx.node.create({
+            data: {
+              id: node.id,
+              workflowId: id,
+              name: node.type,
+              type: node.type,
+              position: JSON.parse(JSON.stringify(node.position)),
+              data: JSON.parse(JSON.stringify(node.data || {})),
+            },
+          });
+        }
 
         await tx.connection.createMany({
           data: edges.map((edge) => ({
