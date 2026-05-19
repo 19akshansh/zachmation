@@ -25,7 +25,7 @@ export const StripeDialogTrigger = ({ open, onOpenChange }: Props) => {
 
   const baseURL = process.env.NEXT_PUBLIC_APP_URL;
 
-  const webhookUrl = `${baseURL}/api/webhooks/stripeTrigger?workflowId=${workflowId}`;
+  const webhookUrl = `${baseURL}/api/webhooks/stripe?workflowId=${workflowId}`;
 
   const copyToClipboard = async () => {
     try {
