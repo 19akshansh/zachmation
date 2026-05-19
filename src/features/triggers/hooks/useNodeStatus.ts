@@ -3,7 +3,7 @@ import { useReactFlow } from "@xyflow/react";
 import { useRealtime } from "inngest/react";
 import type { ClientSubscriptionToken } from "inngest/react";
 
-import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
+import type { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 
 interface UseNodeStatusOptions {
   nodeId: string;
@@ -16,19 +16,23 @@ export function useNodeStatus({ nodeId, channel }: UseNodeStatusOptions) {
   const refreshToken = useCallback(async () => {
     const res = await fetch(`/api/inngest/realtimeToken?channel=${channel}`);
 
-    return res.json() as Promise<ClientSubscriptionToken>;
+    if (!res.ok) {
+      throw new Error(`Failed to get realtime token (${res.status})`);
+    }
+
+    return (await res.json()) as ClientSubscriptionToken;
   }, [channel]);
 
-  const { messages } = useRealtime({
+  const realtime = useRealtime({
     channel,
     topics: ["status"],
     token: refreshToken,
     bufferInterval: 100,
   });
 
-  useEffect(() => {
-    const message = messages.byTopic.status;
+  const message = realtime.messages.byTopic.status;
 
+  useEffect(() => {
     if (!message || message.kind !== "data") {
       return;
     }
@@ -61,5 +65,5 @@ export function useNodeStatus({ nodeId, channel }: UseNodeStatusOptions) {
         };
       }),
     );
-  }, [messages.byTopic.status, nodeId, setNodes]);
+  }, [message, nodeId, setNodes]);
 }
