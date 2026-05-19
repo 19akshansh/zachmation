@@ -7,6 +7,7 @@ const ALLOWED_CHANNELS = [
   "httpTriggerExec",
   "manualTriggerExec",
   "googleFormTriggerExec",
+  "stripeTriggerExec",
 ];
 
 export async function GET(request: Request) {

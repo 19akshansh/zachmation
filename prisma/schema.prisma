@@ -86,6 +86,7 @@ enum NodeType {
   MANUAL_TRIGGER
   HTTP_REQ
   GOOGLE_FORM_TRIGGER
+  STRIPE_TRIGGER
 }
 
 model Node {

@@ -32,52 +32,52 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     },
   );
 
-  if (!data.endpoint) {
-    await step.realtime.publish(
-      `node-error-endpoint-${nodeId}`,
-
-      httpTriggerChannel.status,
-
-      {
-        nodeId,
-        status: "error",
-      },
-    );
-
-    throw new NonRetriableError("HTTP Request node: No endpoint configured");
-  }
-
-  if (!data.variableName) {
-    await step.realtime.publish(
-      `node-error-variable-${nodeId}`,
-
-      httpTriggerChannel.status,
-
-      {
-        nodeId,
-        status: "error",
-      },
-    );
-
-    throw new NonRetriableError("No variable name configured");
-  }
-
-  if (!data.method) {
-    await step.realtime.publish(
-      `node-error-method-${nodeId}`,
-
-      httpTriggerChannel.status,
-
-      {
-        nodeId,
-        status: "error",
-      },
-    );
-
-    throw new NonRetriableError("HTTP Request node: No Method configured");
-  }
-
   try {
+    if (!data.endpoint) {
+      await step.realtime.publish(
+        `node-error-endpoint-${nodeId}`,
+
+        httpTriggerChannel.status,
+
+        {
+          nodeId,
+          status: "error",
+        },
+      );
+
+      throw new NonRetriableError("HTTP Request node: No endpoint configured");
+    }
+
+    if (!data.variableName) {
+      await step.realtime.publish(
+        `node-error-variable-${nodeId}`,
+
+        httpTriggerChannel.status,
+
+        {
+          nodeId,
+          status: "error",
+        },
+      );
+
+      throw new NonRetriableError("No variable name configured");
+    }
+
+    if (!data.method) {
+      await step.realtime.publish(
+        `node-error-method-${nodeId}`,
+
+        httpTriggerChannel.status,
+
+        {
+          nodeId,
+          status: "error",
+        },
+      );
+
+      throw new NonRetriableError("HTTP Request node: No Method configured");
+    }
+
     const result = await step.run(
       `httpTrigger-${nodeId}`,
 
