@@ -74,7 +74,7 @@ export const GoogleFormDialogTrigger = ({ open, onOpenChange }: Props) => {
               <li>Click the three dots menu {"->"} Script editor</li>
               <li>Copy & Paste the script below</li>
               <li>Replace WEBHOOK_URL with your webhook URL above</li>
-              <li>Replace workflowId with your workflowId</li>
+              <li>Replace google form id</li>
               <li>Click Run</li>
             </ol>
           </div>
@@ -112,7 +112,7 @@ export const GoogleFormDialogTrigger = ({ open, onOpenChange }: Props) => {
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{googleForm.responses.question-name}}"}
+                  {"{{googleForm.responses.question_name}}"}
                 </code>
                 - Specific answer
               </li>

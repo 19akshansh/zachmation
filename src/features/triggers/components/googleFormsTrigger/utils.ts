@@ -2,7 +2,7 @@ export const generateGoogleFormScript = (
   webhookUrl: string,
 ) => `function setupTrigger() {
   const form = FormApp.openById(
-    "workflowID"
+    "google form ID"
   );
 
   // Delete existing triggers first
@@ -32,8 +32,15 @@ function onFormSubmit(e) {
 
   for (var i = 0; i < itemResponses.length; i++) {
     var itemResponse = itemResponses[i];
+    var rawTitle = itemResponse.getItem().getTitle();
 
-    responses[itemResponse.getItem().getTitle()] =
+    var safeTitle = rawTitle
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "");
+
+    responses[safeTitle] =
       itemResponse.getResponse();
   }
 
@@ -49,7 +56,7 @@ function onFormSubmit(e) {
 
   // Webhook URL
   var WEBHOOK_URL =
-    "webhookURL";
+    "${webhookUrl}";
 
   // Send webhook
   var options = {

@@ -21,8 +21,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    console.log("GOOGLE FORM BODY:", JSON.stringify(body, null, 2));
-
     await sendWorkflowExecution({
       workflowId,
       initialData: {
