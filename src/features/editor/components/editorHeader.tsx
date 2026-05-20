@@ -20,6 +20,7 @@ import { SaveIcon } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { editorAtom } from "../store/atoms";
+import { NodeType } from "@/generated/prisma/enums";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
   const editor = useAtomValue(editorAtom);
@@ -38,11 +39,7 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
       const cleanedNodes = rawNodes.map((node) => ({
         id: node.id,
 
-        type: node.type as
-          | "INITIAL"
-          | "MANUAL_TRIGGER"
-          | "HTTP_REQ"
-          | "GOOGLE_FORM_TRIGGER",
+        type: NodeType[node.type as keyof typeof NodeType],
 
         position: {
           x: node.position.x,
