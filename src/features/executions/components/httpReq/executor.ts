@@ -36,9 +36,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     if (!data.endpoint) {
       await step.realtime.publish(
         `node-error-endpoint-${nodeId}`,
-
         httpTriggerChannel.status,
-
         {
           nodeId,
           status: "error",
@@ -51,9 +49,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     if (!data.variableName) {
       await step.realtime.publish(
         `node-error-variable-${nodeId}`,
-
         httpTriggerChannel.status,
-
         {
           nodeId,
           status: "error",
@@ -66,9 +62,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
     if (!data.method) {
       await step.realtime.publish(
         `node-error-method-${nodeId}`,
-
         httpTriggerChannel.status,
-
         {
           nodeId,
           status: "error",
@@ -83,9 +77,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
 
       async () => {
         const endpoint = Handlebars.compile(data.endpoint)(context);
-
         const method = data.method || "GET";
-
         const options: KyOptions = {
           method,
         };
@@ -103,9 +95,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
         }
 
         const response = await ky(endpoint, options);
-
         const contentType = response.headers.get("content-type");
-
         const responseData = contentType?.includes("application/json")
           ? await response.json()
           : await response.text();
@@ -127,9 +117,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
 
     await step.realtime.publish(
       `node-success-${nodeId}`,
-
       httpTriggerChannel.status,
-
       {
         nodeId,
         status: "success",
@@ -140,9 +128,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
   } catch (error) {
     await step.realtime.publish(
       `node-error-runtime-${nodeId}`,
-
       httpTriggerChannel.status,
-
       {
         nodeId,
         status: "error",

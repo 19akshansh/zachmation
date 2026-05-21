@@ -15,7 +15,7 @@ export const manualReqTriggerExecutor: NodeExecutor<
     },
   );
 
-  const result = await step.run(`httpTrigger-${nodeId}`, async () => context);
+  const result = await step.run(`manualTrigger-${nodeId}`, async () => context);
 
   await step.realtime.publish(
     `node-success-${nodeId}`,

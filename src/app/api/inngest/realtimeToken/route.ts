@@ -8,6 +8,9 @@ const ALLOWED_CHANNELS = [
   "manualTriggerExec",
   "googleFormTriggerExec",
   "stripeTriggerExec",
+  "geminiExec",
+  "anthropicExec",
+  "openaiExec",
 ];
 
 export async function GET(request: Request) {
