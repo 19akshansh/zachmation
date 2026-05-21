@@ -122,7 +122,7 @@ export const GeminiDialog = ({
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.httpResponse.data}}`}
+                    {`{{${watchVariableName}.text}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -193,8 +193,8 @@ export const GeminiDialog = ({
                     />
                   </FormControl>
                   <FormDescription>
-                    This prompt is sent to the AI. Use {"{{variables}}"} for
-                    simple values or {"{{json.variable}}"} to stringify objects
+                    This prompt is sent to the AI. Use {"{{aiResponse}}"} for
+                    simple values or {"{{json.aiResponse}}"} to stringify objects
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
