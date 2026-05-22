@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["handlebars"],
+  allowedDevOrigins: [
+    "3000-19akshansh-zachmation-eumm9plwbt.app.codeanywhere.com",
+    "scarlett-semipictorial-liliana.ngrok-free.dev",
+  ],
 
   async redirects() {
     return [
