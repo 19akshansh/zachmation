@@ -64,11 +64,13 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
 
   const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 
-  const google = createGoogleGenerativeAI({
-    apiKey,
-  });
+  
 
   try {
+    const google = createGoogleGenerativeAI({
+      apiKey,
+    });
+    
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
       model: google(data.model || "gemini-1.5-flash"),
       system: systemPrompt,

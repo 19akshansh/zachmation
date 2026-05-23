@@ -1,6 +1,5 @@
 "use client";
 
-import { formatDistanceToNow } from "date-fns";
 import {
   EntityHeader,
   EntityContainer,
@@ -23,6 +22,7 @@ import { useWorkflowsParams } from "../hooks/useWorkflowsParams";
 import { UseEntitySearch } from "../hooks/useEnititySearch";
 import type { Workflow as WorkflowType } from "@/generated";
 import { WorkflowIcon } from "lucide-react";
+import { RelativeTime } from "@/components/relativeTime";
 
 export const WorkflowsList = () => {
   const workflows = useSuspenseWorkflows();
@@ -173,9 +173,8 @@ export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
       title={data.name}
       subtitle={
         <>
-          Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
-          &bull; Created{" "}
-          {formatDistanceToNow(data.createdAt, { addSuffix: true })}
+          Updated <RelativeTime date={data.updatedAt} />
+          &bull; Created <RelativeTime date={data.createdAt} />
         </>
       }
       image={
