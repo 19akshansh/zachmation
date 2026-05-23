@@ -1,5 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,16 +31,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { GOOGLE_MODELS, type GoogleModelId } from "@/config/ai/geminiModels";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { OPENAI_MODELS, type OpenAIModelId } from "@/config/ai/openaiModels";
 
-const CHAT_MODELS = GOOGLE_MODELS.filter((model) => model.category === "chat");
-const GOOGLE_MODEL_IDS = CHAT_MODELS.map((model) => model.id) as [
-  GoogleModelId,
-  ...GoogleModelId[],
+const OPENAI_MODEL_IDS = OPENAI_MODELS.map((model) => model.id) as [
+  OpenAIModelId,
+  ...OpenAIModelId[]
 ];
 
 const formSchema = z.object({
@@ -49,31 +48,31 @@ const formSchema = z.object({
       message:
         "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores",
     }),
-  model: z.enum(GOOGLE_MODEL_IDS),
+  model: z.enum(OPENAI_MODEL_IDS),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "Prompt required."),
 });
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type OpenAIFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: GeminiFormValues) => void;
-  defaultValues?: Partial<GeminiFormValues>;
+  onSubmit: (values: OpenAIFormValues) => void;
+  defaultValues?: Partial<OpenAIFormValues>;
 }
 
-export const GeminiDialog = ({
+export const OpenAIDialog = ({
   open,
   onOpenChange,
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const form = useForm<GeminiFormValues>({
+  const form = useForm<OpenAIFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName || "",
-      model: defaultValues.model || CHAT_MODELS[0].id,
+      model: defaultValues.model || OPENAI_MODELS[0].id,
       systemPrompt: defaultValues.systemPrompt || "",
       userPrompt: defaultValues.userPrompt || "",
     },
@@ -83,29 +82,32 @@ export const GeminiDialog = ({
     if (open) {
       form.reset({
         variableName: defaultValues.variableName || "",
-        model: defaultValues.model || CHAT_MODELS[0].id,
+        model: defaultValues.model || OPENAI_MODELS[0].id,
         systemPrompt: defaultValues.systemPrompt || "",
         userPrompt: defaultValues.userPrompt || "",
       });
     }
   }, [open, defaultValues, form]);
 
-  const demoVarName = "myGeminiChat";
+  const demoVarName = "myOpenAi";
+
   const watchVariableName = form.watch("variableName") || demoVarName;
-  const handleSubmit = (values: GeminiFormValues) => {
+
+  const handleSubmit = (values: OpenAIFormValues) => {
     onSubmit(values);
     onOpenChange(false);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Gemini {"(Chat)"} Config</DialogTitle>
+          <DialogTitle>OpenAI (Chat) Config</DialogTitle>
           <DialogDescription>
-            Configure settings for Gemini {"(Chat)"} node.
+            Configure settings for OpenAI chat generation.
           </DialogDescription>
         </DialogHeader>
+
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(handleSubmit)}
@@ -117,17 +119,21 @@ export const GeminiDialog = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Variable Name</FormLabel>
+
                   <FormControl>
                     <Input {...field} placeholder={demoVarName} />
                   </FormControl>
+
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
                     {`{{${watchVariableName}.text}}`}
                   </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="model"
@@ -143,26 +149,30 @@ export const GeminiDialog = ({
                     </FormControl>
 
                     <SelectContent>
-                      {CHAT_MODELS.map((model) => (
+                      {OPENAI_MODELS.map((model) => (
                         <SelectItem key={model.id} value={model.id}>
                           {model.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+
                   <FormDescription>
-                    Select the Gemini model used for AI generation
+                    Select the OpenAI model used for AI generation
                   </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="systemPrompt"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>System Prompt (Optional)</FormLabel>
+
                   <FormControl>
                     <Textarea
                       placeholder="You are a helpful assistant"
@@ -170,21 +180,25 @@ export const GeminiDialog = ({
                       {...field}
                     />
                   </FormControl>
+
                   <FormDescription>
-                    Sets the behaviour of assistant. Use {"{{variableName}}"}{" "}
+                    Sets the behavior of the assistant. Use {"{{variableName}}"}{" "}
                     for simple values or {"{{json.variableName}}"} to stringify
-                    objects
+                    objects.
                   </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="userPrompt"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>User Prompt</FormLabel>
+
                   <FormControl>
                     <Textarea
                       placeholder="Summarize this text..."
@@ -192,14 +206,18 @@ export const GeminiDialog = ({
                       {...field}
                     />
                   </FormControl>
+
                   <FormDescription>
                     This prompt is sent to the AI. Use {"{{aiResponse}}"} for
-                    simple values or {"{{json.aiResponse}}"} to stringify objects
+                    simple values or {"{{json.aiResponse}}"} to stringify
+                    objects.
                   </FormDescription>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
+
             <DialogFooter>
               <Button type="submit">Save</Button>
             </DialogFooter>

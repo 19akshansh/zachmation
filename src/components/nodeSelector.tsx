@@ -62,6 +62,18 @@ const executionNodes: NodeTypeOption[] = [
     description: "Makes a GEMINI(Chat) Request",
     icon: "/gemini.svg",
   },
+  {
+    type: NodeType.OPENAI,
+    label: "OPENAI Chat",
+    description: "Makes a OPENAI(Chat) Request",
+    icon: "/openai.svg",
+  },
+  {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic Chat",
+    description: "Makes a Anthropic(Chat) Request",
+    icon: "/anthropic.svg",
+  },
 ];
 
 interface NodeSelectorProps {
@@ -82,7 +94,7 @@ export function NodeSelector({
       if (selection.type === NodeType.MANUAL_TRIGGER) {
         const nodes = getNodes();
         const hasManualTrigger = nodes.some(
-          (node) => node.type === NodeType.MANUAL_TRIGGER,
+          (node) => node.type === NodeType.MANUAL_TRIGGER
         );
 
         if (hasManualTrigger) {
@@ -93,7 +105,7 @@ export function NodeSelector({
 
       setNodes((nodes) => {
         const hasInitialTrigger = nodes.some(
-          (node) => node.type === NodeType.INITIAL,
+          (node) => node.type === NodeType.INITIAL
         );
 
         const centerX = window.innerWidth / 2;
@@ -119,7 +131,7 @@ export function NodeSelector({
 
       onOpenChange(false);
     },
-    [setNodes, getNodes, onOpenChange, screenToFlowPosition],
+    [setNodes, getNodes, onOpenChange, screenToFlowPosition]
   );
 
   return (
