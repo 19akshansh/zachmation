@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "ngrok:dev": "dotenv -- ngrok http --url=$NGROK_URL 3000",
+    "ngrok:dev": "dotenv -- ngrok http --url=$NGROK_URL 8288",
     "inngest:dev": "inngest-cli dev",
     "dev:all": "dotenv -- mprocs",
     "generate": "prisma generate",

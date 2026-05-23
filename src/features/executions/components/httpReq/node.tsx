@@ -5,19 +5,15 @@ import { GlobeIcon } from "lucide-react";
 import { useState } from "react";
 import { BaseExecutionNode } from "../baseExecutionNode";
 import { HTTPReqDialog, HTTPReqFormValues } from "./dialog";
-import { httpTriggerChannel } from "@/inngest/channels/httpTrigger";
+import { CHANNELS } from "@/config/channels";
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 import { useNodeStatus } from "../../hooks/useNodeStatus";
 
 type HTTPReqNodeData = {
   variableName?: string;
-
   endpoint?: string;
-
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-
   body?: string;
-
   status?: NodeStatus;
 };
 
@@ -36,7 +32,6 @@ export const HTTPReqNode = (props: NodeProps<HTTPReqNodeType>) => {
         if (node.id === props.id) {
           return {
             ...node,
-
             data: {
               ...node.data,
               ...values,
@@ -57,7 +52,7 @@ export const HTTPReqNode = (props: NodeProps<HTTPReqNodeType>) => {
 
   useNodeStatus({
     nodeId: props.id,
-    channel: httpTriggerChannel.name,
+    channel: CHANNELS.HTTP_TRIGGER,
     topics: ["status"],
   });
 

@@ -6,7 +6,7 @@ import { BaseExecutionNode } from "../baseExecutionNode";
 import { GeminiDialog, GeminiFormValues } from "./dialog";
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 import { useNodeStatus } from "../../hooks/useNodeStatus";
-import { geminiChannel } from "@/inngest/channels/ai/gemini";
+import { CHANNELS } from "@/config/channels";
 import { GOOGLE_MODELS, GoogleModelId } from "@/config/ai/geminiModels";
 
 export type GeminiNodeData = {
@@ -52,7 +52,7 @@ export const GeminiNode = (props: NodeProps<GeminiNodeType>) => {
 
   useNodeStatus({
     nodeId: props.id,
-    channel: geminiChannel.name,
+    channel: CHANNELS.GEMINI,
     topics: ["status"],
   });
 
