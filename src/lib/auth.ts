@@ -11,7 +11,8 @@ export const auth = betterAuth({
     "http://localhost:3000",
     "https://bug-free-robot-w457rvjqvx7fr4q-3000.app.github.dev",
     "https://scarlett-semipictorial-liliana.ngrok-free.dev",
-    "https://3000-19akshansh-zachmation-e6nar9x7fw.app.codeanywhere.com"
+    "https://3000-19akshansh-zachmation-e6nar9x7fw.app.codeanywhere.com",
+    "https://3000-cs-7452aacf-6504-4c6a-8e1c-96d00bb63f05.cs-asia-southeast1-ajrg.cloudshell.dev"
   ],
 
   database: prismaAdapter(prisma, {

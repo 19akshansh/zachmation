@@ -1,29 +1,32 @@
 import Handlebars from "handlebars";
+
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { openaiChannel } from "@/inngest/channels/ai/openai";
+import { OpenAIModelId } from "@/config/ai/openaiModels";
 
 Handlebars.registerHelper("json", (context) => {
   const stringified = JSON.stringify(context, null, 2);
+
   return new Handlebars.SafeString(stringified);
 });
 
-type openAIData = {
+type OpenAIData = {
   variableName?: string;
-  model?: openaiModels;
+  model?: OpenAIModelId;
   systemPrompt?: string;
   userPrompt?: string;
 };
 
-export const openAIExecutor: NodeExecutor<openAIData> = async ({
+export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
   data,
   nodeId,
   context,
   step,
 }) => {
-  await step.realtime.publish(`node-loading-${nodeId}`, openAIChannel.status, {
+  await step.realtime.publish(`node-loading-${nodeId}`, openaiChannel.status, {
     nodeId,
     status: "loading",
   });
@@ -35,7 +38,7 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
       {
         nodeId,
         status: "error",
-      }
+      },
     );
 
     throw new NonRetriableError("OPENAI: No variable name configured");
@@ -48,7 +51,7 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
       {
         nodeId,
         status: "error",
-      }
+      },
     );
 
     throw new NonRetriableError("OPENAI: No User Prompt configured");
@@ -57,8 +60,24 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant";
+
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
+
   const apiKey = process.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    await step.realtime.publish(
+      `node-error-apikey-${nodeId}`,
+      openaiChannel.status,
+      {
+        nodeId,
+        status: "error",
+        error: "Missing OpenAI API Key",
+      },
+    );
+
+    throw new NonRetriableError("Missing OpenAI API Key");
+  }
 
   try {
     const openai = createOpenAI({
@@ -66,7 +85,7 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
     });
 
     const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
-      model: openai(data.model || "gpt-4.1"),
+      model: openai(data.model || "gpt-4.1-mini"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {
@@ -77,7 +96,7 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
     });
 
     const text =
-      steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
+      steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
 
     await step.realtime.publish(
       `node-success-${nodeId}`,
@@ -85,7 +104,7 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
       {
         nodeId,
         status: "success",
-      }
+      },
     );
 
     return {
@@ -101,8 +120,11 @@ export const openAIExecutor: NodeExecutor<openAIData> = async ({
       {
         nodeId,
         status: "error",
-      }
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     throw error;
   }

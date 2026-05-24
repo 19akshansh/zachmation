@@ -1,8 +1,8 @@
 import Handlebars from "handlebars";
+import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
-import type { NodeExecutor } from "@/features/executions/types";
 import { anthropicChannel } from "@/inngest/channels/ai/anthropic";
 import { AnthropicModelId } from "@/config/ai/anthropicModels";
 
@@ -19,7 +19,7 @@ type AnthropicData = {
   userPrompt?: string;
 };
 
-export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
+export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   data,
   nodeId,
   context,
@@ -31,7 +31,7 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
     {
       nodeId,
       status: "loading",
-    }
+    },
   );
 
   if (!data.variableName) {
@@ -41,7 +41,8 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
       {
         nodeId,
         status: "error",
-      }
+        error: "No variable name configured",
+      },
     );
 
     throw new NonRetriableError("ANTHROPIC: No variable name configured");
@@ -54,7 +55,8 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
       {
         nodeId,
         status: "error",
-      }
+        error: "No User Prompt configured",
+      },
     );
 
     throw new NonRetriableError("ANTHROPIC: No User Prompt configured");
@@ -75,7 +77,8 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
       {
         nodeId,
         status: "error",
-      }
+        error: "Missing Anthropic API Key",
+      },
     );
 
     throw new NonRetriableError("Missing Anthropic API Key");
@@ -86,23 +89,23 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
       apiKey,
     });
 
-    const { text } = await step.ai.wrap(
+    const { steps } = await step.ai.wrap(
       "anthropic-generate-text",
       generateText,
       {
         model: anthropic(data.model || "claude-3-5-sonnet-latest"),
-
         system: systemPrompt,
-
         prompt: userPrompt,
-
         experimental_telemetry: {
           isEnabled: true,
           recordInputs: true,
           recordOutputs: true,
         },
-      }
+      },
     );
+
+    const text =
+      steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
 
     await step.realtime.publish(
       `node-success-${nodeId}`,
@@ -110,12 +113,11 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
       {
         nodeId,
         status: "success",
-      }
+      },
     );
 
     return {
       ...context,
-
       [data.variableName]: {
         text,
       },
@@ -127,8 +129,11 @@ export const AnthropicExecutor: NodeExecutor<AnthropicData> = async ({
       {
         nodeId,
         status: "error",
-      }
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     throw error;
   }

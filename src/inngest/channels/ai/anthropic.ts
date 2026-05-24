@@ -8,6 +8,7 @@ export const anthropicChannel = realtime.channel({
       schema: z.object({
         nodeId: z.string(),
         status: z.enum(["loading", "success", "error"]),
+        error: z.string().optional(),
       }),
     },
   },

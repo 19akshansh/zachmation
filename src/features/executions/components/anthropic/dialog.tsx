@@ -31,11 +31,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { OPENAI_MODELS, type OpenAIModelId } from "@/config/ai/openaiModels";
+import {
+  ANTHROPIC_MODELS,
+  type AnthropicModelId,
+} from "@/config/ai/anthropicModels";
 
-const OPENAI_MODEL_IDS = OPENAI_MODELS.map((model) => model.id) as [
-  OpenAIModelId,
-  ...OpenAIModelId[]
+const ANTHROPIC_MODEL_IDS = ANTHROPIC_MODELS.map((model) => model.id) as [
+  AnthropicModelId,
+  ...AnthropicModelId[],
 ];
 
 const formSchema = z.object({
@@ -48,31 +51,31 @@ const formSchema = z.object({
       message:
         "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores",
     }),
-  model: z.enum(OPENAI_MODEL_IDS),
+  model: z.enum(ANTHROPIC_MODEL_IDS),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "Prompt required."),
 });
 
-export type OpenAIFormValues = z.infer<typeof formSchema>;
+export type AnthropicFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: OpenAIFormValues) => void;
-  defaultValues?: Partial<OpenAIFormValues>;
+  onSubmit: (values: AnthropicFormValues) => void;
+  defaultValues?: Partial<AnthropicFormValues>;
 }
 
-export const OpenAIDialog = ({
+export const AnthropicDialog = ({
   open,
   onOpenChange,
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const form = useForm<OpenAIFormValues>({
+  const form = useForm<AnthropicFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName || "",
-      model: defaultValues.model || OPENAI_MODELS[0].id,
+      model: defaultValues.model || ANTHROPIC_MODELS[0].id,
       systemPrompt: defaultValues.systemPrompt || "",
       userPrompt: defaultValues.userPrompt || "",
     },
@@ -82,18 +85,18 @@ export const OpenAIDialog = ({
     if (open) {
       form.reset({
         variableName: defaultValues.variableName || "",
-        model: defaultValues.model || OPENAI_MODELS[0].id,
+        model: defaultValues.model || ANTHROPIC_MODELS[0].id,
         systemPrompt: defaultValues.systemPrompt || "",
         userPrompt: defaultValues.userPrompt || "",
       });
     }
   }, [open, defaultValues, form]);
 
-  const demoVarName = "myOpenAi";
+  const demoVarName = "myClaudeResponse";
 
   const watchVariableName = form.watch("variableName") || demoVarName;
 
-  const handleSubmit = (values: OpenAIFormValues) => {
+  const handleSubmit = (values: AnthropicFormValues) => {
     onSubmit(values);
     onOpenChange(false);
   };
@@ -102,9 +105,10 @@ export const OpenAIDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>OpenAI (Chat) Config</DialogTitle>
+          <DialogTitle>Anthropic (Chat) Config</DialogTitle>
+
           <DialogDescription>
-            Configure settings for OpenAI chat generation.
+            Configure settings for Claude chat generation.
           </DialogDescription>
         </DialogHeader>
 
@@ -149,7 +153,7 @@ export const OpenAIDialog = ({
                     </FormControl>
 
                     <SelectContent>
-                      {OPENAI_MODELS.map((model) => (
+                      {ANTHROPIC_MODELS.map((model) => (
                         <SelectItem key={model.id} value={model.id}>
                           {model.label}
                         </SelectItem>
@@ -158,7 +162,7 @@ export const OpenAIDialog = ({
                   </Select>
 
                   <FormDescription>
-                    Select the OpenAI model used for AI generation
+                    Select the Claude model used for AI generation
                   </FormDescription>
 
                   <FormMessage />
