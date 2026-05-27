@@ -135,8 +135,11 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
       {
         nodeId,
         status: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     throw error;
   }

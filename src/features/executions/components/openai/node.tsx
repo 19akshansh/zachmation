@@ -11,6 +11,7 @@ import { OPENAI_MODELS, OpenAIModelId } from "@/config/ai/openaiModels";
 
 export type OpenAIData = {
   variableName?: string;
+  credentialId?: string;
   model?: OpenAIModelId;
   systemPrompt?: string;
   userPrompt?: string;
@@ -43,7 +44,7 @@ export const OpenAINode = (props: NodeProps<OpenAINodeType>) => {
             ...values,
           },
         };
-      })
+      }),
     );
   };
 
