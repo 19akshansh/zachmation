@@ -11,7 +11,7 @@ export const executeWorkflow = inngest.createFunction(
     triggers: {
       event: "workflows/workflow.exec",
     },
-    retries: 2,
+    retries: 0,
   },
   
 

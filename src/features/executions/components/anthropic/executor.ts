@@ -5,6 +5,7 @@ import { generateText } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { anthropicChannel } from "@/inngest/channels/ai/anthropic";
 import { AnthropicModelId } from "@/config/ai/anthropicModels";
+import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
   const stringified = JSON.stringify(context, null, 2);
@@ -14,6 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 
 type AnthropicData = {
   variableName?: string;
+  credentialId?: string;
   model?: AnthropicModelId;
   systemPrompt?: string;
   userPrompt?: string;
@@ -62,27 +64,41 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("ANTHROPIC: No User Prompt configured");
   }
 
+  if (!data.credentialId) {
+    await step.realtime.publish(
+      `node-error-credential-${nodeId}`,
+      anthropicChannel.status,
+      {
+        nodeId,
+        status: "error",
+      },
+    );
+
+    throw new NonRetriableError("ANTHROPIC: No Credential configured");
+  }
+
   const systemPrompt = data.systemPrompt
     ? Handlebars.compile(data.systemPrompt)(context)
     : "You are a helpful assistant";
 
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const credential = await step.run(
+    `node-error-get-credential-${nodeId}`,
+    () => {
+      return prisma.credential.findUnique({
+        where: {
+          id: data.credentialId,
+        },
+      });
+    },
+  );
 
-  if (!apiKey) {
-    await step.realtime.publish(
-      `node-error-apikey-${nodeId}`,
-      anthropicChannel.status,
-      {
-        nodeId,
-        status: "error",
-        error: "Missing Anthropic API Key",
-      },
-    );
-
-    throw new NonRetriableError("Missing Anthropic API Key");
+  if (!credential) {
+    throw new NonRetriableError("ANTHROPIC: Credential not found");
   }
+
+  const apiKey = credential.value;
 
   try {
     const anthropic = createAnthropic({

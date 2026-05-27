@@ -22,7 +22,6 @@ const Page = async ({ searchParams }: Props) => {
   await requireAuth();
 
   const params = await workflowsParamsLoader(searchParams);
-
   await prefetchWorkflows(params);
 
   return (
