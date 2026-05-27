@@ -75,7 +75,7 @@ export const workflowsRouter = createTRPCRouter({
         nodes: z.array(
           z.object({
             id: z.string(),
-            type: z.nativeEnum(NodeType),
+            type: z.enum(NodeType),
             position: z.object({
               x: z.number(),
               y: z.number(),

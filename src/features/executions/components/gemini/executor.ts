@@ -5,6 +5,7 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { geminiChannel } from "@/inngest/channels/ai/gemini";
 import { GoogleModelId } from "@/config/ai/geminiModels";
+import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
   const stringified = JSON.stringify(context, null, 2);
@@ -14,6 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 
 type GeminiData = {
   variableName?: string;
+  credentialId?: string;
   model?: GoogleModelId;
   systemPrompt?: string;
   userPrompt?: string;
@@ -40,7 +42,7 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
       },
     );
 
-    throw new NonRetriableError("No variable name configured");
+    throw new NonRetriableError("GEMINI: No variable name configured");
   }
 
   if (!data.userPrompt) {
@@ -53,7 +55,20 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
       },
     );
 
-    throw new NonRetriableError("No User Prompt configured");
+    throw new NonRetriableError("GEMINI: No User Prompt configured");
+  }
+
+  if (!data.credentialId) {
+    await step.realtime.publish(
+      `node-error-credential-${nodeId}`,
+      geminiChannel.status,
+      {
+        nodeId,
+        status: "error",
+      },
+    );
+
+    throw new NonRetriableError("GEMINI: No Credential configured");
   }
 
   const systemPrompt = data.systemPrompt
@@ -62,15 +77,28 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
 
   const userPrompt = Handlebars.compile(data.userPrompt)(context);
 
-  const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  const credential = await step.run(
+    `node-error-get-credential-${nodeId}`,
+    () => {
+      return prisma.credential.findUnique({
+        where: {
+          id: data.credentialId,
+        },
+      });
+    },
+  );
 
-  
+  if (!credential) {
+    throw new NonRetriableError("GEMINI: Credential not found");
+  }
+
+  const apiKey = credential.value;
 
   try {
     const google = createGoogleGenerativeAI({
       apiKey,
     });
-    
+
     const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
       model: google(data.model || "gemini-1.5-flash"),
       system: systemPrompt,
@@ -107,8 +135,11 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
       {
         nodeId,
         status: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
     );
+
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     throw error;
   }

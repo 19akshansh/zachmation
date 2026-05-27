@@ -35,6 +35,9 @@ import {
   ANTHROPIC_MODELS,
   type AnthropicModelId,
 } from "@/config/ai/anthropicModels";
+import { CredentialType } from "@/generated/prisma/enums";
+import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import Image from "next/image";
 
 const ANTHROPIC_MODEL_IDS = ANTHROPIC_MODELS.map((model) => model.id) as [
   AnthropicModelId,
@@ -51,6 +54,9 @@ const formSchema = z.object({
       message:
         "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores",
     }),
+  credentialId: z.string().min(1, {
+    message: "Credential is required.",
+  }),
   model: z.enum(ANTHROPIC_MODEL_IDS),
   systemPrompt: z.string().optional(),
   userPrompt: z.string().min(1, "Prompt required."),
@@ -71,9 +77,13 @@ export const AnthropicDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
+  const { data: credentials, isLoading: credentialsLoading } =
+    useCredentialsByType(CredentialType.ANTHROPIC);
+
   const form = useForm<AnthropicFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      credentialId: defaultValues.credentialId || "",
       variableName: defaultValues.variableName || "",
       model: defaultValues.model || ANTHROPIC_MODELS[0].id,
       systemPrompt: defaultValues.systemPrompt || "",
@@ -84,6 +94,7 @@ export const AnthropicDialog = ({
   useEffect(() => {
     if (open) {
       form.reset({
+        credentialId: defaultValues.credentialId || "",
         variableName: defaultValues.variableName || "",
         model: defaultValues.model || ANTHROPIC_MODELS[0].id,
         systemPrompt: defaultValues.systemPrompt || "",
@@ -165,6 +176,43 @@ export const AnthropicDialog = ({
                     Select the Claude model used for AI generation
                   </FormDescription>
 
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="credentialId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>ANTHROPIC API KEY</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={credentialsLoading || !credentials?.length}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a credential" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {credentials?.map((credential) => (
+                        <SelectItem key={credential.id} value={credential.id}>
+                          <div className="flex items-center gap-2">
+                            <Image
+                              src={"/anthropic.svg"}
+                              alt={"ANTHROPIC LOGO"}
+                              width={24}
+                              height={24}
+                            />
+                            {credential.name}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

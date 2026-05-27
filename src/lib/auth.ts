@@ -7,7 +7,7 @@ import { polarClient } from "./polar";
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
 
-  trustedOrigins: [
+trustedOrigins: [
     "http://localhost:3000",
     "https://bug-free-robot-w457rvjqvx7fr4q-3000.app.github.dev",
     "https://scarlett-semipictorial-liliana.ngrok-free.dev",

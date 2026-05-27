@@ -11,6 +11,7 @@ import { GOOGLE_MODELS, GoogleModelId } from "@/config/ai/geminiModels";
 
 export type GeminiNodeData = {
   variableName?: string;
+  credentialId?: string;
   model?: GoogleModelId;
   systemPrompt?: string;
   userPrompt?: string;

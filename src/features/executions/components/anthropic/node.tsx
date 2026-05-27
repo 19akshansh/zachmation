@@ -14,6 +14,7 @@ import {
 
 export type AnthropicData = {
   variableName?: string;
+  credentialId?: string;
   model?: AnthropicModelId;
   systemPrompt?: string;
   userPrompt?: string;
@@ -45,7 +46,7 @@ export const AnthropicNode = (props: NodeProps<AnthropicNodeType>) => {
             ...values,
           },
         };
-      })
+      }),
     );
   };
 
