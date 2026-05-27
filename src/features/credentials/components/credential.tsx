@@ -75,7 +75,7 @@ const credentialTypeOptions = [
   },
 ];
 
-export const CredentialForm = async ({ initialData }: CredentialFormProps) => {
+export const CredentialForm = ({ initialData }: CredentialFormProps) => {
   const router = useRouter();
   const createCredential = useCreateCredential();
   const updateCredential = useUpdateCredential();

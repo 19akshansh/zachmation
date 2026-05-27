@@ -20,7 +20,7 @@ import { useUpgradeModal } from "@/hooks/useUpgradeModal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/useWorkflowsParams";
 import { UseEntitySearch } from "../hooks/useEnititySearch";
-import type { Workflow as WorkflowType } from "@/generated/prisma/client";
+import type { Workflow as WorkflowType } from "@/generated/prisma/browser";
 import { WorkflowIcon } from "lucide-react";
 import { RelativeTime } from "@/components/relativeTime";
 

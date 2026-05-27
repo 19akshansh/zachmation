@@ -17,10 +17,10 @@ import {
   useSuspenseCredential,
   useSuspenseCredentials,
 } from "../hooks/useCredentials";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCredentialsParams } from "../hooks/useCredentialsParams";
 import { UseEntitySearch } from "../hooks/useEnititySearch";
-import { CredentialType, type Credential } from "@/generated/prisma/client";
+import { CredentialType, type Credential } from "@/generated/prisma/browser";
 import { RelativeTime } from "@/components/relativeTime";
 import Image from "next/image";
 import { CredentialForm } from "./credential";
@@ -42,8 +42,8 @@ export const CredentialsHeader = ({ disabled }: { disabled?: boolean }) => {
   return (
     <>
       <EntityHeader
-        title="Credential"
-        description="Create and manage your Credential"
+        title="Credentials"
+        description="Create and manage your Credentials"
         newButtonLabel="New Credential"
         disabled={disabled}
         newButtonHref={"/credentials/new"}
@@ -114,7 +114,7 @@ export const CredentialsError = () => {
 export const CredentialsEmpty = () => {
   const router = useRouter();
   const handleCreate = () => {
-    router.push(`/credentiala/new`);
+    router.push(`/credentials/new`);
   };
 
   return (
@@ -166,7 +166,7 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
   );
 };
 
-export const CredentialView = async ({
+export const CredentialView = ({
   credentialId,
 }: {
   credentialId: string;
