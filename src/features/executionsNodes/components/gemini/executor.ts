@@ -1,5 +1,5 @@
 import Handlebars from "handlebars";
-import type { NodeExecutor } from "@/features/executions/types";
+import type { NodeExecutor } from "@/features/executionsNodes/types";
 import { NonRetriableError } from "inngest";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";

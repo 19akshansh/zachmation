@@ -19,7 +19,7 @@ import {
 } from "../hooks/useCredentials";
 import { useRouter } from "next/navigation";
 import { useCredentialsParams } from "../hooks/useCredentialsParams";
-import { UseEntitySearch } from "../hooks/useEnititySearch";
+import { UseEntitySearch } from "@/hooks/useEnititySearch";
 import { CredentialType, type Credential } from "@/generated/prisma/browser";
 import { RelativeTime } from "@/components/relativeTime";
 import Image from "next/image";
