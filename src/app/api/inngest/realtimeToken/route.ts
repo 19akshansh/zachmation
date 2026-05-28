@@ -11,6 +11,8 @@ const ALLOWED_CHANNELS = [
   "geminiExec",
   "anthropicExec",
   "openaiExec",
+  "slackExec",
+  "discordExec",
 ];
 
 export async function GET(request: Request) {
