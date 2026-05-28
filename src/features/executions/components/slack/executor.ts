@@ -59,12 +59,6 @@ export const SlackExecutor: NodeExecutor<SlackData> = async ({
         throw new NonRetriableError("SLACK: No Webhook URL configured");
       }
 
-      await ky.post(data.webhookUrl, {
-        json: {
-          text: messageContent,
-        },
-      });
-
       if (!data.variableName) {
         await step.realtime.publish(
           `node-error-variable-${nodeId}`,
@@ -78,10 +72,16 @@ export const SlackExecutor: NodeExecutor<SlackData> = async ({
         throw new NonRetriableError("SLACK: No variable name configured");
       }
 
+      await ky.post(data.webhookUrl, {
+        json: {
+          text: messageContent,
+        },
+      });
+
       return {
         ...context,
         [data.variableName]: {
-          messageContent: messageContent,
+          text: messageContent,
         },
       };
     });

@@ -64,13 +64,6 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async ({
         throw new NonRetriableError("DISCORD: No Webhook URL configured");
       }
 
-      await ky.post(data.webhookUrl, {
-        json: {
-          content: messageContent.slice(0, 2000),
-          username,
-        },
-      });
-
       if (!data.variableName) {
         await step.realtime.publish(
           `node-error-variable-${nodeId}`,
@@ -84,10 +77,17 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async ({
         throw new NonRetriableError("DISCORD: No variable name configured");
       }
 
+      await ky.post(data.webhookUrl, {
+        json: {
+          content: messageContent.slice(0, 2000),
+          username,
+        },
+      });
+
       return {
         ...context,
         [data.variableName]: {
-          messageContent: messageContent.slice(0, 2000),
+          text: messageContent.slice(0, 2000),
         },
       };
     });

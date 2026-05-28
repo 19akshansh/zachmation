@@ -9,6 +9,7 @@ import { useNodeStatus } from "../../hooks/useNodeStatus";
 import { CHANNELS } from "@/config/channels";
 
 export type DiscordNodeData = {
+  variableName?: string;
   webhookUrl?: string;
   content?: string;
   username?: string;
@@ -54,6 +55,7 @@ export const DiscordNode = (props: NodeProps<DiscordNodeType>) => {
         onOpenChange={setDialogOpen}
         onSubmit={handleSubmit}
         defaultValues={{
+          variableName: nodeData?.variableName,
           webhookUrl: nodeData?.webhookUrl,
           content: nodeData?.content,
           username: nodeData?.username,

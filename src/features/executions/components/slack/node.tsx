@@ -9,9 +9,9 @@ import { useNodeStatus } from "../../hooks/useNodeStatus";
 import { CHANNELS } from "@/config/channels";
 
 export type SlackNodeData = {
+  variableName?: string;
   webhookUrl?: string;
   content?: string;
-  username?: string;
   status?: NodeStatus;
 };
 
@@ -56,6 +56,7 @@ export const SlackNode = (props: NodeProps<SlackNodeType>) => {
         defaultValues={{
           webhookUrl: nodeData?.webhookUrl,
           content: nodeData?.content,
+          variableName: nodeData?.variableName,
         }}
       />
 
