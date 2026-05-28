@@ -1,9 +1,9 @@
 import Handlebars from "handlebars";
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
-import { discordChannel } from "@/inngest/channels/discord";
 import { decode } from "html-entities";
 import ky from "ky";
+import { slackChannel } from "@/inngest/channels/slack";
 
 Handlebars.registerHelper("json", (context) => {
   const stringified = JSON.stringify(context, null, 2);
@@ -11,20 +11,19 @@ Handlebars.registerHelper("json", (context) => {
   return new Handlebars.SafeString(stringified);
 });
 
-type DiscordData = {
+type SlackData = {
   variableName?: string;
   webhookUrl?: string;
   content?: string;
-  username?: string;
 };
 
-export const DiscordExecutor: NodeExecutor<DiscordData> = async ({
+export const SlackExecutor: NodeExecutor<SlackData> = async ({
   data,
   nodeId,
   context,
   step,
 }) => {
-  await step.realtime.publish(`node-loading-${nodeId}`, discordChannel.status, {
+  await step.realtime.publish(`node-loading-${nodeId}`, slackChannel.status, {
     nodeId,
     status: "loading",
   });
@@ -32,80 +31,71 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async ({
   if (!data.content) {
     await step.realtime.publish(
       `node-error-content-${nodeId}`,
-      discordChannel.status,
+      slackChannel.status,
       {
         nodeId,
         status: "error",
       },
     );
 
-    throw new NonRetriableError("DISCORD: No Message Content configured");
+    throw new NonRetriableError("SLACK: No Message Content configured");
   }
 
   const rawMessageContent = Handlebars.compile(data.content)(context);
   const messageContent = decode(rawMessageContent);
 
-  const username = data.username
-    ? decode(Handlebars.compile(data.username)(context))
-    : undefined;
-
   try {
-    const result = await step.run("discord-webhook", async () => {
+    const result = await step.run("slack-webhook", async () => {
       if (!data.webhookUrl) {
         await step.realtime.publish(
           `node-error-webhookurl-${nodeId}`,
-          discordChannel.status,
+          slackChannel.status,
           {
             nodeId,
             status: "error",
           },
         );
 
-        throw new NonRetriableError("DISCORD: No Webhook URL configured");
+        throw new NonRetriableError("SLACK: No Webhook URL configured");
       }
 
       await ky.post(data.webhookUrl, {
         json: {
-          content: messageContent.slice(0, 2000),
-          username,
+          text: messageContent,
         },
       });
 
       if (!data.variableName) {
         await step.realtime.publish(
           `node-error-variable-${nodeId}`,
-          discordChannel.status,
+          slackChannel.status,
           {
             nodeId,
             status: "error",
           },
         );
 
-        throw new NonRetriableError("DISCORD: No variable name configured");
+        throw new NonRetriableError("SLACK: No variable name configured");
       }
 
       return {
         ...context,
         [data.variableName]: {
-          messageContent: messageContent.slice(0, 2000),
+          messageContent: messageContent,
         },
       };
     });
 
-    await step.realtime.publish(
-      `node-success-${nodeId}`,
-      discordChannel.status,
-      {
-        nodeId,
-        status: "success",
-      },
-    );
+    await step.realtime.publish(`node-success-${nodeId}`, slackChannel.status, {
+      nodeId,
+      status: "success",
+    });
 
     return result;
   } catch (error) {
     await step.realtime.publish(
       `node-error-runtime-${nodeId}`,
-      discordChannel.status,
+      slackChannel.status,
       {
         nodeId,
         status: "error",
