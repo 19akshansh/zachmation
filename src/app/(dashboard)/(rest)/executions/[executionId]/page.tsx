@@ -1,7 +1,5 @@
 // http://localhost:3000/executions/3000
 
-"use client"
-
 import { ExecutionView } from "@/features/executions/components/execution";
 import { ExecutionsError, ExecutionsLoading } from "@/features/executions/components/executions";
 import { prefetchExecution } from "@/features/executions/server/prefetch";

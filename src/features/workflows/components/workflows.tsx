@@ -169,7 +169,7 @@ export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
       title={data.name}
       subtitle={
         <>
-          Updated <RelativeTime date={data.updatedAt} />
+          Updated <RelativeTime date={data.updatedAt} />{" "}
           &bull; Created <RelativeTime date={data.createdAt} />
         </>
       }

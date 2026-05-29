@@ -3,7 +3,6 @@
 import {
   EntityHeader,
   EntityContainer,
-  EntitySearch,
   EntityPagination,
   LoadingView,
   ErrorView,
@@ -14,13 +13,13 @@ import {
 import { useSuspenseExecutions } from "../hooks/useExecutions";
 import { useExecutionsParams } from "../hooks/useExecutionsParams";
 import { ExecutionStatus, type Execution } from "@/generated/prisma/browser";
-import { formatDistanceToNow } from "date-fns";
 import {
   CheckCircle2Icon,
   ClockIcon,
   Loader2Icon,
   XCircleIcon,
 } from "lucide-react";
+import { RelativeTime } from "@/components/relativeTime";
 
 export const ExecutionsList = () => {
   const executions = useSuspenseExecutions();
@@ -140,8 +139,9 @@ export const ExecutionItem = ({
 
   const subtitle = (
     <>
-      {data.workflow.name} &bull; Started{" "}
-      {formatDistanceToNow(data.startedAt, { addSuffix: true })}
+      {data.workflow.name}
+      {" • Started "}
+      <RelativeTime date={data.startedAt} />
       {duration !== null && ` • Took ${duration}s`}
     </>
   );
