@@ -116,6 +116,10 @@ const getStatusIcon = (status: ExecutionStatus) => {
   }
 };
 
+const formatStatus = (status: ExecutionStatus) => {
+  return status.charAt(0) + status.slice(1).toLowerCase();
+};
+
 export const ExecutionItem = ({
   data,
 }: {
@@ -136,17 +140,17 @@ export const ExecutionItem = ({
 
   const subtitle = (
     <>
-      {data.workflow.name} &bull; Started{""}
+      {data.workflow.name} &bull; Started{" "}
       {formatDistanceToNow(data.startedAt, { addSuffix: true })}
-      {duration !== null && ` &bull; Took ${duration}s`}
+      {duration !== null && ` • Took ${duration}s`}
     </>
   );
 
   return (
     <EntityItem
       href={`/executions/${data.id}`}
-      title={data.status}
-      subtitle
+      title={formatStatus(data.status)}
+      subtitle={subtitle}
       image={
         <div className="size-8 flex items-center justify-center">
           {getStatusIcon(data.status)}

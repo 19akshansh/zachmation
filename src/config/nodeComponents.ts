@@ -1,13 +1,13 @@
 import { InitialNode } from "@/components/initialNode";
-import { AnthropicNode } from "@/features/executionsNodes/components/anthropic/node";
-import { DiscordNode } from "@/features/executionsNodes/components/discord/node";
-import { GeminiNode } from "@/features/executionsNodes/components/gemini/node";
-import { HTTPReqNode } from "@/features/executionsNodes/components/httpReq/node";
-import { OpenAINode } from "@/features/executionsNodes/components/openai/node";
-import { SlackNode } from "@/features/executionsNodes/components/slack/node";
-import { GoogleFormTriggerNode } from "@/features/triggersNodes/components/googleFormsTrigger/node";
-import { ManualTriggerNode } from "@/features/triggersNodes/components/manualTrigger/node";
-import { StripeTriggerNode } from "@/features/triggersNodes/components/stripeTrigger/node";
+import { AnthropicNode } from "@/features/nodes/executionsNodes/components/anthropic/node";
+import { DiscordNode } from "@/features/nodes/executionsNodes/components/discord/node";
+import { GeminiNode } from "@/features/nodes/executionsNodes/components/gemini/node";
+import { HTTPReqNode } from "@/features/nodes/executionsNodes/components/httpReq/node";
+import { OpenAINode } from "@/features/nodes/executionsNodes/components/openai/node";
+import { SlackNode } from "@/features/nodes/executionsNodes/components/slack/node";
+import { GoogleFormTriggerNode } from "@/features/nodes/triggersNodes/components/googleFormsTrigger/node";
+import { ManualTriggerNode } from "@/features/nodes/triggersNodes/components/manualTrigger/node";
+import { StripeTriggerNode } from "@/features/nodes/triggersNodes/components/stripeTrigger/node";
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 

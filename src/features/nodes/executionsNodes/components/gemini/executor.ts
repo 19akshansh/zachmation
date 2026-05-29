@@ -1,11 +1,10 @@
 import Handlebars from "handlebars";
-
-import type { NodeExecutor } from "@/features/executionsNodes/types";
+import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { NonRetriableError } from "inngest";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText } from "ai";
-import { createOpenAI } from "@ai-sdk/openai";
-import { openaiChannel } from "@/inngest/channels/ai/openai";
-import { OpenAIModelId } from "@/config/ai/openaiModels";
+import { geminiChannel } from "@/inngest/channels/ai/gemini";
+import { GoogleModelId } from "@/config/ai/geminiModels";
 import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
@@ -14,22 +13,22 @@ Handlebars.registerHelper("json", (context) => {
   return new Handlebars.SafeString(stringified);
 });
 
-type OpenAIData = {
+type GeminiData = {
   variableName?: string;
   credentialId?: string;
-  model?: OpenAIModelId;
+  model?: GoogleModelId;
   systemPrompt?: string;
   userPrompt?: string;
 };
 
-export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
+export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
   data,
   nodeId,
   userId,
   context,
   step,
 }) => {
-  await step.realtime.publish(`node-loading-${nodeId}`, openaiChannel.status, {
+  await step.realtime.publish(`node-loading-${nodeId}`, geminiChannel.status, {
     nodeId,
     status: "loading",
   });
@@ -37,40 +36,40 @@ export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
   if (!data.variableName) {
     await step.realtime.publish(
       `node-error-variable-${nodeId}`,
-      openaiChannel.status,
+      geminiChannel.status,
       {
         nodeId,
         status: "error",
       },
     );
 
-    throw new NonRetriableError("OPENAI: No variable name configured");
+    throw new NonRetriableError("GEMINI: No variable name configured");
   }
 
   if (!data.userPrompt) {
     await step.realtime.publish(
       `node-error-userprompt-${nodeId}`,
-      openaiChannel.status,
+      geminiChannel.status,
       {
         nodeId,
         status: "error",
       },
     );
 
-    throw new NonRetriableError("OPENAI: No User Prompt configured");
+    throw new NonRetriableError("GEMINI: No User Prompt configured");
   }
 
   if (!data.credentialId) {
     await step.realtime.publish(
       `node-error-credential-${nodeId}`,
-      openaiChannel.status,
+      geminiChannel.status,
       {
         nodeId,
         status: "error",
       },
     );
 
-    throw new NonRetriableError("OPENAI: No Credential configured");
+    throw new NonRetriableError("GEMINI: No Credential configured");
   }
 
   const systemPrompt = data.systemPrompt
@@ -92,18 +91,18 @@ export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
   );
 
   if (!credential) {
-    throw new NonRetriableError("OPENAI: Credential not found");
+    throw new NonRetriableError("GEMINI: Credential not found");
   }
 
   const apiKey = credential.value;
 
   try {
-    const openai = createOpenAI({
+    const google = createGoogleGenerativeAI({
       apiKey,
     });
 
-    const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
-      model: openai(data.model || "gpt-4.1-mini"),
+    const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
+      model: google(data.model || "gemini-1.5-flash"),
       system: systemPrompt,
       prompt: userPrompt,
       experimental_telemetry: {
@@ -114,11 +113,11 @@ export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
     });
 
     const text =
-      steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
+      steps[0].content[0].type === "text" ? steps[0].content[0].text : "";
 
     await step.realtime.publish(
       `node-success-${nodeId}`,
-      openaiChannel.status,
+      geminiChannel.status,
       {
         nodeId,
         status: "success",
@@ -134,7 +133,7 @@ export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
   } catch (error) {
     await step.realtime.publish(
       `node-error-runtime-${nodeId}`,
-      openaiChannel.status,
+      geminiChannel.status,
       {
         nodeId,
         status: "error",
