@@ -1,9 +1,9 @@
 import { NodeType } from "@/generated/prisma/enums";
 import { NodeExecutor } from "../types";
-import { manualReqTriggerExecutor } from "@/features/triggers/components/manualTrigger/executor";
+import { manualReqTriggerExecutor } from "@/features/nodes/triggersNodes/components/manualTrigger/executor";
 import { HTTPReqTriggerExecutor } from "../components/httpReq/executor";
-import { googleFormTriggerExecutor } from "@/features/triggers/components/googleFormsTrigger/executor";
-import { stripeTriggerExecutor } from "@/features/triggers/components/stripeTrigger/executor";
+import { googleFormTriggerExecutor } from "@/features/nodes/triggersNodes/components/googleFormsTrigger/executor";
+import { stripeTriggerExecutor } from "@/features/nodes/triggersNodes/components/stripeTrigger/executor";
 import { GeminiExecutor } from "../components/gemini/executor";
 import { openAIExecutor } from "../components/openai/executor";
 import { anthropicExecutor } from "../components/anthropic/executor";

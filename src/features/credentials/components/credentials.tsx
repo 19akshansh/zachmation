@@ -19,7 +19,7 @@ import {
 } from "../hooks/useCredentials";
 import { useRouter } from "next/navigation";
 import { useCredentialsParams } from "../hooks/useCredentialsParams";
-import { UseEntitySearch } from "../hooks/useEnititySearch";
+import { UseEntitySearch } from "@/hooks/useEnititySearch";
 import { CredentialType, type Credential } from "@/generated/prisma/browser";
 import { RelativeTime } from "@/components/relativeTime";
 import Image from "next/image";
@@ -151,7 +151,7 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
       title={data.name}
       subtitle={
         <>
-          Updated <RelativeTime date={data.updatedAt} />
+          Updated <RelativeTime date={data.updatedAt} />{" "}
           &bull; Created <RelativeTime date={data.createdAt} />
         </>
       }

@@ -1,11 +1,13 @@
-import type { NodeExecutor } from "@/features/executions/types";
-import { stripeTriggerChannel } from "@/inngest/channels/stripeTrigger";
+import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
+import { stripeTriggerChannel } from "@/inngest/channels/triggers/stripeTrigger";
 
 type stripeTriggerData = Record<string, unknown>;
 
-export const stripeTriggerExecutor: NodeExecutor<
-  stripeTriggerData
-> = async ({ nodeId, context, step }) => {
+export const stripeTriggerExecutor: NodeExecutor<stripeTriggerData> = async ({
+  nodeId,
+  context,
+  step,
+}) => {
   await step.realtime.publish(
     `node-loading-${nodeId}`,
     stripeTriggerChannel.status,

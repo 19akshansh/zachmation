@@ -1,10 +1,11 @@
 import Handlebars from "handlebars";
-import type { NodeExecutor } from "@/features/executions/types";
+
+import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { NonRetriableError } from "inngest";
 import { generateText } from "ai";
-import { createAnthropic } from "@ai-sdk/anthropic";
-import { anthropicChannel } from "@/inngest/channels/ai/anthropic";
-import { AnthropicModelId } from "@/config/ai/anthropicModels";
+import { createOpenAI } from "@ai-sdk/openai";
+import { openaiChannel } from "@/inngest/channels/ai/openai";
+import { OpenAIModelId } from "@/config/ai/openaiModels";
 import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
@@ -13,69 +14,63 @@ Handlebars.registerHelper("json", (context) => {
   return new Handlebars.SafeString(stringified);
 });
 
-type AnthropicData = {
+type OpenAIData = {
   variableName?: string;
   credentialId?: string;
-  model?: AnthropicModelId;
+  model?: OpenAIModelId;
   systemPrompt?: string;
   userPrompt?: string;
 };
 
-export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
+export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
   data,
   nodeId,
   userId,
   context,
   step,
 }) => {
-  await step.realtime.publish(
-    `node-loading-${nodeId}`,
-    anthropicChannel.status,
-    {
-      nodeId,
-      status: "loading",
-    },
-  );
+  await step.realtime.publish(`node-loading-${nodeId}`, openaiChannel.status, {
+    nodeId,
+    status: "loading",
+  });
 
   if (!data.variableName) {
     await step.realtime.publish(
       `node-error-variable-${nodeId}`,
-      anthropicChannel.status,
+      openaiChannel.status,
       {
         nodeId,
         status: "error",
-        error: "No variable name configured",
       },
     );
 
-    throw new NonRetriableError("ANTHROPIC: No variable name configured");
+    throw new NonRetriableError("OPENAI: No variable name configured");
   }
 
   if (!data.userPrompt) {
     await step.realtime.publish(
       `node-error-userprompt-${nodeId}`,
-      anthropicChannel.status,
+      openaiChannel.status,
       {
         nodeId,
         status: "error",
-        error: "No User Prompt configured",
       },
     );
 
-    throw new NonRetriableError("ANTHROPIC: No User Prompt configured");
+    throw new NonRetriableError("OPENAI: No User Prompt configured");
   }
 
   if (!data.credentialId) {
     await step.realtime.publish(
       `node-error-credential-${nodeId}`,
-      anthropicChannel.status,
+      openaiChannel.status,
       {
         nodeId,
         status: "error",
       },
     );
 
-    throw new NonRetriableError("ANTHROPIC: No Credential configured");
+    throw new NonRetriableError("OPENAI: No Credential configured");
   }
 
   const systemPrompt = data.systemPrompt
@@ -97,37 +92,33 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   );
 
   if (!credential) {
-    throw new NonRetriableError("ANTHROPIC: Credential not found");
+    throw new NonRetriableError("OPENAI: Credential not found");
   }
 
   const apiKey = credential.value;
 
   try {
-    const anthropic = createAnthropic({
+    const openai = createOpenAI({
       apiKey,
     });
 
-    const { steps } = await step.ai.wrap(
-      "anthropic-generate-text",
-      generateText,
-      {
-        model: anthropic(data.model || "claude-3-5-sonnet-latest"),
-        system: systemPrompt,
-        prompt: userPrompt,
-        experimental_telemetry: {
-          isEnabled: true,
-          recordInputs: true,
-          recordOutputs: true,
-        },
+    const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
+      model: openai(data.model || "gpt-4.1-mini"),
+      system: systemPrompt,
+      prompt: userPrompt,
+      experimental_telemetry: {
+        isEnabled: true,
+        recordInputs: true,
+        recordOutputs: true,
       },
-    );
+    });
 
     const text =
       steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
 
     await step.realtime.publish(
       `node-success-${nodeId}`,
-      anthropicChannel.status,
+      openaiChannel.status,
       {
         nodeId,
         status: "success",
@@ -143,7 +134,7 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
   } catch (error) {
     await step.realtime.publish(
       `node-error-runtime-${nodeId}`,
-      anthropicChannel.status,
+      openaiChannel.status,
       {
         nodeId,
         status: "error",

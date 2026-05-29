@@ -19,7 +19,7 @@ import {
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/useWorkflowsParams";
-import { UseEntitySearch } from "../hooks/useEnititySearch";
+import { UseEntitySearch } from "@/hooks/useEnititySearch";
 import type { Workflow as WorkflowType } from "@/generated/prisma/browser";
 import { WorkflowIcon } from "lucide-react";
 import { RelativeTime } from "@/components/relativeTime";
@@ -169,7 +169,7 @@ export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
       title={data.name}
       subtitle={
         <>
-          Updated <RelativeTime date={data.updatedAt} />
+          Updated <RelativeTime date={data.updatedAt} />{" "}
           &bull; Created <RelativeTime date={data.createdAt} />
         </>
       }
