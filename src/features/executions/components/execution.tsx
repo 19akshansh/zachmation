@@ -77,7 +77,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
   const { data: execution } = useSuspenseExecution(executionId);
   const [showStackTrace, setShowStackTrace] = useState(false);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
-  const output = JSON.stringify(execution.output, null, 2)
+  const output = JSON.stringify(execution.output, null, 2);
 
   const duration = execution.completedAt
     ? Math.round(
@@ -227,7 +227,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
                     </div>
 
                     <pre className="text-xs font-mono text-red-800 overflow-auto mt-2 p-2 pr-12 bg-red-100 rounded">
-                      <code>{execution.errorStack}</code>
+                      {execution.errorStack}
                     </pre>
                   </div>
                 </CollapsibleContent>
@@ -249,9 +249,7 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
               />
             </div>
 
-            <pre className="text-xs font-mono overflow-auto">
-              <code>{output}</code>
-            </pre>
+            <pre className="text-xs font-mono overflow-auto">{output}</pre>
           </div>
         )}
       </CardContent>

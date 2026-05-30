@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -29,7 +29,10 @@ import { authClient } from "@/lib/authClient";
 
 const signinSchema = z.object({
   email: z.email("Please enter a valid email address."),
-  password: z.string().min(6, "Password should be of minimum 6 letters.").max(10, "Password can't exceed 10 letters"),
+  password: z
+    .string()
+    .min(6, "Password should be of minimum 6 letters.")
+    .max(10, "Password can't exceed 10 letters"),
 });
 
 type SigninFormValues = z.infer<typeof signinSchema>;
@@ -44,22 +47,58 @@ export const SigninForm = () => {
     },
   });
 
+  const signinGithub = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(
+            "Something went wrong. Please try a different Signin Provider.",
+          );
+        },
+      },
+    );
+  };
+
+  const signinGoogle = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(
+            "Something went wrong. Please try a different Signin Provider.",
+          );
+        },
+      },
+    );
+  };
+
   const onSubmit = async (values: SigninFormValues) => {
     await authClient.signIn.email(
-          {
-            email: values.email,
-            password: values.password,
-            callbackURL: "/"
-          },
-          {
-            onSuccess: () => {
-              router.push("/")
-            },
-            onError: (ctx) => {
-              toast.error(ctx.error.message)
-            }
-          },
-        );;
+      {
+        email: values.email,
+        password: values.password,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
+      },
+    );
   };
 
   const isPending = form.formState.isSubmitting;
@@ -68,12 +107,8 @@ export const SigninForm = () => {
     <div>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle>
-            Welcome Back ! 
-          </CardTitle>
-          <CardDescription>
-            Login to continue
-          </CardDescription>
+          <CardTitle>Welcome Back !</CardTitle>
+          <CardDescription>Login to continue</CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -86,31 +121,31 @@ export const SigninForm = () => {
                     className="w-full bg-white"
                     type="button"
                     disabled={isPending}
+                    onClick={signinGithub}
                   >
                     <FaGithub />
-                    Continue with Github 
+                    Continue with Github
                   </Button>
                   <Button
                     variant={"outline"}
                     className="w-full bg-white"
                     type="button"
                     disabled={isPending}
+                    onClick={signinGoogle}
                   >
                     <FaGoogle />
-                    Continue with Google 
+                    Continue with Google
                   </Button>
                 </div>
                 <div className="grid gap-6">
-                  <FormField 
+                  <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Email
-                        </FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             type="email"
                             placeholder="xyz@example.com"
                             {...field}
@@ -120,16 +155,14 @@ export const SigninForm = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField 
+                  <FormField
                     control={form.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Password
-                        </FormLabel>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             type="password"
                             placeholder="********"
                             {...field}
@@ -139,12 +172,8 @@ export const SigninForm = () => {
                       </FormItem>
                     )}
                   />
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isPending}
-                  >
-                     Signin
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    Signin
                   </Button>
                 </div>
                 <div className="text-center text-sm">

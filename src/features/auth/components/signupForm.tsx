@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
-import { FaGithub, FaGoogle } from "react-icons/fa"
+import { FaGithub, FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -27,16 +27,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/authClient";
 
-const signupSchema = z.object({
-  name: z.string().min(1, "Please enter your Full name."),
-  email: z.email("Please enter a valid email address."),
-  password: z.string().min(6, "Password should be of minimum 6 letters."),
-  confirmPassword: z.string(),
-})
-.refine((data) => data.password === data.confirmPassword, {
-  message: "Password doesn't match.",
-  path: ["confirmPassword"]
-});
+const signupSchema = z
+  .object({
+    name: z.string().min(1, "Please enter your Full name."),
+    email: z.email("Please enter a valid email address."),
+    password: z.string().min(6, "Password should be of minimum 6 letters."),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password doesn't match.",
+    path: ["confirmPassword"],
+  });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
 
@@ -52,21 +53,57 @@ export const SignupForm = () => {
     },
   });
 
+  const signinGithub = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "github",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(
+            "Something went wrong. Please try a different Signup Provider.",
+          );
+        },
+      },
+    );
+  };
+
+  const signinGoogle = async () => {
+    await authClient.signIn.social(
+      {
+        provider: "google",
+      },
+      {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (ctx) => {
+          toast.error(
+            "Something went wrong. Please try a different Signup Provider.",
+          );
+        },
+      },
+    );
+  };
+
   const onSubmit = async (values: SignupFormValues) => {
     await authClient.signUp.email(
       {
         name: values.name,
         email: values.email,
         password: values.password,
-        callbackURL: "/"
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
-          router.push("/")
+          router.push("/");
         },
         onError: (ctx) => {
-          toast.error(ctx.error.message)
-        }
+          toast.error(ctx.error.message);
+        },
       },
     );
   };
@@ -77,17 +114,13 @@ export const SignupForm = () => {
     <div>
       <Card>
         <CardHeader className="text-center">
-          <CardTitle>
-            Get Started !
-          </CardTitle>
-          <CardDescription>
-            Create an account
-          </CardDescription>
+          <CardTitle>Get Started !</CardTitle>
+          <CardDescription>Create an account</CardDescription>
         </CardHeader>
 
         <CardContent>
           <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="grid gap-6">
                 <div className="flex flex-col gap-4">
                   <Button
@@ -95,8 +128,9 @@ export const SignupForm = () => {
                     className="w-full bg-white"
                     type="button"
                     disabled={isPending}
+                    onClick={signinGithub}
                   >
-                    <FaGithub /> 
+                    <FaGithub />
                     Continue with Github
                   </Button>
                   <Button
@@ -104,22 +138,21 @@ export const SignupForm = () => {
                     className="w-full bg-white"
                     type="button"
                     disabled={isPending}
+                    onClick={signinGoogle}
                   >
-                    <FaGoogle /> 
+                    <FaGoogle />
                     Continue with Google
                   </Button>
                 </div>
                 <div className="grid gap-6">
-                  <FormField 
+                  <FormField
                     control={form.control}
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Full Name
-                        </FormLabel>
+                        <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             type="text"
                             placeholder="John Doe"
                             {...field}
@@ -129,16 +162,14 @@ export const SignupForm = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField 
+                  <FormField
                     control={form.control}
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Email
-                        </FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             type="email"
                             placeholder="xyz@example.com"
                             {...field}
@@ -148,16 +179,14 @@ export const SignupForm = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField 
+                  <FormField
                     control={form.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Password
-                        </FormLabel>
+                        <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             type="password"
                             placeholder="********"
                             {...field}
@@ -167,16 +196,14 @@ export const SignupForm = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField 
+                  <FormField
                     control={form.control}
                     name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Confirm Password
-                        </FormLabel>
+                        <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input 
+                          <Input
                             type="password"
                             placeholder="********"
                             {...field}
@@ -186,13 +213,9 @@ export const SignupForm = () => {
                       </FormItem>
                     )}
                   />
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={isPending}
-                  >
-                     Signup
+
+                  <Button type="submit" className="w-full" disabled={isPending}>
+                    Signup
                   </Button>
                 </div>
                 <div className="text-center text-sm">
