@@ -7,6 +7,7 @@ import {
 import z from "zod";
 import { PAGINATION } from "@/config/constants";
 import { CredentialType } from "@/generated/prisma/enums";
+import { encrypt } from "@/lib/encryption";
 
 export const credentialsRouter = createTRPCRouter({
   create: premiumProcedure
@@ -28,7 +29,7 @@ export const credentialsRouter = createTRPCRouter({
           name,
           userId: ctx.auth.user.id,
           type,
-          value, // TODO: Encryption Amazon echo
+          value: encrypt(value)
         },
       });
     }),
@@ -59,7 +60,7 @@ export const credentialsRouter = createTRPCRouter({
 
       return prisma.credential.update({
         where: { id, userId: ctx.auth.user.id },
-        data: { name, type, value }, // TODO: Encryption
+        data: { name, type, value: encrypt(value) },
       });
     }),
   getOne: protectedProcedure

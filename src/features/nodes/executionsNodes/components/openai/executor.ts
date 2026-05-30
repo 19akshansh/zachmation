@@ -7,6 +7,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { openaiChannel } from "@/inngest/channels/ai/openai";
 import { OpenAIModelId } from "@/config/ai/openaiModels";
 import prisma from "@/lib/db";
+import { decrypt } from "@/lib/encryption";
 
 Handlebars.registerHelper("json", (context) => {
   const stringified = JSON.stringify(context, null, 2);
@@ -95,11 +96,9 @@ export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
     throw new NonRetriableError("OPENAI: Credential not found");
   }
 
-  const apiKey = credential.value;
-
   try {
     const openai = createOpenAI({
-      apiKey,
+      apiKey: decrypt(credential.value),
     });
 
     const { steps } = await step.ai.wrap("openai-generate-text", generateText, {

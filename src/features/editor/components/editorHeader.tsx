@@ -21,6 +21,7 @@ import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { editorAtom } from "../store/atoms";
 import { NodeType } from "@/generated/prisma/enums";
+import { toast } from "sonner";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
   const editor = useAtomValue(editorAtom);
@@ -68,7 +69,7 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
       editor.setNodes(cleanedNodes);
       editor.setEdges(cleanedEdges);
     } catch (error) {
-      console.error("Failed to save workflow:", error);
+      toast.error(`Failed to save workflow`);
     }
   };
 
