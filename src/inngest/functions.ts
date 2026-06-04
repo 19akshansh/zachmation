@@ -12,7 +12,7 @@ export const executeWorkflow = inngest.createFunction(
     triggers: {
       event: "workflows/workflow.exec",
     },
-    retries: process.env.NODE_ENV === "production" ? 3 : 2,
+    retries: 0,
     onFailure: async ({ event, step }) => {
       return prisma.execution.update({
         where: {
