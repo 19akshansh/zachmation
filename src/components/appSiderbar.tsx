@@ -114,7 +114,7 @@ export const AppSidebar = () => {
                 className="gap-z-4 h-10 px-4"
                 onClick={async () => {
                   try {
-                    toast.info("Redirecting to checkout...");
+                    toast.info("Redirecting to BETA checkout...");
 
                     await authClient.checkout({
                       slug: "pro",
