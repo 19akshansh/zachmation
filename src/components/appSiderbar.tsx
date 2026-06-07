@@ -91,7 +91,7 @@ export const AppSidebar = () => {
                           : pathname.startsWith(item.url)
                       }
                       asChild
-                    className="gap-x-4 h-10 px-4"
+                      className="gap-x-4 h-10 px-4"
                     >
                       <Link href={item.url} prefetch>
                         <item.icon className="size-6" />
@@ -112,11 +112,19 @@ export const AppSidebar = () => {
               <SidebarMenuButton
                 tooltip={"Upgrade to PRO"}
                 className="gap-z-4 h-10 px-4"
-                onClick={() => {
-                  authClient.checkout({
-                    slug: "pro",
-                  });
-                  toast.success("Upgraded to PRO");
+                onClick={async () => {
+                  try {
+                    toast.info("Redirecting to checkout...");
+
+                    await authClient.checkout({
+                      slug: "pro",
+                    });
+                  } catch (error) {
+                    console.error("Checkout error:", error);
+                    toast.error(
+                      "Failed to initiate checkout. Please try again.",
+                    );
+                  }
                 }}
               >
                 <StarIcon className="h-4 w-4" />
