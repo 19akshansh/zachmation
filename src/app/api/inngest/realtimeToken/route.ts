@@ -9,6 +9,7 @@ const ALLOWED_CHANNELS = [
   "googleFormTriggerExec",
   "stripeTriggerExec",
   "geminiExec",
+  "blackForestExec",
   "anthropicExec",
   "openaiExec",
   "slackExec",

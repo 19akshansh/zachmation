@@ -73,6 +73,16 @@ const credentialTypeOptions = [
     label: "Anthropic",
     logo: "/anthropic.svg",
   },
+  {
+    value: CredentialType.HUGGING_FACE,
+    label: "Hugging Face",
+    logo: "/huggingface.svg",
+  },
+    {
+    value: CredentialType.IMG_BB,
+    label: "Image BB",
+    logo: "/imgbb.png",
+  },
 ];
 
 export const CredentialForm = ({ initialData }: CredentialFormProps) => {

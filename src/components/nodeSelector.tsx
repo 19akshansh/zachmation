@@ -75,6 +75,12 @@ const executionNodes: NodeTypeOption[] = [
     icon: "/anthropic.svg",
   },
   {
+    type: NodeType.BLACK_LABS,
+    label: "Black Labs Image Gen",
+    description: "Makes a Black Labs(Image) Request",
+    icon: "/blackforest.svg",
+  },
+  {
     type: NodeType.DISCORD,
     label: "Discord",
     description: "Send a Discord Message",

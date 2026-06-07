@@ -2,8 +2,8 @@ import { CHANNELS } from "@/config/channels";
 import { realtime } from "inngest";
 import { z } from "zod";
 
-export const anthropicChannel = realtime.channel({
-  name: CHANNELS.ANTHROPIC,
+export const blackForestChannel = realtime.channel({
+  name: CHANNELS.BLACK_FOREST,
   topics: {
     status: {
       schema: z.object({

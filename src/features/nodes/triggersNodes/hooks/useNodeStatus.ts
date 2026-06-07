@@ -1,38 +1,38 @@
 import { useCallback, useEffect } from "react";
-import { useReactFlow } from "@xyflow/react";
 import { useRealtime } from "inngest/react";
 import type { ClientSubscriptionToken } from "inngest/react";
-
-import type { NodeStatus } from "@/components/reactFlow/node-status-indicator";
+import { useReactFlow } from "@xyflow/react";
+import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 
 interface UseNodeStatusOptions {
   nodeId: string;
   channel: string;
+  topics: string[];
 }
 
-export function useNodeStatus({ nodeId, channel }: UseNodeStatusOptions) {
+export function useNodeStatus({
+  nodeId,
+  channel,
+  topics,
+}: UseNodeStatusOptions) {
   const { setNodes } = useReactFlow();
 
   const refreshToken = useCallback(async () => {
     const res = await fetch(`/api/inngest/realtimeToken?channel=${channel}`);
 
-    if (!res.ok) {
-      throw new Error(`Failed to get realtime token (${res.status})`);
-    }
+    return res.json() as Promise<ClientSubscriptionToken>;
+  }, []);
 
-    return (await res.json()) as ClientSubscriptionToken;
-  }, [channel]);
-
-  const realtime = useRealtime({
+  const { messages } = useRealtime({
     channel,
-    topics: ["status"],
+    topics,
     token: refreshToken,
     bufferInterval: 100,
   });
 
-  const message = realtime.messages.byTopic.status;
-
   useEffect(() => {
+    const message = messages.byTopic.status;
+
     if (!message || message.kind !== "data") {
       return;
     }
@@ -65,5 +65,5 @@ export function useNodeStatus({ nodeId, channel }: UseNodeStatusOptions) {
         };
       }),
     );
-  }, [message, nodeId, setNodes]);
+  }, [messages.byTopic.status, nodeId, setNodes]);
 }

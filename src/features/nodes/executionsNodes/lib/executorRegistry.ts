@@ -9,6 +9,7 @@ import { openAIExecutor } from "../components/openai/executor";
 import { anthropicExecutor } from "../components/anthropic/executor";
 import { DiscordExecutor } from "../components/discord/executor";
 import { SlackExecutor } from "../components/slack/executor";
+import { BlackForestExecutor } from "../components/blackforest/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -21,6 +22,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.OPENAI]: openAIExecutor,
   [NodeType.DISCORD]: DiscordExecutor,
   [NodeType.SLACK]: SlackExecutor,
+  [NodeType.BLACK_LABS]: BlackForestExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

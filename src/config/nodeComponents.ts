@@ -1,5 +1,6 @@
 import { InitialNode } from "@/components/initialNode";
 import { AnthropicNode } from "@/features/nodes/executionsNodes/components/anthropic/node";
+import { BlackForestNode } from "@/features/nodes/executionsNodes/components/blackforest/node";
 import { DiscordNode } from "@/features/nodes/executionsNodes/components/discord/node";
 import { GeminiNode } from "@/features/nodes/executionsNodes/components/gemini/node";
 import { HTTPReqNode } from "@/features/nodes/executionsNodes/components/httpReq/node";
@@ -22,6 +23,7 @@ export const nodeComponents = {
   [NodeType.ANTHROPIC]: AnthropicNode,
   [NodeType.DISCORD]: DiscordNode,
   [NodeType.SLACK]: SlackNode,
+  [NodeType.BLACK_LABS]: BlackForestNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

@@ -1,8 +1,9 @@
+import { CHANNELS } from "@/config/channels";
 import { realtime } from "inngest";
 import { z } from "zod";
 
 export const slackChannel = realtime.channel({
-  name: "slackExec",
+  name: CHANNELS.SLACK,
   topics: {
     status: {
       schema: z.object({

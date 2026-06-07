@@ -8,6 +8,7 @@ import { useNodeStatus } from "../../hooks/useNodeStatus";
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 
 import { Node } from "@xyflow/react";
+import { CHANNELS } from "@/config/channels";
 
 type GoogleFormNodeData = {
   status?: NodeStatus;
@@ -23,7 +24,8 @@ export const GoogleFormTriggerNode = memo(
 
     useNodeStatus({
       nodeId: props.id,
-      channel: "googleFormTriggerExec",
+      channel: CHANNELS.GOOGLE_FORM_TRIGGER,
+      topics: ["status"],
     });
 
     return (
