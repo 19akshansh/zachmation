@@ -1,8 +1,9 @@
+import { CHANNELS } from "@/config/channels";
 import { realtime } from "inngest";
 import { z } from "zod";
 
 export const geminiChannel = realtime.channel({
-  name: "geminiExec",
+  name: CHANNELS.GEMINI,
   topics: {
     status: {
       schema: z.object({

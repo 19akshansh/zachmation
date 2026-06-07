@@ -9,6 +9,7 @@ import { useNodeStatus } from "../../hooks/useNodeStatus";
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 
 import { Node } from "@xyflow/react";
+import { CHANNELS } from "@/config/channels";
 
 type ManualTriggerNodeData = {
   status?: NodeStatus;
@@ -24,7 +25,8 @@ export const ManualTriggerNode = memo(
 
     useNodeStatus({
       nodeId: props.id,
-      channel: "manualTriggerExec",
+      channel: CHANNELS.MANUAL_TRIGGER,
+      topics: ["status"],
     });
 
     return (

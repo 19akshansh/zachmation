@@ -8,6 +8,7 @@ import { useNodeStatus } from "../../hooks/useNodeStatus";
 import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 
 import { Node } from "@xyflow/react";
+import { CHANNELS } from "@/config/channels";
 
 type StripeTriggerNodeData = {
   status?: NodeStatus;
@@ -23,7 +24,8 @@ export const StripeTriggerNode = memo(
 
     useNodeStatus({
       nodeId: props.id,
-      channel: "stripeTriggerExec",
+      channel: CHANNELS.STRIPE_TRIGGER,
+      topics: ["status"],
     });
 
     return (

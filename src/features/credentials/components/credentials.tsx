@@ -12,7 +12,6 @@ import {
   EntityItem,
 } from "@/components/entityComponents";
 import {
-  useCreateCredential,
   useRemoveCredential,
   useSuspenseCredential,
   useSuspenseCredentials,
@@ -132,6 +131,8 @@ const credentialLogos: Record<string, string> = {
   [CredentialType.OPENAI]: "/openai.svg",
   [CredentialType.GEMINI]: "/gemini.svg",
   [CredentialType.ANTHROPIC]: "/anthropic.svg",
+  [CredentialType.HUGGING_FACE]: "/huggingface.svg",
+  [CredentialType.IMG_BB]: "/imgbb.png",
 };
 
 export const CredentialItem = ({ data }: { data: Credential }) => {

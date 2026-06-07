@@ -24,6 +24,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/authClient";
 import { useHasActiveSubscription } from "@/features/subscriptions/hooks/useSubscription";
+import { toast } from "sonner";
 
 const menuItems = [
   {
@@ -90,7 +91,7 @@ export const AppSidebar = () => {
                           : pathname.startsWith(item.url)
                       }
                       asChild
-                      className="gap-x-4 h-10 px-4"
+                    className="gap-x-4 h-10 px-4"
                     >
                       <Link href={item.url} prefetch>
                         <item.icon className="size-6" />
@@ -111,11 +112,12 @@ export const AppSidebar = () => {
               <SidebarMenuButton
                 tooltip={"Upgrade to PRO"}
                 className="gap-z-4 h-10 px-4"
-                onClick={() =>
+                onClick={() => {
                   authClient.checkout({
                     slug: "pro",
-                  })
-                }
+                  });
+                  toast.success("Upgraded to PRO");
+                }}
               >
                 <StarIcon className="h-4 w-4" />
                 <span>Upgrade to PRO</span>

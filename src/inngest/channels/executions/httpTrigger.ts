@@ -1,8 +1,9 @@
+import { CHANNELS } from "@/config/channels";
 import { realtime } from "inngest";
 import { z } from "zod";
 
 export const httpTriggerChannel = realtime.channel({
-  name: "httpTriggerExec",
+  name: CHANNELS.HTTP_TRIGGER,
   topics: {
     status: {
       schema: z.object({

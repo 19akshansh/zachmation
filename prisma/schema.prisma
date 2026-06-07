@@ -87,6 +87,8 @@ enum CredentialType {
   OPENAI
   ANTHROPIC
   GEMINI
+  HUGGING_FACE
+  IMG_BB
 }
 
 model Workflow {
@@ -114,6 +116,7 @@ enum NodeType {
   OPENAI
   DISCORD
   SLACK
+  BLACK_LABS
 }
 
 model Node {

@@ -1,9 +1,10 @@
+import { CHANNELS } from "@/config/channels";
 import { realtime } from "inngest";
 
 import { z } from "zod";
 
 export const openaiChannel = realtime.channel({
-  name: "openaiExec",
+  name: CHANNELS.OPENAI,
   topics: {
     status: {
       schema: z.object({
