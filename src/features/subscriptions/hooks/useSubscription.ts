@@ -11,17 +11,17 @@ export const useSubscription = () => {
   });
 };
 
-export const useHasActiveSubscription = () => {
-  const { data: customerState, isLoading, ...rest} = useSubscription();
+export const useHasActivePROSubscription = () => {
+  const { data: customerState, isLoading, ...rest } = useSubscription();
 
-  const hasActiveSubscription =
+  const hasActivePROSubscription =
     customerState?.activeSubscriptions &&
     customerState.activeSubscriptions.length > 0;
 
-  return  {
-    hasActiveSubscription,
+  return {
+    hasActivePROSubscription,
     subscription: customerState?.activeSubscriptions?.[0],
     isLoading,
     ...rest,
-  }
-}
+  };
+};

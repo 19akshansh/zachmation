@@ -23,7 +23,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/authClient";
-import { useHasActiveSubscription } from "@/features/subscriptions/hooks/useSubscription";
+import { useHasActivePROSubscription } from "@/features/subscriptions/hooks/useSubscription";
 import { toast } from "sonner";
 
 const menuItems = [
@@ -52,7 +52,7 @@ const menuItems = [
 export const AppSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
+  const { hasActivePROSubscription, isLoading } = useHasActivePROSubscription();
 
   return (
     <Sidebar collapsible="icon">
@@ -107,7 +107,7 @@ export const AppSidebar = () => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {!hasActiveSubscription && !isLoading && (
+          {!hasActivePROSubscription && !isLoading && (
             <SidebarMenuItem>
               <SidebarMenuButton
                 tooltip={"Upgrade to PRO"}
