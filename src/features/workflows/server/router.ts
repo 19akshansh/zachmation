@@ -3,6 +3,7 @@ import type { Edge, Node } from "@xyflow/react";
 import prisma from "@/lib/db";
 import {
   createTRPCRouter,
+  proNodesProcedure,
   proProcedure,
   protectedProcedure,
 } from "@/trpc/init";
@@ -11,9 +12,10 @@ import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/enums";
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { TRPCError } from "@trpc/server";
+import { PRO_NODES } from "@/config/proNodes";
 
 export const workflowsRouter = createTRPCRouter({
-  execute: protectedProcedure
+  execute: proProcedure
     .input(
       z.object({
         id: z.string(),
@@ -25,7 +27,21 @@ export const workflowsRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.auth.user.id,
         },
+        include: {
+          nodes: true,
+        },
       });
+
+      const containsProNodes = workflow.nodes.some((node) =>
+        PRO_NODES.has(node.type),
+      );
+
+      if (containsProNodes && !ctx.hasPro) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "This workflow contains PRO nodes.",
+        });
+      }
 
       await sendWorkflowExecution({
         workflowId: input.id,
@@ -79,7 +95,7 @@ export const workflowsRouter = createTRPCRouter({
         data: { name: input.name },
       });
     }),
-  update: protectedProcedure
+  update: proNodesProcedure
     .input(
       z.object({
         id: z.string(),

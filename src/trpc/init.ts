@@ -1,6 +1,7 @@
+import { PRO_NODES } from "@/config/proNodes";
+import { NodeType } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
-import prisma from "@/lib/db";
-import { polarClient } from "@/lib/polar";
+import { hasProSubscription } from "@/lib/subscriptions";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -51,22 +52,7 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
   });
 });
 export const proProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  let hasPro = false;
-
-  try {
-    const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
-    });
-
-    hasPro =
-      customer.activeSubscriptions?.some(
-        (sub) =>
-          sub.status === "active" &&
-          sub.productId === process.env.POLAR_PRO_PRODUCT_SLUG,
-      ) ?? false;
-  } catch (error) {
-    console.log("error");
-  }
+  const hasPro = await hasProSubscription(ctx.auth.user.id);
 
   const plan = hasPro ? "PRO" : "FREE";
 
@@ -83,6 +69,28 @@ export const proProcedure = protectedProcedure.use(async ({ ctx, next }) => {
             workflows: 1,
             credentials: 2,
           },
+      hasPro,
     },
   });
 });
+export const proNodesProcedure = proProcedure.use(
+  async ({ ctx, next, getRawInput }) => {
+    const input = (await getRawInput()) as {
+      nodes?: {
+        type: NodeType;
+      }[];
+    };
+
+    const containsProNodes =
+      input.nodes?.some((node) => PRO_NODES.has(node.type)) ?? false;
+
+    if (containsProNodes && !ctx.hasPro) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "This workflow contains PRO nodes.",
+      });
+    }
+
+    return next();
+  },
+);
