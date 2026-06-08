@@ -5,7 +5,7 @@ import { topologicalSort } from "./utils";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegistry";
 import { Prisma } from "@/generated/prisma/client";
-import { hasProSubscription } from "@/lib/subscriptions";
+import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { PRO_NODES } from "@/config/proNodes";
 
 export const executeWorkflow = inngest.createFunction(
@@ -51,33 +51,39 @@ export const executeWorkflow = inngest.createFunction(
       });
     });
 
-   const sortedNodes = await step.run("prepareWorkflow", async () => {
-     const workflow = await prisma.workflow.findUniqueOrThrow({
-       where: {
-         id: workflowId,
-       },
-       include: {
-         nodes: true,
-         connections: true,
-       },
-     });
+    const sortedNodes = await step.run("prepareWorkflow", async () => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
+        where: {
+          id: workflowId,
+        },
+        include: {
+          nodes: true,
+          connections: true,
+        },
+      });
 
-     const containsProNodes = workflow.nodes.some((node) =>
-       PRO_NODES.has(node.type),
-     );
+      const containsProNodes = workflow.nodes.some((node) =>
+        PRO_NODES.has(node.type),
+      );
 
-     if (containsProNodes) {
-       const hasPro = await hasProSubscription(workflow.userId);
+      if (containsProNodes) {
+        const subscriptionStatus = await getSubscriptionStatus(workflow.userId);
 
-       if (!hasPro) {
-         throw new NonRetriableError(
-           "This workflow contains PRO nodes and requires an active PRO subscription.",
-         );
-       }
-     }
+        if (subscriptionStatus === "UNKNOWN") {
+          throw new NonRetriableError(
+            "Unable to verify subscription status. Please retry later.",
+          );
+        }
 
-     return topologicalSort(workflow.nodes, workflow.connections);
-   });
+        if (subscriptionStatus !== "PRO") {
+          throw new NonRetriableError(
+            "This workflow contains PRO nodes and requires an active PRO subscription.",
+          );
+        }
+      }
+
+      return topologicalSort(workflow.nodes, workflow.connections);
+    });
 
     const userId = await step.run("getUserId", async () => {
       const workflow = await prisma.workflow.findUniqueOrThrow({

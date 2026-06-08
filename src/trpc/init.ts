@@ -1,7 +1,7 @@
 import { PRO_NODES } from "@/config/proNodes";
 import { NodeType } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
-import { hasProSubscription } from "@/lib/subscriptions";
+import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -52,14 +52,21 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
   });
 });
 export const proProcedure = protectedProcedure.use(async ({ ctx, next }) => {
-  const hasPro = await hasProSubscription(ctx.auth.user.id);
+  const subscriptionStatus = await getSubscriptionStatus(ctx.auth.user.id);
 
-  const plan = hasPro ? "PRO" : "FREE";
+  if (subscriptionStatus === "UNKNOWN") {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message:
+        "Unable to verify subscription status. Please try again shortly.",
+    });
+  }
+
+  const hasPro = subscriptionStatus === "PRO";
 
   return next({
     ctx: {
       ...ctx,
-      plan,
       limits: hasPro
         ? {
             workflows: Infinity,
