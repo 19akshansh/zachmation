@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/authClient";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const signinSchema = z.object({
   email: z.email("Please enter a valid email address."),
@@ -39,6 +39,7 @@ type SigninFormValues = z.infer<typeof signinSchema>;
 
 export const SigninForm = () => {
   const [canResend, setCanResend] = useState(true);
+  const resendTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const router = useRouter();
   const form = useForm<SigninFormValues>({
@@ -48,6 +49,14 @@ export const SigninForm = () => {
       password: "",
     },
   });
+
+  useEffect(() => {
+    return () => {
+      if (resendTimeoutRef.current) {
+        clearTimeout(resendTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const signinGithub = async () => {
     await authClient.signIn.social(
@@ -98,8 +107,6 @@ export const SigninForm = () => {
         },
         onError: (ctx) => {
           if (ctx.error.status === 403) {
-            const email = form.getValues("email");
-
             toast.error("Please verify your email address before signing in.", {
               action: canResend
                 ? {
@@ -135,8 +142,13 @@ export const SigninForm = () => {
             `Verification email sent to ${email}! Please check your inbox/spam.`,
           );
 
-          setTimeout(() => {
+          if (resendTimeoutRef.current) {
+            clearTimeout(resendTimeoutRef.current);
+          }
+
+          resendTimeoutRef.current = setTimeout(() => {
             setCanResend(true);
+            resendTimeoutRef.current = null;
           }, 60000 * 2);
         },
         onError: (ctx) => {

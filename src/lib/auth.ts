@@ -19,7 +19,7 @@ export const auth = betterAuth({
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
       await transporter.sendMail({
-        from: '"ZachMation" <zachmation01@gmail.com>',
+        from: process.env.EMAIL_FROM,
         to: user.email,
         subject: "Verify your email address",
         html: `<div
