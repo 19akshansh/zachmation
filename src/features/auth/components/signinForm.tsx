@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -26,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/authClient";
+import { useState } from "react";
 
 const signinSchema = z.object({
   email: z.email("Please enter a valid email address."),
@@ -38,6 +38,8 @@ const signinSchema = z.object({
 type SigninFormValues = z.infer<typeof signinSchema>;
 
 export const SigninForm = () => {
+  const [canResend, setCanResend] = useState(true);
+
   const router = useRouter();
   const form = useForm<SigninFormValues>({
     resolver: zodResolver(signinSchema),
@@ -95,7 +97,51 @@ export const SigninForm = () => {
           router.push("/");
         },
         onError: (ctx) => {
+          if (ctx.error.status === 403) {
+            const email = form.getValues("email");
+
+            toast.error("Please verify your email address before signing in.", {
+              action: canResend
+                ? {
+                    label: "Resend Link",
+                    onClick: () => handleResendVerification(values.email),
+                  }
+                : {
+                    label: "Wait 2mins before resending.",
+                    onClick: () => {},
+                  },
+            });
+          } else {
+            toast.error(ctx.error.message);
+          }
+        },
+      },
+    );
+  };
+
+  const handleResendVerification = async (email: string) => {
+    if (!canResend) return;
+
+    setCanResend(false);
+
+    await authClient.sendVerificationEmail(
+      {
+        email,
+        callbackURL: "/",
+      },
+      {
+        onSuccess: () => {
+          toast.success(
+            `Verification email sent to ${email}! Please check your inbox/spam.`,
+          );
+
+          setTimeout(() => {
+            setCanResend(true);
+          }, 60000 * 2);
+        },
+        onError: (ctx) => {
           toast.error(ctx.error.message);
+          setCanResend(true);
         },
       },
     );
