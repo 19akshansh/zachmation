@@ -41,10 +41,14 @@ export async function getSubscriptionStatus(
 
     return status;
   } catch (error) {
-    console.error("[POLAR_SUBSCRIPTION_CHECK_FAILED]", {
-      userId,
-      error: error instanceof Error ? error.message : String(error),
-    });
+    console.error("[POLAR_SUBSCRIPTION_CHECK_FAILED]", userId, error);
+
+    if (
+      error instanceof Error &&
+      error.message.toLowerCase().includes("not found")
+    ) {
+      return "FREE";
+    }
 
     return "UNKNOWN";
   }
