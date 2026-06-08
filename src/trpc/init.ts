@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import prisma from "@/lib/db";
 import { polarClient } from "@/lib/polar";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
@@ -49,27 +50,39 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
     },
   });
 });
-export const premiumProcedure = protectedProcedure.use(
-  async ({ ctx, next }) => {
+export const proProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  let hasPro = false;
+
+  try {
     const customer = await polarClient.customers.getStateExternal({
       externalId: ctx.auth.user.id,
     });
 
-    if (
-      !customer.activeSubscriptions ||
-      customer.activeSubscriptions.length === 0
-    ) {
-      throw new TRPCError({
-        code: "FORBIDDEN",
-        message: "Active subscription required to access this.",
-      });
-    }
+    hasPro =
+      customer.activeSubscriptions?.some(
+        (sub) =>
+          sub.status === "active" &&
+          sub.productId === process.env.POLAR_PRO_PRODUCT_SLUG,
+      ) ?? false;
+  } catch (error) {
+    console.log("error");
+  }
 
-    return next({
-      ctx: {
-        ...ctx,
-        customer,
-      },
-    });
-  },
-);
+  const plan = hasPro ? "PRO" : "FREE";
+
+  return next({
+    ctx: {
+      ...ctx,
+      plan,
+      limits: hasPro
+        ? {
+            workflows: Infinity,
+            credentials: Infinity,
+          }
+        : {
+            workflows: 1,
+            credentials: 2,
+          },
+    },
+  });
+});
