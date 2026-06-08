@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import Image from "next/image";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -99,7 +98,11 @@ export const SignupForm = () => {
       },
       {
         onSuccess: () => {
-          router.push("/");
+          toast.success(
+            "Account created! Check your inbox for a verification email.",
+          );
+
+          router.push("/signin");
         },
         onError: (ctx) => {
           toast.error(ctx.error.message);

@@ -3,23 +3,117 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@/lib/db";
 import { polar, checkout, portal } from "@polar-sh/better-auth";
 import { polarClient } from "./polar";
+import { transporter } from "./mail";
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
-
-  trustedOrigins: [
-    process.env.NEXT_PUBLIC_APP_URL!,
-  ],
-
+  trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL!],
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
-
   emailAndPassword: {
     enabled: true,
-    autoSignIn: true,
+    autoSignIn: false,
+    requireEmailVerification: true,
   },
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url, token }, request) => {
+      await transporter.sendMail({
+        from: '"ZachMation" <zachmation01@gmail.com>',
+        to: user.email,
+        subject: "Verify your email address",
+        html: `<div
+  style="
+    background-color: #f4f4f5;
+    padding: 40px 20px;
+font-family: Arial, Helvetica, sans-serif;"
+>
 
+  <div
+    style="
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      padding: 48px 32px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    "
+  >
+    <div style="margin-bottom: 32px;">
+      <img
+        src="https://zachmation.vercel.app/logo.svg"
+        alt="Logo"
+        width="80"
+        height="80"
+        style="display: block; margin: 0 auto;"
+      />
+    </div>
+
+    <h1
+      style="
+        margin: 0 0 16px;
+        color: #111827;
+        font-size: 28px;
+        font-weight: 700;
+      "
+    >
+      Verify Your Email
+    </h1>
+
+    <p
+      style="
+        margin: 0 0 32px;
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.6;
+      "
+    >
+      Thanks for signing up! Please confirm your email address by clicking the
+      button below.
+    </p>
+
+    <a
+      href="${url}"
+      style="
+        display: inline-block;
+        background: #111827;
+        color: white;
+        text-decoration: none;
+        padding: 14px 28px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 16px;
+      "
+    >
+      Verify Email
+    </a>
+
+    <p style="margin-top:24px;color:#6b7280;font-size:14px;">
+  If the button doesn't work, copy and paste this link into your browser:
+</p>
+
+<p style="word-break:break-all;font-size:13px;">
+  <a href="${url}">
+    ${url}
+  </a>
+</p>
+
+    <p
+      style="
+        margin-top: 32px;
+        color: #9ca3af;
+        font-size: 14px;
+        line-height: 1.5;
+      "
+    >
+      If you didn't create an account, you can safely ignore this email.
+    </p>
+  </div>
+</div>`,
+      });
+    },
+  },
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID as string,
@@ -30,7 +124,6 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
-
   plugins: [
     polar({
       client: polarClient,
