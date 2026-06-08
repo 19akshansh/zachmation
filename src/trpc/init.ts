@@ -1,5 +1,7 @@
+import { PRO_NODES } from "@/config/proNodes";
+import { NodeType } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
-import { polarClient } from "@/lib/polar";
+import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { headers } from "next/headers";
 import { cache } from "react";
@@ -49,27 +51,53 @@ export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
     },
   });
 });
-export const premiumProcedure = protectedProcedure.use(
-  async ({ ctx, next }) => {
-    const customer = await polarClient.customers.getStateExternal({
-      externalId: ctx.auth.user.id,
-    });
+export const proProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  const subscriptionStatus = await getSubscriptionStatus(ctx.auth.user.id);
 
-    if (
-      !customer.activeSubscriptions ||
-      customer.activeSubscriptions.length === 0
-    ) {
+  if (subscriptionStatus === "UNKNOWN") {
+    throw new TRPCError({
+      code: "SERVICE_UNAVAILABLE",
+      message:
+        "Unable to verify subscription status. Please try again shortly.",
+    });
+  }
+
+  const hasPro = subscriptionStatus === "PRO";
+
+  return next({
+    ctx: {
+      ...ctx,
+      limits: hasPro
+        ? {
+            workflows: Infinity,
+            credentials: Infinity,
+          }
+        : {
+            workflows: 1,
+            credentials: 2,
+          },
+      hasPro,
+    },
+  });
+});
+export const proNodesProcedure = proProcedure.use(
+  async ({ ctx, next, getRawInput }) => {
+    const input = (await getRawInput()) as {
+      nodes?: {
+        type: NodeType;
+      }[];
+    };
+
+    const containsProNodes =
+      input.nodes?.some((node) => PRO_NODES.has(node.type)) ?? false;
+
+    if (containsProNodes && !ctx.hasPro) {
       throw new TRPCError({
         code: "FORBIDDEN",
-        message: "Active subscription required to access this.",
+        message: "This workflow contains PRO nodes.",
       });
     }
 
-    return next({
-      ctx: {
-        ...ctx,
-        customer,
-      },
-    });
+    return next();
   },
 );

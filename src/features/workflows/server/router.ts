@@ -3,16 +3,19 @@ import type { Edge, Node } from "@xyflow/react";
 import prisma from "@/lib/db";
 import {
   createTRPCRouter,
-  premiumProcedure,
+  proNodesProcedure,
+  proProcedure,
   protectedProcedure,
 } from "@/trpc/init";
 import z from "zod";
 import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/enums";
 import { sendWorkflowExecution } from "@/inngest/utils";
+import { TRPCError } from "@trpc/server";
+import { PRO_NODES } from "@/config/proNodes";
 
 export const workflowsRouter = createTRPCRouter({
-  execute: protectedProcedure
+  execute: proProcedure
     .input(
       z.object({
         id: z.string(),
@@ -24,7 +27,21 @@ export const workflowsRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.auth.user.id,
         },
+        include: {
+          nodes: true,
+        },
       });
+
+      const containsProNodes = workflow.nodes.some((node) =>
+        PRO_NODES.has(node.type),
+      );
+
+      if (containsProNodes && !ctx.hasPro) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "This workflow contains PRO nodes.",
+        });
+      }
 
       await sendWorkflowExecution({
         workflowId: input.id,
@@ -32,7 +49,20 @@ export const workflowsRouter = createTRPCRouter({
 
       return workflow;
     }),
-  create: premiumProcedure.mutation(({ ctx }) => {
+  create: proProcedure.mutation(async ({ ctx }) => {
+    const workflowCount = await prisma.workflow.count({
+      where: {
+        userId: ctx.auth.user.id,
+      },
+    });
+
+    if (workflowCount >= ctx.limits.workflows) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Workflow limit reached. UPGRADE TO PRO.",
+      });
+    }
+
     return prisma.workflow.create({
       data: {
         name: generateSlug(3),
@@ -40,10 +70,7 @@ export const workflowsRouter = createTRPCRouter({
         nodes: {
           create: {
             type: NodeType.INITIAL,
-            position: {
-              x: 0,
-              y: 0,
-            },
+            position: { x: 0, y: 0 },
             name: NodeType.INITIAL,
           },
         },
@@ -68,7 +95,7 @@ export const workflowsRouter = createTRPCRouter({
         data: { name: input.name },
       });
     }),
-  update: protectedProcedure
+  update: proNodesProcedure
     .input(
       z.object({
         id: z.string(),

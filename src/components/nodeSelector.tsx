@@ -16,6 +16,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import { useHasActivePROSubscription } from "@/features/subscriptions/hooks/useSubscription";
+import { cn } from "@/lib/utils";
 
 export type NodeTypeOption = {
   type: NodeType;
@@ -26,6 +28,7 @@ export type NodeTypeOption = {
         className?: string;
       }>
     | string;
+  pro?: boolean;
 };
 
 const triggerNodes: NodeTypeOption[] = [
@@ -34,18 +37,21 @@ const triggerNodes: NodeTypeOption[] = [
     label: "Execute Workflow Manually",
     description: "Runs the flow on clicking a button, Good for first start",
     icon: MousePointerIcon,
+    pro: false,
   },
   {
     type: NodeType.GOOGLE_FORM_TRIGGER,
     label: "Google Form Trigger",
     description: "Triggers a Google Form Submission",
     icon: "/gforms.svg",
+    pro: false,
   },
   {
     type: NodeType.STRIPE_TRIGGER,
     label: "Stripe Event",
     description: "Triggers a Stripe Event",
     icon: "/stripe.svg",
+    pro: true,
   },
 ];
 
@@ -55,42 +61,49 @@ const executionNodes: NodeTypeOption[] = [
     label: "HTTP Request",
     description: "Makes an HTTP Request",
     icon: GlobeIcon,
+    pro: false,
   },
   {
     type: NodeType.GEMINI,
     label: "GEMINI Chat",
     description: "Makes a GEMINI(Chat) Request",
     icon: "/gemini.svg",
+    pro: false,
   },
   {
     type: NodeType.OPENAI,
     label: "OPENAI Chat",
     description: "Makes a OPENAI(Chat) Request",
     icon: "/openai.svg",
+    pro: true,
   },
   {
     type: NodeType.ANTHROPIC,
     label: "Anthropic Chat",
     description: "Makes a Anthropic(Chat) Request",
     icon: "/anthropic.svg",
+    pro: true,
   },
   {
     type: NodeType.BLACK_LABS,
     label: "Black Labs Image Gen",
     description: "Makes a Black Labs(Image) Request",
     icon: "/blackforest.svg",
+    pro: true,
   },
   {
     type: NodeType.DISCORD,
     label: "Discord",
     description: "Send a Discord Message",
     icon: "/discord.svg",
+    pro: false,
   },
   {
     type: NodeType.SLACK,
     label: "Slack",
     description: "Send a Slack Message",
     icon: "/slack.svg",
+    pro: true,
   },
 ];
 
@@ -106,13 +119,14 @@ export function NodeSelector({
   children,
 }: NodeSelectorProps) {
   const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
+  const { hasActivePROSubscription, isLoading } = useHasActivePROSubscription();
 
   const handleNodeSelect = useCallback(
     (selection: NodeTypeOption) => {
       if (selection.type === NodeType.MANUAL_TRIGGER) {
         const nodes = getNodes();
         const hasManualTrigger = nodes.some(
-          (node) => node.type === NodeType.MANUAL_TRIGGER
+          (node) => node.type === NodeType.MANUAL_TRIGGER,
         );
 
         if (hasManualTrigger) {
@@ -123,7 +137,7 @@ export function NodeSelector({
 
       setNodes((nodes) => {
         const hasInitialTrigger = nodes.some(
-          (node) => node.type === NodeType.INITIAL
+          (node) => node.type === NodeType.INITIAL,
         );
 
         const centerX = window.innerWidth / 2;
@@ -149,7 +163,7 @@ export function NodeSelector({
 
       onOpenChange(false);
     },
-    [setNodes, getNodes, onOpenChange, screenToFlowPosition]
+    [setNodes, getNodes, onOpenChange, screenToFlowPosition],
   );
 
   return (
@@ -167,45 +181,26 @@ export function NodeSelector({
         </SheetHeader>
         <div>
           {triggerNodes.map((nodeType) => {
+            const proOnly =
+              nodeType.pro && (isLoading || !hasActivePROSubscription);
             const Icon = nodeType.icon;
             return (
               <div
                 key={nodeType.type}
-                className="w-full justify-start h-auto py-5 px-4 rounded cursor-pointer border-l-4 border-transparent hover:border-l-primary"
-                onClick={() => handleNodeSelect(nodeType)}
-              >
-                <div className="flex items-center gap-6 w-full overflow-hidden">
-                  {typeof Icon === "string" ? (
-                    <img
-                      src={Icon}
-                      alt={nodeType.label}
-                      className="size-5 object-contain rounded-sm"
-                    />
-                  ) : (
-                    <Icon className="size-5 background-transparent" />
-                  )}
-                  <div className="flex flex-col items-start text-left">
-                    <span className="font-medium text-sm">
-                      {nodeType.label}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {nodeType.description}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <Separator />
-        <div>
-          {executionNodes.map((nodeType) => {
-            const Icon = nodeType.icon;
-            return (
-              <div
-                key={nodeType.type}
-                className="w-full justify-start h-auto py-5 px-4 rounded cursor-pointer border-l-4 border-transparent hover:border-l-primary"
-                onClick={() => handleNodeSelect(nodeType)}
+                className={cn(
+                  "w-full justify-start h-auto py-5 px-4 rounded border-l-4",
+                  proOnly
+                    ? "opacity-60 cursor-not-allowed"
+                    : "cursor-pointer border-transparent hover:border-l-primary",
+                )}
+                onClick={() => {
+                  if (proOnly) {
+                    toast.error("This node requires PRO.");
+                    return;
+                  }
+
+                  handleNodeSelect(nodeType);
+                }}
               >
                 <div className="flex items-center gap-6 w-full overflow-hidden">
                   {typeof Icon === "string" ? (
@@ -218,9 +213,74 @@ export function NodeSelector({
                     <Icon className="size-5" />
                   )}
                   <div className="flex flex-col items-start text-left">
-                    <span className="font-medium text-sm">
-                      {nodeType.label}
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">
+                        {nodeType.label}
+                      </span>
+
+                      {nodeType.pro && (
+                        <span className="rounded-md border border-primary px-2 py-0.5 text-xs text-primary">
+                          PRO
+                        </span>
+                      )}
+                    </div>
+
+                    <span className="text-xs text-muted-foreground">
+                      {nodeType.description}
                     </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <Separator />
+        <div>
+          {executionNodes.map((nodeType) => {
+            const proOnly =
+              nodeType.pro && (isLoading || !hasActivePROSubscription);
+            const Icon = nodeType.icon;
+            return (
+              <div
+                key={nodeType.type}
+                className={cn(
+                  "w-full justify-start h-auto py-5 px-4 rounded border-l-4",
+                  proOnly
+                    ? "opacity-60 cursor-not-allowed"
+                    : "cursor-pointer border-transparent hover:border-l-primary",
+                )}
+                onClick={() => {
+                  if (proOnly) {
+                    toast.error("This node requires PRO.");
+                    return;
+                  }
+
+                  handleNodeSelect(nodeType);
+                }}
+              >
+                <div className="flex items-center gap-6 w-full overflow-hidden">
+                  {typeof Icon === "string" ? (
+                    <img
+                      src={Icon}
+                      alt={nodeType.label}
+                      className="size-5 object-contain rounded-sm"
+                    />
+                  ) : (
+                    <Icon className="size-5" />
+                  )}
+                  <div className="flex flex-col items-start text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">
+                        {nodeType.label}
+                      </span>
+
+                      {nodeType.pro && (
+                        <span className="rounded-md border border-primary px-2 py-0.5 text-xs text-primary">
+                          PRO
+                        </span>
+                      )}
+                    </div>
+
                     <span className="text-xs text-muted-foreground">
                       {nodeType.description}
                     </span>

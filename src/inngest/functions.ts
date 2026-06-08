@@ -5,6 +5,8 @@ import { topologicalSort } from "./utils";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegistry";
 import { Prisma } from "@/generated/prisma/client";
+import { getSubscriptionStatus } from "@/lib/subscriptions";
+import { PRO_NODES } from "@/config/proNodes";
 
 export const executeWorkflow = inngest.createFunction(
   {
@@ -59,6 +61,26 @@ export const executeWorkflow = inngest.createFunction(
           connections: true,
         },
       });
+
+      const containsProNodes = workflow.nodes.some((node) =>
+        PRO_NODES.has(node.type),
+      );
+
+      if (containsProNodes) {
+        const subscriptionStatus = await getSubscriptionStatus(workflow.userId);
+
+        if (subscriptionStatus === "UNKNOWN") {
+          throw new NonRetriableError(
+            "Unable to verify subscription status. Please retry later.",
+          );
+        }
+
+        if (subscriptionStatus !== "PRO") {
+          throw new NonRetriableError(
+            "This workflow contains PRO nodes and requires an active PRO subscription.",
+          );
+        }
+      }
 
       return topologicalSort(workflow.nodes, workflow.connections);
     });
