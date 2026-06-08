@@ -32,7 +32,6 @@ const signinSchema = z.object({
   password: z
     .string()
     .min(6, "Password should be of minimum 6 letters.")
-    .max(10, "Password can't exceed 10 letters"),
 });
 
 type SigninFormValues = z.infer<typeof signinSchema>;
