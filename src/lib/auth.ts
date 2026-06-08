@@ -132,7 +132,7 @@ font-family: Arial, Helvetica, sans-serif;"
         checkout({
           products: [
             {
-              productId: process.env.POLAR_PRO_PRODUCT_SLUG!,
+              productId: process.env.NEXT_PUBLIC_POLAR_PRO_PRODUCT_SLUG!,
               slug: "pro",
             },
           ],
