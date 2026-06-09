@@ -9,7 +9,7 @@
 Build powerful AI workflows visually using drag-and-drop nodes, AI models, triggers, APIs, and automations.
 
 <p align="center">
-  <a href="https://zachmation.com">Website</a>
+  <a href="https://zachmation.vercel.app">Website</a>
   ·
   <a href="#">Documentation</a>
   ·
