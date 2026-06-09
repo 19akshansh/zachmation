@@ -19,10 +19,10 @@ Build powerful AI workflows visually using drag-and-drop nodes, AI models, trigg
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/19akshansh/zachmation?style=for-the-badge" />
-  <img src="https://img.shields.io/github/forks/19akshansh/zachmation?style=for-the-badge" />
-  <img src="https://img.shields.io/github/issues/19akshansh/zachmation?style=for-the-badge" />
-  <img src="https://img.shields.io/github/license/19akshansh/zachmation?style=for-the-badge" />
+  <img src="https://img.shields.io/github/stars/19akshansh/zachmation.svg?style=for-the-badge" />
+  <img src="https://img.shields.io/github/forks/19akshansh/zachmation.svg?style=for-the-badge" />
+  <img src="https://img.shields.io/github/issues/19akshansh/zachmation.svg?style=for-the-badge" />
+  <img src="https://img.shields.io/github/license/19akshansh/zachmation.svg?style=for-the-badge" />
 </p>
 
 <p align="center">
