@@ -3,11 +3,12 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@/lib/db";
 import { polar, checkout, portal } from "@polar-sh/better-auth";
 import { polarClient } from "./polar";
-import { transporter } from "./mail";
+import { transporter } from "../helpers/mail";
+import { envSchem } from "@/config/envSchema";
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL!],
+  baseURL: envSchem.BETTER_AUTH_URL,
+  trustedOrigins: [envSchem.NEXT_PUBLIC_APP_URL],
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -15,31 +16,11 @@ export const auth = betterAuth({
     enabled: true,
     autoSignIn: false,
     requireEmailVerification: true,
-    sendResetPassword: async ({ user, url }) => {
-      await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
-        to: user.email,
-        subject: "Reset your password",
-        html: `<div style="background-color:#f4f4f5;padding:40px 20px;font-family:Arial,Helvetica,sans-serif;">
-  <div style="max-width:600px;margin:0 auto;background:white;border-radius:16px;padding:48px 32px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.08);">
-    <div style="margin-bottom:32px;">
-      <img src="${process.env.NEXT_PUBLIC_APP_URL}/logo.svg" alt="Zachmation" width="80" height="80" style="display:block;margin:0 auto;" />
-    </div>
-    <h1 style="margin:0 0 16px;color:#111827;font-size:28px;font-weight:700;">Reset Your Password</h1>
-    <p style="margin:0 0 32px;color:#6b7280;font-size:16px;line-height:1.6;">We received a request to reset your password. Click the button below to choose a new password. This link will expire shortly.</p>
-    <a href="${url}" style="display:inline-block;background:#111827;color:white;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:600;font-size:16px;">Reset Password</a>
-    <p style="margin-top:24px;color:#6b7280;font-size:14px;">If the button doesn't work, copy and paste this link into your browser:</p>
-    <p style="word-break:break-all;font-size:13px;"><a href="${url}">${url}</a></p>
-    <p style="margin-top:32px;color:#9ca3af;font-size:14px;line-height:1.5;">If you didn't request a password reset, you can safely ignore this email.</p>
-  </div>
-</div>`,
-      });
-    },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url, token }, request) => {
       await transporter.sendMail({
-        from: process.env.EMAIL_FROM,
+        from: envSchem.EMAIL_FROM,
         to: user.email,
         subject: "Verify your email address",
         html: `<div
@@ -136,12 +117,12 @@ font-family: Arial, Helvetica, sans-serif;"
   },
   socialProviders: {
     github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      clientId: envSchem.GITHUB_CLIENT_ID,
+      clientSecret: envSchem.GITHUB_CLIENT_SECRET,
     },
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      clientId: envSchem.GOOGLE_CLIENT_ID,
+      clientSecret: envSchem.GOOGLE_CLIENT_SECRET,
     },
   },
   plugins: [
@@ -152,11 +133,11 @@ font-family: Arial, Helvetica, sans-serif;"
         checkout({
           products: [
             {
-              productId: process.env.POLAR_PRO_PRODUCT_SLUG!,
+              productId: envSchem.POLAR_PRO_PRODUCT_SLUG,
               slug: "pro",
             },
           ],
-          successUrl: process.env.POLAR_SUCCESS_URL,
+          successUrl: envSchem.POLAR_SUCCESS_URL,
           authenticatedUsersOnly: true,
         }),
         portal(),

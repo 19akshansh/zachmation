@@ -1,4 +1,5 @@
 import { polarClient } from "@/lib/polar";
+import { envSchem } from "@/config/envSchema";
 
 type SubscriptionStatus = "PRO" | "FREE" | "UNKNOWN";
 
@@ -29,7 +30,7 @@ export async function getSubscriptionStatus(
       customer.activeSubscriptions?.some(
         (sub) =>
           sub.status === "active" &&
-          sub.productId === process.env.POLAR_PRO_PRODUCT_SLUG,
+          sub.productId === envSchem.POLAR_PRO_PRODUCT_SLUG,
       ) ?? false;
 
     const status: SubscriptionStatus = hasPro ? "PRO" : "FREE";

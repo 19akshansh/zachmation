@@ -1,6 +1,7 @@
 import { Polar } from "@polar-sh/sdk";
+import { envSchem } from "@/config/envSchema";
 
 export const polarClient = new Polar({
-    accessToken: process.env.POLAR_ACCESS_TOKEN,
-    server: process.env.POLAR_SERVER === "production" ? undefined : "sandbox",
+    accessToken: envSchem.POLAR_ACCESS_TOKEN,
+    server: envSchem.POLAR_SERVER === "production" ? undefined : "sandbox",
 });
