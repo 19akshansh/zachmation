@@ -3,7 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import prisma from "@/lib/db";
 import { polar, checkout, portal } from "@polar-sh/better-auth";
 import { polarClient } from "./polar";
-import { transporter } from "./mail";
+import { transporter } from "../helpers/mail";
 import { envSchem } from "@/config/envSchema";
 
 export const auth = betterAuth({
