@@ -1,7 +1,9 @@
-"use client";
+import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/authUtils";
 
-const Page = () => {
-  return <div>Subscription management coming soon.</div>;
+const Page = async () => {
+  await requireAuth();
+  redirect("/settings?tab=billing");
 };
 
 export default Page;

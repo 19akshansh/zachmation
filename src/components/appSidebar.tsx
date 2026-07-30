@@ -7,6 +7,7 @@ import {
   KeyIcon,
   LogOutIcon,
   StarIcon,
+  SettingsIcon,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,6 +45,11 @@ const menuItems = [
         title: "Executions",
         icon: HistoryIcon,
         url: "/executions",
+      },
+      {
+        title: "Settings",
+        icon: SettingsIcon,
+        url: "/settings",
       },
     ],
   },
