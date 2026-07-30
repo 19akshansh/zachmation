@@ -3,11 +3,7 @@
 import { formatDistanceToNow } from "date-fns";
 import { useEffect, useState } from "react";
 
-export function RelativeTime({
-  date,
-}: {
-  date: Date | string;
-}) {
+export function RelativeTime({ date }: { date: Date | string }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -15,11 +11,7 @@ export function RelativeTime({
   }, []);
 
   if (!mounted) {
-    return (
-      <span className="text-muted-foreground">
-        ...
-      </span>
-    );
+    return <span className="text-muted-foreground">...</span>;
   }
 
   return (

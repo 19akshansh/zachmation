@@ -1,6 +1,12 @@
 "use client";
 
-import { CreditCardIcon, ExternalLinkIcon, SparklesIcon } from "lucide-react";
+import {
+  CreditCardIcon,
+  ExternalLinkIcon,
+  Loader2Icon,
+  SparklesIcon,
+} from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,8 +23,13 @@ import { authClient } from "@/lib/authClient";
 export const BillingTab = () => {
   const { hasActivePROSubscription, subscription, isLoading } =
     useHasActivePROSubscription();
+  const [isUpgrading, setIsUpgrading] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
 
   const handleUpgrade = async () => {
+    if (isUpgrading || isOpeningPortal) return;
+    setIsUpgrading(true);
+
     try {
       toast.info("Generating checkout link...");
       const { data, error } = await authClient.checkout({ slug: "pro" });
@@ -31,10 +42,15 @@ export const BillingTab = () => {
       if (data?.url) window.location.href = data.url;
     } catch {
       toast.error("Failed to initiate checkout. Please try again.");
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
   const handleManageBilling = async () => {
+    if (isOpeningPortal || isUpgrading) return;
+    setIsOpeningPortal(true);
+
     try {
       const { data, error } = await authClient.customer.portal();
 
@@ -46,6 +62,8 @@ export const BillingTab = () => {
       if (data?.url) window.location.href = data.url;
     } catch {
       toast.error("Could not open billing portal.");
+    } finally {
+      setIsOpeningPortal(false);
     }
   };
 
@@ -54,7 +72,8 @@ export const BillingTab = () => {
       <CardHeader>
         <CardTitle>Plans & billing</CardTitle>
         <CardDescription>
-          Manage your Zachmation plan, payment method, invoices, and cancellation.
+          Manage your Zachmation plan, payment method, invoices, and
+          cancellation.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -89,19 +108,36 @@ export const BillingTab = () => {
           </div>
 
           {!hasActivePROSubscription && !isLoading && (
-            <Button type="button" size="sm" onClick={handleUpgrade}>
-              Upgrade to PRO
+            <Button
+              type="button"
+              size="sm"
+              onClick={handleUpgrade}
+              disabled={isUpgrading || isOpeningPortal}
+            >
+              {isUpgrading && <Loader2Icon className="size-4 animate-spin" />}
+              {isUpgrading ? "Redirecting..." : "Upgrade to PRO"}
             </Button>
           )}
         </div>
       </CardContent>
       <CardFooter className="justify-between gap-4">
         <p className="text-xs text-muted-foreground">
-          Payment methods, invoices, and cancellation are handled securely in the billing portal.
+          Payment methods, invoices, and cancellation are handled securely in
+          the billing portal.
         </p>
-        <Button type="button" variant="outline" size="sm" onClick={handleManageBilling}>
-          Manage billing
-          <ExternalLinkIcon className="size-3.5" />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleManageBilling}
+          disabled={isOpeningPortal || isUpgrading}
+        >
+          {isOpeningPortal ? (
+            <Loader2Icon className="size-3.5 animate-spin" />
+          ) : (
+            <ExternalLinkIcon className="size-3.5" />
+          )}
+          {isOpeningPortal ? "Redirecting..." : "Manage billing"}
         </Button>
       </CardFooter>
     </Card>

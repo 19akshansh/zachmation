@@ -14,7 +14,9 @@ const envSchema = z.object({
   EMAIL_FROM: z.string().min(1, "EMAIL_FROM is required"),
   POLAR_ACCESS_TOKEN: z.string().min(1, "POLAR_ACCESS_TOKEN is required"),
   POLAR_SERVER: z.enum(["production", "sandbox"]).default("sandbox"),
-  POLAR_PRO_PRODUCT_SLUG: z.string().min(1, "POLAR_PRO_PRODUCT_SLUG is required"),
+  POLAR_PRO_PRODUCT_SLUG: z
+    .string()
+    .min(1, "POLAR_PRO_PRODUCT_SLUG is required"),
   POLAR_SUCCESS_URL: z.url("POLAR_SUCCESS_URL must be a valid URL"),
   ENCRYPTION_KEY: z.string().min(1, "ENCRYPTION_KEY is required"),
 });

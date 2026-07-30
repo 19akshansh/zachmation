@@ -19,7 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useCredentialsParams } from "../hooks/useCredentialsParams";
 import { UseEntitySearch } from "@/hooks/useEnititySearch";
-import { CredentialType, type Credential } from "@/generated/prisma/browser";
+import { CredentialType } from "@/generated/prisma/browser";
 import { RelativeTime } from "@/components/relativeTime";
 import Image from "next/image";
 import { CredentialForm } from "./credential";
@@ -135,7 +135,11 @@ const credentialLogos: Record<string, string> = {
   [CredentialType.IMG_BB]: "/imgbb.png",
 };
 
-export const CredentialItem = ({ data }: { data: Credential }) => {
+type CredentialListItem = ReturnType<
+  typeof useSuspenseCredentials
+>["data"]["items"][number];
+
+export const CredentialItem = ({ data }: { data: CredentialListItem }) => {
   const removeCredential = useRemoveCredential();
 
   const handleRemove = () => {
@@ -152,8 +156,8 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
       title={data.name}
       subtitle={
         <>
-          Updated <RelativeTime date={data.updatedAt} />{" "}
-          &bull; Created <RelativeTime date={data.createdAt} />
+          Updated <RelativeTime date={data.updatedAt} /> &bull; Created{" "}
+          <RelativeTime date={data.createdAt} />
         </>
       }
       image={
@@ -167,11 +171,7 @@ export const CredentialItem = ({ data }: { data: Credential }) => {
   );
 };
 
-export const CredentialView = ({
-  credentialId,
-}: {
-  credentialId: string;
-}) => {
+export const CredentialView = ({ credentialId }: { credentialId: string }) => {
   const { data: credential } = useSuspenseCredential(credentialId);
 
   return <CredentialForm initialData={credential} />;

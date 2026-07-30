@@ -15,11 +15,13 @@ export const useDeleteAccount = () => {
       onSuccess: async () => {
         await authClient.signOut();
         toast.success("Your account has been deleted.");
-        router.replace("/signin");
+        router.replace("/");
         router.refresh();
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete account. Please try again.");
+        toast.error(
+          error.message || "Failed to delete account. Please try again.",
+        );
       },
     }),
   );

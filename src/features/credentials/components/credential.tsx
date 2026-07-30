@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2Icon } from "lucide-react";
 import { CredentialType } from "@/generated/prisma/enums";
 import { useRouter } from "next/navigation";
 import {
@@ -43,7 +44,7 @@ const formSchema = z.object({
     .min(1, { message: "Name is required" })
     .max(25, { message: "Name must be less than 25 characters" }),
   type: z.enum(CredentialType),
-  value: z.string().min(1, { message: "API Key is required" }),
+  value: z.string(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -53,7 +54,7 @@ interface CredentialFormProps {
     id?: string;
     name: string;
     type: CredentialType;
-    value: string;
+    value?: string;
   };
 }
 
@@ -78,7 +79,7 @@ const credentialTypeOptions = [
     label: "Hugging Face",
     logo: "/huggingface.svg",
   },
-    {
+  {
     value: CredentialType.IMG_BB,
     label: "Image BB",
     logo: "/imgbb.png",
@@ -95,14 +96,28 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {
-      name: "",
-      type: CredentialType.OPENAI,
-      value: "",
-    },
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          type: initialData.type,
+          value: "",
+        }
+      : {
+          name: "",
+          type: CredentialType.OPENAI,
+          value: "",
+        },
   });
 
   const onSubmit = async (values: FormValues) => {
+    if (!isEdit && !values.value.trim()) {
+      form.setError("value", {
+        type: "manual",
+        message: "API Key is required",
+      });
+      return;
+    }
+
     if (isEdit && initialData?.id) {
       await updateCredential.mutateAsync({
         id: initialData.id,
@@ -192,10 +207,20 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                     <FormControl>
                       <Input
                         type="password"
-                        placeholder="caksc#$%cjadbc...."
+                        placeholder={
+                          isEdit
+                            ? "Leave blank to keep the existing secret"
+                            : "Enter API key or credential value"
+                        }
                         {...field}
                       />
                     </FormControl>
+                    {isEdit && !field.value && (
+                      <p className="text-xs text-muted-foreground">
+                        The saved secret is never sent back to this page. Enter
+                        a new value only when you want to replace it.
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}
@@ -208,7 +233,17 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                     createCredential.isPending || updateCredential.isPending
                   }
                 >
-                  {isEdit ? "Update" : "Create"}
+                  {(createCredential.isPending ||
+                    updateCredential.isPending) && (
+                    <Loader2Icon className="size-4 animate-spin" />
+                  )}
+                  {createCredential.isPending
+                    ? "Creating..."
+                    : updateCredential.isPending
+                      ? "Updating..."
+                      : isEdit
+                        ? "Update"
+                        : "Create"}
                 </Button>
                 <Button type="button" variant={"outline"} asChild>
                   <Link href="/credentials" prefetch>

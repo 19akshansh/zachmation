@@ -1,33 +1,33 @@
 import { useEffect, useState } from "react";
 import { PAGINATION } from "@/config/constants";
 
-interface UseEntitySearchProps<T extends {
-  search: string;
-  page: number
-}> {
+interface UseEntitySearchProps<
+  T extends {
+    search: string;
+    page: number;
+  },
+> {
   params: T;
   setParams: (params: T) => void;
-  debounceMs?: number
+  debounceMs?: number;
 }
 
-export function UseEntitySearch<T extends {
-  search: string;
-  page: number;
-}>({
-  params,
-  setParams,
-  debounceMs = 500
-}: UseEntitySearchProps<T>) {
-  const [localSearch, setLocalSearch] = useState(params.search)
+export function UseEntitySearch<
+  T extends {
+    search: string;
+    page: number;
+  },
+>({ params, setParams, debounceMs = 500 }: UseEntitySearchProps<T>) {
+  const [localSearch, setLocalSearch] = useState(params.search);
 
   useEffect(() => {
     if (localSearch === "" && params.search !== "") {
       setParams({
         ...params,
         search: "",
-        page: PAGINATION.DEFAULT_PAGE
-      })
-      return
+        page: PAGINATION.DEFAULT_PAGE,
+      });
+      return;
     }
 
     const timer = setTimeout(() => {
@@ -35,20 +35,20 @@ export function UseEntitySearch<T extends {
         setParams({
           ...params,
           search: localSearch,
-          page: PAGINATION.DEFAULT_PAGE
-        })
+          page: PAGINATION.DEFAULT_PAGE,
+        });
       }
-    }, debounceMs)
+    }, debounceMs);
 
-    return () => clearTimeout(timer)
-  }, [localSearch, params, setParams, debounceMs])
+    return () => clearTimeout(timer);
+  }, [localSearch, params, setParams, debounceMs]);
 
   useEffect(() => {
-    setLocalSearch(params.search)
-  }, [params.search])
+    setLocalSearch(params.search);
+  }, [params.search]);
 
   return {
     searchValue: localSearch,
-    onSearchChange: setLocalSearch
-  }
+    onSearchChange: setLocalSearch,
+  };
 }

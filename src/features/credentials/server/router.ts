@@ -10,6 +10,14 @@ import { CredentialType } from "@/generated/prisma/enums";
 import { encrypt } from "@/lib/encryption";
 import { TRPCError } from "@trpc/server";
 
+const publicCredentialSelect = {
+  id: true,
+  name: true,
+  type: true,
+  createdAt: true,
+  updatedAt: true,
+} as const;
+
 export const credentialsRouter = createTRPCRouter({
   create: proProcedure
     .input(
@@ -45,6 +53,7 @@ export const credentialsRouter = createTRPCRouter({
           type,
           value: encrypt(value),
         },
+        select: publicCredentialSelect,
       });
     }),
   remove: protectedProcedure
@@ -55,6 +64,7 @@ export const credentialsRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.auth.user.id,
         },
+        select: publicCredentialSelect,
       });
     }),
   update: protectedProcedure
@@ -66,15 +76,21 @@ export const credentialsRouter = createTRPCRouter({
           .min(1, "Name is required.")
           .max(25, "Name must be less than 25 characters."),
         type: z.enum(CredentialType),
-        value: z.string().min(1, "Value is required."),
+        value: z.string().optional(),
       }),
     )
     .mutation(({ ctx, input }) => {
       const { id, name, type, value } = input;
+      const nextValue = value?.trim();
 
       return prisma.credential.update({
         where: { id, userId: ctx.auth.user.id },
-        data: { name, type, value: encrypt(value) },
+        data: {
+          name,
+          type,
+          ...(nextValue ? { value: encrypt(nextValue) } : {}),
+        },
+        select: publicCredentialSelect,
       });
     }),
   getOne: protectedProcedure
@@ -85,6 +101,7 @@ export const credentialsRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.auth.user.id,
         },
+        select: publicCredentialSelect,
       });
     }),
   getMany: protectedProcedure
@@ -116,6 +133,7 @@ export const credentialsRouter = createTRPCRouter({
           orderBy: {
             updatedAt: "desc",
           },
+          select: publicCredentialSelect,
         }),
         prisma.credential.count({
           where: {
@@ -153,6 +171,7 @@ export const credentialsRouter = createTRPCRouter({
         orderBy: {
           updatedAt: "desc",
         },
+        select: publicCredentialSelect,
       });
     }),
 });

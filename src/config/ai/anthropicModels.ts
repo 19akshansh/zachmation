@@ -13,5 +13,4 @@ export const ANTHROPIC_MODELS = [
   },
 ] as const;
 
-export type AnthropicModelId =
-  (typeof ANTHROPIC_MODELS)[number]["id"];
+export type AnthropicModelId = (typeof ANTHROPIC_MODELS)[number]["id"];

@@ -1,6 +1,10 @@
 // http://localhost:3000/workflows/id
 
-import { Editor, EditorError, EditorLoading } from "@/features/editor/components/editor";
+import {
+  Editor,
+  EditorError,
+  EditorLoading,
+} from "@/features/editor/components/editor";
 import { EditorHeader } from "@/features/editor/components/editorHeader";
 import { prefetchWorkflow } from "@/features/workflows/server/prefetch";
 import { requireAuth } from "@/lib/authUtils";
@@ -11,16 +15,14 @@ import { ErrorBoundary } from "react-error-boundary";
 interface PageProps {
   params: Promise<{
     workflowId: string;
-  }>
+  }>;
 }
 
-const Page = async ({
-  params
-}: PageProps) => {
+const Page = async ({ params }: PageProps) => {
   await requireAuth();
   const { workflowId } = await params;
 
-  prefetchWorkflow(workflowId)
+  prefetchWorkflow(workflowId);
 
   return (
     <HydrateClient>
@@ -29,8 +31,8 @@ const Page = async ({
           <EditorHeader workflowId={workflowId} />
           <main className="flex-1">
             <Editor workflowId={workflowId} />
-          </main> 
-        </Suspense>   
+          </main>
+        </Suspense>
       </ErrorBoundary>
     </HydrateClient>
   );

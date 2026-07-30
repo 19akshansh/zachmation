@@ -8,6 +8,7 @@ import {
   LoadingView,
   ErrorView,
   EmptyView,
+  SearchEmptyView,
   EntityList,
   EntityItem,
 } from "@/components/entityComponents";
@@ -26,13 +27,33 @@ import { RelativeTime } from "@/components/relativeTime";
 
 export const WorkflowsList = () => {
   const workflows = useSuspenseWorkflows();
+  const [params, setParams] = useWorkflowsParams();
+  const query = params.search.trim();
+
+  const clearSearch = () => {
+    setParams({
+      ...params,
+      search: "",
+      page: 1,
+    });
+  };
 
   return (
     <EntityList
       items={workflows.data.items}
       getKey={(workflow) => workflow.id}
       renderItem={(workflow) => <WorkflowItem data={workflow} />}
-      emptyView={<WorkflowsEmpty />}
+      emptyView={
+        query ? (
+          <SearchEmptyView
+            query={query}
+            entity="Workflows"
+            onClear={clearSearch}
+          />
+        ) : (
+          <WorkflowsEmpty />
+        )
+      }
     />
   );
 };
@@ -169,8 +190,8 @@ export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
       title={data.name}
       subtitle={
         <>
-          Updated <RelativeTime date={data.updatedAt} />{" "}
-          &bull; Created <RelativeTime date={data.createdAt} />
+          Updated <RelativeTime date={data.updatedAt} /> &bull; Created{" "}
+          <RelativeTime date={data.createdAt} />
         </>
       }
       image={

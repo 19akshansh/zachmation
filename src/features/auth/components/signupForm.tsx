@@ -25,6 +25,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/authClient";
+import { useState } from "react";
+import { EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react";
 
 const signupSchema = z
   .object({
@@ -42,6 +44,8 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 export const SignupForm = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -189,11 +193,30 @@ export const SignupForm = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="********"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="********"
+                              autoComplete="new-password"
+                              className="pr-10"
+                              {...field}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword((value) => !value)}
+                              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                              aria-label={
+                                showPassword ? "Hide password" : "Show password"
+                              }
+                              aria-pressed={showPassword}
+                            >
+                              {showPassword ? (
+                                <EyeOffIcon className="size-4" />
+                              ) : (
+                                <EyeIcon className="size-4" />
+                              )}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -206,11 +229,34 @@ export const SignupForm = () => {
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="********"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="********"
+                              autoComplete="new-password"
+                              className="pr-10"
+                              {...field}
+                            />
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setShowConfirmPassword((value) => !value)
+                              }
+                              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                              aria-label={
+                                showConfirmPassword
+                                  ? "Hide confirm password"
+                                  : "Show confirm password"
+                              }
+                              aria-pressed={showConfirmPassword}
+                            >
+                              {showConfirmPassword ? (
+                                <EyeOffIcon className="size-4" />
+                              ) : (
+                                <EyeIcon className="size-4" />
+                              )}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -218,7 +264,10 @@ export const SignupForm = () => {
                   />
 
                   <Button type="submit" className="w-full" disabled={isPending}>
-                    Signup
+                    {isPending && (
+                      <Loader2Icon className="size-4 animate-spin" />
+                    )}
+                    {isPending ? "Creating account..." : "Signup"}
                   </Button>
                 </div>
                 <div className="text-center text-sm">

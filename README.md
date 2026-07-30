@@ -72,54 +72,54 @@ Whether you're creating AI content generators, internal automations, lead-proces
 
 ## Visual Workflow Builder
 
-* Drag-and-drop workflow editor
-* Interactive node graph
-* Real-time workflow editing
-* Connection validation
-* Node configuration panels
+- Drag-and-drop workflow editor
+- Interactive node graph
+- Real-time workflow editing
+- Connection validation
+- Node configuration panels
 
 ## AI-Powered Automation
 
-* OpenAI Integration
-* Google Gemini Integration
-* Anthropic Claude Integration
-* AI Image Generation
-* Multi-provider architecture
+- OpenAI Integration
+- Google Gemini Integration
+- Anthropic Claude Integration
+- AI Image Generation
+- Multi-provider architecture
 
 ## Workflow Triggers
 
-* Manual Trigger
-* Google Forms Trigger
-* Stripe Trigger
+- Manual Trigger
+- Google Forms Trigger
+- Stripe Trigger
 
 ## Execution Nodes
 
-* AI Text Generation
-* AI Image Generation
-* HTTP Requests
-* Discord Messages
-* Slack Messages
+- AI Text Generation
+- AI Image Generation
+- HTTP Requests
+- Discord Messages
+- Slack Messages
 
 ## Security & Credentials
 
-* Encrypted credential storage
-* OAuth authentication
-* Provider-specific secrets management
-* Secure workflow execution
+- Encrypted credential storage
+- OAuth authentication
+- Provider-specific secrets management
+- Secure workflow execution
 
 ## Monitoring
 
-* Execution logs
-* Workflow history
-* Error tracking
-* Node-level status visibility
+- Execution logs
+- Workflow history
+- Error tracking
+- Node-level status visibility
 
 ## Authentication & Billing
 
-* Better Auth
-* Google OAuth
-* GitHub OAuth
-* Polar Billing Integration
+- Better Auth
+- Google OAuth
+- GitHub OAuth
+- Polar Billing Integration
 
 ---
 
@@ -166,10 +166,10 @@ Whether you're creating AI content generators, internal automations, lead-proces
 
 | Provider          | Status |
 | ----------------- | ------ |
-| OpenAI            | ✅      |
-| Gemini            | ✅      |
-| Claude            | ✅      |
-| Black Forest Labs | ✅      |
+| OpenAI            | ✅     |
+| Gemini            | ✅     |
+| Claude            | ✅     |
+| Black Forest Labs | ✅     |
 | Hugging Face      | 🚧     |
 
 ---
@@ -198,7 +198,7 @@ Whether you're creating AI content generators, internal automations, lead-proces
 | AI            | OpenAI, Gemini, Claude, Image Generation |
 | Communication | Slack, Discord                           |
 | Utility       | HTTP Request                             |
-| Logic         | Coming Soon                         |
+| Logic         | Coming Soon                              |
 
 ---
 
@@ -322,7 +322,6 @@ npm install --legacy-peer-deps
 
 Create a `.env` file and view `/.env.example` for reference.
 
-
 ## Generate Prisma Client
 
 ```bash
@@ -366,19 +365,19 @@ src
 
 ## Near Term
 
-* [ ] Workflow Templates
-* [ ] API Workflow Execution
-* [ ] Webhook Trigger
-* [ ] Conditional Logic
-* [ ] Delay / Wait Nodes
+- [ ] Workflow Templates
+- [ ] API Workflow Execution
+- [ ] Webhook Trigger
+- [ ] Conditional Logic
+- [ ] Delay / Wait Nodes
 
 ## Future
 
-* [ ] Agent Nodes
-* [ ] Workflow Marketplace
-* [ ] Team Workspaces
-* [ ] Public APIs
-* [ ] Community Templates
+- [ ] Agent Nodes
+- [ ] Workflow Marketplace
+- [ ] Team Workspaces
+- [ ] Public APIs
+- [ ] Community Templates
 
 ---
 
@@ -396,7 +395,6 @@ Contributions are welcome.
 # ⭐ Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=19akshansh/zachmation&type=Date)](https://star-history.com)
-
 
 ---
 
