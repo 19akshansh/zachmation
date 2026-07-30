@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import { auth } from "./auth";
 import { redirect } from "next/navigation";
 
-
 export const requireAuth = async () => {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -21,6 +20,6 @@ export const requireUnAuth = async () => {
   });
 
   if (session) {
-    redirect("/");
+    redirect("/workflows");
   };
 };
