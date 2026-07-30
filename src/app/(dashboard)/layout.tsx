@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/appSiderbar"
+import { AppSidebar } from "@/components/appSidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
 const Layout = ({
