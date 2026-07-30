@@ -52,19 +52,19 @@ Whether you're creating AI content generators, internal automations, lead-proces
 
 ## Workflow Builder
 
-![Workflow Builder](./assets/workflows.gif)
+![Workflow Builder](./public/landing//workflows.gif)
 
 ## Execution Logs
 
-![Execution Logs](./assets/executions.gif)
+![Execution Logs](./public/landing/executions.gif)
 
 ## Credentials Vault
 
-![Credentials](./assets/credentials.gif)
+![Credentials](./public/landing/credentials.gif)
 
 ## Billing Dashboard
 
-![Billing](./assets/billing.gif)
+![Billing](./public/landing/billing.gif)
 
 ---
 
