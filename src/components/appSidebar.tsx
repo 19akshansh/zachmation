@@ -28,6 +28,7 @@ import {
   SidebarSeparator,
 } from "./ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Skeleton } from "./ui/skeleton";
 import { useCreateWorkflow } from "@/features/workflows/hooks/useWorkflows";
 import { useHasActivePROSubscription } from "@/features/subscriptions/hooks/useSubscription";
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
@@ -73,7 +74,7 @@ export const AppSidebar = () => {
   const handleSignOut = () => {
     authClient.signOut({
       fetchOptions: {
-        onSuccess: () => router.push("/signin"),
+        onSuccess: () => router.push("/"),
         onError: (ctx) => {
           toast.error(ctx.error.message);
         },
@@ -193,29 +194,38 @@ export const AppSidebar = () => {
 
         <SidebarFooter className="p-2">
           <SidebarMenu>
-            {!hasActivePROSubscription && !isLoading && (
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Upgrade to PRO"
-                  className="h-10 px-3 text-amber-400 transition-colors hover:bg-amber-400/10 hover:text-amber-300 group-data-[state=collapsed]:px-2"
-                  onClick={async () => {
-                    try {
-                      toast.info("Redirecting to BETA checkout...");
-                      await authClient.checkout({ slug: "pro" });
-                    } catch (error) {
-                      console.error("Checkout error:", error);
-                      toast.error(
-                        "Failed to initiate checkout. Please try again.",
-                      );
-                    }
-                  }}
-                >
-                  <StarIcon className="size-4 shrink-0" />
-                  <span className="group-data-[state=collapsed]:hidden">
-                    Upgrade to PRO
-                  </span>
-                </SidebarMenuButton>
+            {isLoading ? (
+              <SidebarMenuItem aria-hidden="true">
+                <div className="flex h-10 items-center gap-2 px-3 group-data-[state=collapsed]:px-2">
+                  <Skeleton className="size-4 shrink-0 rounded-sm" />
+                  <Skeleton className="h-4 w-24 group-data-[state=collapsed]:hidden" />
+                </div>
               </SidebarMenuItem>
+            ) : (
+              !hasActivePROSubscription && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip="Upgrade to PRO"
+                    className="h-10 px-3 text-amber-400 transition-colors hover:bg-amber-400/10 hover:text-amber-300 group-data-[state=collapsed]:px-2"
+                    onClick={async () => {
+                      try {
+                        toast.info("Redirecting to BETA checkout...");
+                        await authClient.checkout({ slug: "pro" });
+                      } catch (error) {
+                        console.error("Checkout error:", error);
+                        toast.error(
+                          "Failed to initiate checkout. Please try again.",
+                        );
+                      }
+                    }}
+                  >
+                    <StarIcon className="size-4 shrink-0" />
+                    <span className="group-data-[state=collapsed]:hidden">
+                      Upgrade to PRO
+                    </span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )
             )}
             <SidebarMenuItem>
               <SidebarMenuButton
@@ -246,9 +256,13 @@ export const AppSidebar = () => {
               <p className="truncate text-sm font-semibold text-sidebar-foreground">
                 {userName}
               </p>
-              <p className="truncate text-xs text-muted-foreground">
-                {hasActivePROSubscription ? "PRO plan" : "Free plan"}
-              </p>
+              {isLoading ? (
+                <Skeleton className="mt-1 h-3 w-14" />
+              ) : (
+                <p className="truncate text-xs text-muted-foreground">
+                  {hasActivePROSubscription ? "PRO plan" : "Free plan"}
+                </p>
+              )}
             </div>
             <button
               type="button"
