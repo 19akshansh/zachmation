@@ -2,7 +2,6 @@ import z from "zod";
 
 const envSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.url("NEXT_PUBLIC_APP_URL must be a valid URL"),
-  NGROK_URL: z.url("NGROK_URL is required"),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   BETTER_AUTH_SECRET: z.string().min(1, "BETTER_AUTH_SECRET is required"),
   BETTER_AUTH_URL: z.url("BETTER_AUTH_URL must be a valid URL"),
@@ -22,7 +21,6 @@ const envSchema = z.object({
 
 export const envSchem = envSchema.parse({
   NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  NGROK_URL: process.env.NGROK_URL,
   DATABASE_URL: process.env.DATABASE_URL,
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
