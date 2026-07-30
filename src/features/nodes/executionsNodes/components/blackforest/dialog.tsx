@@ -264,7 +264,7 @@ export const BlackForestDialog = ({
                     />
                   </FormControl>
                   <FormDescription>
-                    This prompt is sent to the AI. 
+                    This prompt is sent to the AI.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

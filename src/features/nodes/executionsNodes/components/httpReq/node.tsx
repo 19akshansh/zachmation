@@ -79,4 +79,4 @@ export const HTTPReqNode = (props: NodeProps<HTTPReqNodeType>) => {
   );
 };
 
-HTTPReqNode.displayName = "HTTP Request Node"
+HTTPReqNode.displayName = "HTTP Request Node";

@@ -40,7 +40,7 @@ export const useCreateWorkflow = () => {
       onError: (error) => {
         toast.error(`Failed to create Workflow: ${error.message}!`);
       },
-    })
+    }),
   );
 };
 
@@ -57,7 +57,7 @@ export const useRemoveWorkflow = () => {
       onError: (error) => {
         toast.error(`Failed to remove Workflow: ${error.message}!`);
       },
-    })
+    }),
   );
 };
 
@@ -71,13 +71,13 @@ export const useUpdateWorkflowName = () => {
         toast.success(`Workflow "${data.name}" updated!`);
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
         queryClient.invalidateQueries(
-          trpc.workflows.getOne.queryOptions({ id: data.id })
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
         );
       },
       onError: (error) => {
         toast.error(`Failed to update Workflow: ${error.message}!`);
       },
-    })
+    }),
   );
 };
 
@@ -91,13 +91,13 @@ export const useUpdateWorkflow = () => {
         toast.success(`Workflow "${data.name}" saved!`);
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
         queryClient.invalidateQueries(
-          trpc.workflows.getOne.queryOptions({ id: data.id })
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
         );
       },
       onError: (error) => {
         toast.error(`Failed to save Workflow: ${error.message}!`);
       },
-    })
+    }),
   );
 };
 
@@ -111,12 +111,12 @@ export const useExecuteWorkflow = () => {
         toast.success(`Workflow "${data.name}" executed!`);
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
         queryClient.invalidateQueries(
-          trpc.workflows.getOne.queryOptions({ id: data.id })
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
         );
       },
       onError: (error) => {
         toast.error(`Failed to execute Workflow: ${error.message}!`);
       },
-    })
+    }),
   );
 };

@@ -177,9 +177,7 @@ export const DiscordDialog = ({
                       {...field}
                     />
                   </FormControl>
-                  <FormDescription>
-                    Give your webhook a name!
-                  </FormDescription>
+                  <FormDescription>Give your webhook a name!</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

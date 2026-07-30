@@ -19,7 +19,9 @@ export const useDeleteAccount = () => {
         router.refresh();
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete account. Please try again.");
+        toast.error(
+          error.message || "Failed to delete account. Please try again.",
+        );
       },
     }),
   );

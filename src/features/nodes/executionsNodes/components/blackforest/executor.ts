@@ -15,7 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 type BlackForestData = {
   variableName?: string;
   credentialId?: string;
-  imgbbCredentialId?: string; 
+  imgbbCredentialId?: string;
   model?: BlackForestModelId;
   prompt?: string;
 };

@@ -12,14 +12,12 @@ import {
 } from "@/components/entityComponents";
 import { useSuspenseExecutions } from "../hooks/useExecutions";
 import { useExecutionsParams } from "../hooks/useExecutionsParams";
-import { ExecutionStatus, type Execution } from "@/generated/prisma/browser";
-import {
-  CheckCircle2Icon,
-  ClockIcon,
-  Loader2Icon,
-  XCircleIcon,
-} from "lucide-react";
+import { type Execution } from "@/generated/prisma/browser";
 import { RelativeTime } from "@/components/relativeTime";
+import {
+  formatExecutionStatus,
+  getExecutionStatusIcon,
+} from "./executionStatus";
 
 export const ExecutionsList = () => {
   const executions = useSuspenseExecutions();
@@ -102,23 +100,6 @@ export const ExecutionsEmpty = () => {
   );
 };
 
-const getStatusIcon = (status: ExecutionStatus) => {
-  switch (status) {
-    case ExecutionStatus.FAILED:
-      return <XCircleIcon className="size-5 text-red-600" />;
-    case ExecutionStatus.RUNNING:
-      return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
-    case ExecutionStatus.SUCCESS:
-      return <CheckCircle2Icon className="size-5 text-green-600" />;
-    default:
-      return <ClockIcon className="size-5 text-muted-foreground" />;
-  }
-};
-
-const formatStatus = (status: ExecutionStatus) => {
-  return status.charAt(0) + status.slice(1).toLowerCase();
-};
-
 export const ExecutionItem = ({
   data,
 }: {
@@ -149,11 +130,11 @@ export const ExecutionItem = ({
   return (
     <EntityItem
       href={`/executions/${data.id}`}
-      title={formatStatus(data.status)}
+      title={formatExecutionStatus(data.status)}
       subtitle={subtitle}
       image={
         <div className="size-8 flex items-center justify-center">
-          {getStatusIcon(data.status)}
+          {getExecutionStatusIcon(data.status)}
         </div>
       }
     />

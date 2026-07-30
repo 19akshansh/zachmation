@@ -9,7 +9,7 @@ export const requireAuth = async () => {
 
   if (!session) {
     redirect("/signin");
-  };
+  }
 
   return session;
 };
@@ -21,5 +21,5 @@ export const requireUnAuth = async () => {
 
   if (session) {
     redirect("/workflows");
-  };
+  }
 };

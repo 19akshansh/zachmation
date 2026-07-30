@@ -33,7 +33,6 @@ export const BaseExecutionNode = memo(
     onSettings,
     onDoubleClick,
   }: BaseExecutionNodeProps) => {
-
     const { setNodes, setEdges } = useReactFlow();
 
     const handleDelete = () => {
@@ -44,7 +43,7 @@ export const BaseExecutionNode = memo(
 
       setEdges((currentEdges) => {
         const updateEdges = currentEdges.filter(
-          (edge) => edge.source !== id && edge.target !== id
+          (edge) => edge.source !== id && edge.target !== id,
         );
 
         return updateEdges;
@@ -81,7 +80,7 @@ export const BaseExecutionNode = memo(
         </NodeStatusIndicator>
       </WorkflowNode>
     );
-  }
+  },
 );
 
 BaseExecutionNode.displayName = "BaseExecutionNode";

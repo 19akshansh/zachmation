@@ -26,18 +26,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/authClient";
 import { useEffect, useRef, useState } from "react";
+import { EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react";
 
 const signinSchema = z.object({
   email: z.email("Please enter a valid email address."),
-  password: z
-    .string()
-    .min(6, "Password should be of minimum 6 letters.")
+  password: z.string().min(6, "Password should be of minimum 6 letters."),
 });
 
 type SigninFormValues = z.infer<typeof signinSchema>;
 
 export const SigninForm = () => {
   const [canResend, setCanResend] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const resendTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const router = useRouter();
@@ -219,11 +219,30 @@ export const SigninForm = () => {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="********"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="********"
+                              autoComplete="current-password"
+                              className="pr-10"
+                              {...field}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword((value) => !value)}
+                              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                              aria-label={
+                                showPassword ? "Hide password" : "Show password"
+                              }
+                              aria-pressed={showPassword}
+                            >
+                              {showPassword ? (
+                                <EyeOffIcon className="size-4" />
+                              ) : (
+                                <EyeIcon className="size-4" />
+                              )}
+                            </button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -238,7 +257,10 @@ export const SigninForm = () => {
                     </Link>
                   </div>
                   <Button type="submit" className="w-full" disabled={isPending}>
-                    Signin
+                    {isPending && (
+                      <Loader2Icon className="size-4 animate-spin" />
+                    )}
+                    {isPending ? "Signing in..." : "Signin"}
                   </Button>
                 </div>
                 <div className="text-center text-sm">

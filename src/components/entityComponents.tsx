@@ -5,9 +5,21 @@ import {
   PackageOpenIcon,
   PlusIcon,
   SearchIcon,
+  XIcon,
   TrashIcon,
 } from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "./ui/alert-dialog";
 import Link from "next/link";
 import React, { ReactNode } from "react";
 import { Input } from "./ui/input";
@@ -126,13 +138,26 @@ export const EntitySearch = ({
 }: EntitySearchProps) => {
   return (
     <div className="relative ml-auto">
-      <SearchIcon className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+      <SearchIcon className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
       <Input
-        className="max-w-[200px] bg-background shadow-none border-border pl-8"
+        className={cn(
+          "max-w-[200px] border-border bg-background pl-8 shadow-none",
+          value && "pr-9",
+        )}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
+      {value && (
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          aria-label="Clear search"
+          className="absolute right-2 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <XIcon className="size-3.5" />
+        </button>
+      )}
     </div>
   );
 };
@@ -193,9 +218,9 @@ export const LoadingView = ({ message }: StateViewProps) => {
 export const ErrorView = ({ message }: StateViewProps) => {
   return (
     <div className="flex justify-center items-center h-full flex-col gap-y-4">
-      <AlertTriangleIcon className="size-6 text-red-600" />
+      <AlertTriangleIcon className="size-6 text-destructive" />
       {!!message && (
-        <p className="text-sm text-red-600 font-extrabold">{message}</p>
+        <p className="text-sm text-destructive font-extrabold">{message}</p>
       )}
     </div>
   );
@@ -222,6 +247,39 @@ export const EmptyView = ({ msg, entity = "item", onNew }: EmptyViewProps) => {
           <Button onClick={onNew}>Add a new {entity}</Button>
         </EmptyContent>
       )}
+    </Empty>
+  );
+};
+
+interface SearchEmptyViewProps {
+  query: string;
+  entity?: string;
+  onClear: () => void;
+}
+
+export const SearchEmptyView = ({
+  query,
+  entity = "items",
+  onClear,
+}: SearchEmptyViewProps) => {
+  return (
+    <Empty className="border border-dashed bg-background">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <SearchIcon />
+        </EmptyMedia>
+        <EmptyTitle>No results for “{query}”</EmptyTitle>
+        <EmptyDescription>
+          No {entity.toLowerCase()} match your current search. Try another term
+          or clear the search to see everything.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button variant="outline" onClick={onClear}>
+          <XIcon className="size-4" />
+          Clear search
+        </Button>
+      </EmptyContent>
     </Empty>
   );
 };
@@ -298,7 +356,7 @@ export const EntityItem = ({
     <Link href={href} prefetch>
       <Card
         className={cn(
-          "p-4 shadow-none hover:shadow cursor-pointer",
+          "cursor-pointer p-4 shadow-none transition-[background-color,border-color,box-shadow] hover:border-primary/30 hover:bg-accent/30 hover:shadow",
           isRemoving && "opacity-50 cursor-not-allowed",
           className,
         )}
@@ -319,29 +377,67 @@ export const EntityItem = ({
             <div className="flex gap-x-4 items-center">
               {actions}
               {onRemove && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      size={"icon"}
-                      variant={"ghost"}
+                <AlertDialog>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        disabled={isRemoving}
+                        onClick={(e) => e.stopPropagation()}
+                        aria-label={`Open actions for ${title}`}
+                      >
+                        {isRemoving ? (
+                          <Loader2Icon className="size-4 animate-spin" />
+                        ) : (
+                          <MoreVerticalIcon className="size-4" />
+                        )}
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      align="end"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <MoreVerticalIcon className="size-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    align="end"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <DropdownMenuItem
-                      onClick={handleRemove}
-                      className="text-red-600"
-                    >
-                      <TrashIcon className="size-4 text-red-600" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <AlertDialogTrigger asChild>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          disabled={isRemoving}
+                          onSelect={(e) => e.preventDefault()}
+                        >
+                          <TrashIcon className="size-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </AlertDialogTrigger>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete “{title}”?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This item and its
+                        associated data will be permanently deleted.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={isRemoving}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        disabled={isRemoving}
+                        onClick={handleRemove}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        {isRemoving ? (
+                          <Loader2Icon className="size-4 animate-spin" />
+                        ) : (
+                          <TrashIcon className="size-4" />
+                        )}
+                        {isRemoving ? "Deleting..." : "Delete permanently"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
           )}

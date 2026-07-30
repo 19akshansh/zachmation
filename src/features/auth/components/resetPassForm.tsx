@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/authClient";
+import { useState } from "react";
+import { EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react";
 
 const resetPassSchema = z.object({
   password: z.string().min(6, "Password should be of minimum 6 letters."),
@@ -32,6 +34,7 @@ type ResetPassValues = z.infer<typeof resetPassSchema>;
 
 export const ResetPassForm = () => {
   const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
 
@@ -79,7 +82,30 @@ export const ResetPassForm = () => {
                 <FormItem>
                   <FormLabel>New Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="********" {...field} />
+                    <div className="relative">
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="********"
+                        autoComplete="new-password"
+                        className="pr-10"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((value) => !value)}
+                        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                        aria-pressed={showPassword}
+                      >
+                        {showPassword ? (
+                          <EyeOffIcon className="size-4" />
+                        ) : (
+                          <EyeIcon className="size-4" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -90,6 +116,9 @@ export const ResetPassForm = () => {
               className="w-full"
               disabled={form.formState.isSubmitting || !token}
             >
+              {form.formState.isSubmitting && (
+                <Loader2Icon className="size-4 animate-spin" />
+              )}
               {form.formState.isSubmitting ? "Updating..." : "Reset Password"}
             </Button>
           </form>
