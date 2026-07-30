@@ -229,6 +229,14 @@ export const SigninForm = () => {
                       </FormItem>
                     )}
                   />
+                  <div className="flex justify-end">
+                    <Link
+                      href="/forgotPass"
+                      className="text-sm underline underline-offset-4"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                   <Button type="submit" className="w-full" disabled={isPending}>
                     Signin
                   </Button>
