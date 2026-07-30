@@ -10,7 +10,7 @@ const adapter = new PrismaPg({
   connectionString: envSchem.DATABASE_URL,
 })
 
-const prisma = globalForPrisma.prisma || new PrismaClient({
+export const prisma = globalForPrisma.prisma || new PrismaClient({
   adapter,
 })
 
