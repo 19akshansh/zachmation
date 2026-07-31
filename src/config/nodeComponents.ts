@@ -11,6 +11,7 @@ import { GoogleFormTriggerNode } from "@/features/nodes/triggersNodes/components
 import { ManualTriggerNode } from "@/features/nodes/triggersNodes/components/manualTrigger/node";
 import { StripeTriggerNode } from "@/features/nodes/triggersNodes/components/stripeTrigger/node";
 import { WebhookTriggerNode } from "@/features/nodes/triggersNodes/components/webhookTrigger/node";
+import { TelegramTriggerNode } from "@/features/nodes/triggersNodes/components/telegramTrigger/node";
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 
@@ -22,6 +23,7 @@ export const nodeComponents = {
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerNode,
   [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
   [NodeType.WEBHOOK_TRIGGER]: WebhookTriggerNode,
+  [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
   [NodeType.GEMINI]: GeminiNode,
   [NodeType.OPENAI]: OpenAINode,
   [NodeType.ANTHROPIC]: AnthropicNode,

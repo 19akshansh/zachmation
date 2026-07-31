@@ -13,8 +13,91 @@ import { NodeType } from "@/generated/prisma/enums";
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { TRPCError } from "@trpc/server";
 import { PRO_NODES } from "@/config/proNodes";
+import { decrypt } from "@/lib/encryption";
+import { envSchem } from "@/config/envSchema";
 
 export const workflowsRouter = createTRPCRouter({
+  registerTelegramWebhook: protectedProcedure
+    .input(
+      z.object({
+        workflowId: z.string(),
+        nodeId: z.string(),
+        credentialId: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const node = await prisma.node.findFirst({
+        where: {
+          id: input.nodeId,
+          workflowId: input.workflowId,
+          type: NodeType.TELEGRAM_TRIGGER,
+          workflow: { userId: ctx.auth.user.id },
+        },
+      });
+
+      if (!node) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Telegram trigger node not found.",
+        });
+      }
+
+      const credential = await prisma.credential.findFirst({
+        where: {
+          id: input.credentialId,
+          userId: ctx.auth.user.id,
+          type: "TELEGRAM_BOT",
+        },
+      });
+
+      if (!credential) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Telegram bot credential not found.",
+        });
+      }
+
+      const botToken = decrypt(credential.value);
+      const secretToken = crypto.randomUUID().replace(/-/g, "");
+      const webhookUrl = `${envSchem.NEXT_PUBLIC_APP_URL}/api/webhooks/telegram?workflowId=${input.workflowId}&nodeId=${input.nodeId}`;
+
+      const response = await fetch(
+        `https://api.telegram.org/bot${botToken}/setWebhook`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: webhookUrl,
+            secret_token: secretToken,
+          }),
+        },
+      );
+
+      const result = (await response.json()) as {
+        ok?: boolean;
+        description?: string;
+      };
+
+      if (!response.ok || !result.ok) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: result.description ?? "Telegram setWebhook failed.",
+        });
+      }
+
+      await prisma.node.update({
+        where: { id: node.id },
+        data: {
+          data: {
+            ...((node.data as Record<string, unknown>) ?? {}),
+            credentialId: input.credentialId,
+            telegramSecretToken: secretToken,
+          },
+        },
+      });
+
+      return { webhookUrl };
+    }),
   execute: proProcedure
     .input(
       z.object({

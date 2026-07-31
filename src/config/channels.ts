@@ -3,6 +3,7 @@ export const CHANNELS = {
   GOOGLE_FORM_TRIGGER: "googleFormTriggerExec",
   STRIPE_TRIGGER: "stripeTriggerExec",
   WEBHOOK_TRIGGER: "webhookTriggerExec",
+  TELEGRAM_TRIGGER: "telegramTriggerExec",
   HTTP_TRIGGER: "httpTriggerExec",
   SET: "setExec",
   GEMINI: "geminiExec",

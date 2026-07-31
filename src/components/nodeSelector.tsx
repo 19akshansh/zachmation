@@ -60,6 +60,13 @@ const triggerNodes: NodeTypeOption[] = [
     icon: WebhookIcon,
     pro: false,
   },
+  {
+    type: NodeType.TELEGRAM_TRIGGER,
+    label: "Telegram Trigger",
+    description: "Triggers when your Telegram bot receives an update",
+    icon: "/telegram.svg",
+    pro: false,
+  },
 ];
 
 const executionNodes: NodeTypeOption[] = [
