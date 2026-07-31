@@ -84,6 +84,21 @@ const credentialTypeOptions = [
     label: "Image BB",
     logo: "/imgbb.png",
   },
+  {
+    value: CredentialType.TELEGRAM_BOT,
+    label: "Telegram Bot",
+    logo: "/telegram.svg",
+  },
+  {
+    value: CredentialType.ZACHURL,
+    label: "Zachurl",
+    logo: "/zachurl.svg",
+  },
+  {
+    value: CredentialType.ZACHCOURSE,
+    label: "Zachcourse",
+    logo: "/zachcourse.svg",
+  },
 ];
 
 export const CredentialForm = ({ initialData }: CredentialFormProps) => {
@@ -113,7 +128,7 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
     if (!isEdit && !values.value.trim()) {
       form.setError("value", {
         type: "manual",
-        message: "API Key is required",
+        message: "API Key or credential is required",
       });
       return;
     }
