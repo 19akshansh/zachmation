@@ -13,6 +13,7 @@ import { StripeTriggerNode } from "@/features/nodes/triggersNodes/components/str
 import { WebhookTriggerNode } from "@/features/nodes/triggersNodes/components/webhookTrigger/node";
 import { TelegramTriggerNode } from "@/features/nodes/triggersNodes/components/telegramTrigger/node";
 import { TelegramSendNode } from "@/features/nodes/executionsNodes/components/telegramSend/node";
+import { DiscordTriggerNode } from "@/features/nodes/triggersNodes/components/discordTrigger/node";
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 
@@ -26,10 +27,11 @@ export const nodeComponents = {
   [NodeType.WEBHOOK_TRIGGER]: WebhookTriggerNode,
   [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
   [NodeType.TELEGRAM_SEND]: TelegramSendNode,
+  [NodeType.DISCORD_TRIGGER]: DiscordTriggerNode,
+  [NodeType.DISCORD_SEND]: DiscordNode,
   [NodeType.GEMINI]: GeminiNode,
   [NodeType.OPENAI]: OpenAINode,
   [NodeType.ANTHROPIC]: AnthropicNode,
-  [NodeType.DISCORD]: DiscordNode,
   [NodeType.SLACK]: SlackNode,
   [NodeType.BLACK_LABS]: BlackForestNode,
 } as const satisfies NodeTypes;

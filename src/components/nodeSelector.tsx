@@ -61,6 +61,13 @@ const triggerNodes: NodeTypeOption[] = [
     pro: false,
   },
   {
+    type: NodeType.DISCORD_TRIGGER,
+    label: "Discord Trigger",
+    description: "Triggers from a Discord interaction or slash command",
+    icon: "/discord.svg",
+    pro: false,
+  },
+  {
     type: NodeType.TELEGRAM_TRIGGER,
     label: "Telegram Trigger",
     description: "Triggers when your Telegram bot receives an update",
@@ -113,8 +120,8 @@ const executionNodes: NodeTypeOption[] = [
     pro: true,
   },
   {
-    type: NodeType.DISCORD,
-    label: "Discord",
+    type: NodeType.DISCORD_SEND,
+    label: "Discord Send",
     description: "Send a Discord Message",
     icon: "/discord.svg",
     pro: false,
