@@ -112,5 +112,14 @@
     "tsx": "^4.20.6",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5"
+  },
+  "allowScripts": {
+    "esbuild@0.28.0": true,
+    "inngest-cli@1.19.4": true,
+    "prisma@7.9.1": true,
+    "sharp@0.34.5": true,
+    "protobufjs@7.5.9": true,
+    "@prisma/engines@7.9.1": true,
+    "@sentry/cli@2.58.5": true
   }
 }
