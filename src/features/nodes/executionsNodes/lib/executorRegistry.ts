@@ -11,11 +11,13 @@ import { anthropicExecutor } from "../components/anthropic/executor";
 import { DiscordExecutor } from "../components/discord/executor";
 import { SlackExecutor } from "../components/slack/executor";
 import { BlackForestExecutor } from "../components/blackforest/executor";
+import { SetExecutor } from "../components/set/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
   [NodeType.INITIAL]: manualReqTriggerExecutor,
   [NodeType.HTTP_REQ]: HTTPReqTriggerExecutor,
+  [NodeType.SET]: SetExecutor,
   [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
   [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
   [NodeType.WEBHOOK_TRIGGER]: webhookTriggerExecutor,

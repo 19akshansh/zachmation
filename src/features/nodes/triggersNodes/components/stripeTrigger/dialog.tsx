@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { envSchem } from "@/config/envSchema";
 import { CopyIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
@@ -24,7 +23,7 @@ export const StripeDialogTrigger = ({ open, onOpenChange }: Props) => {
   const params = useParams();
   const workflowId = params.workflowId as string;
 
-  const baseURL = envSchem.NEXT_PUBLIC_APP_URL;
+  const baseURL = process.env.NEXT_PUBLIC_APP_URL;
 
   const webhookUrl = `${baseURL}/api/webhooks/stripe?workflowId=${workflowId}`;
 

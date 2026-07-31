@@ -2,7 +2,7 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { GlobeIcon, MousePointerIcon, WebhookIcon } from "lucide-react";
+import { GlobeIcon, MousePointerIcon, PencilLineIcon, WebhookIcon } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
@@ -68,6 +68,13 @@ const executionNodes: NodeTypeOption[] = [
     label: "HTTP Request",
     description: "Makes an HTTP Request",
     icon: GlobeIcon,
+    pro: false,
+  },
+  {
+    type: NodeType.SET,
+    label: "Edit Fields",
+    description: "Add or reshape workflow context fields",
+    icon: PencilLineIcon,
     pro: false,
   },
   {

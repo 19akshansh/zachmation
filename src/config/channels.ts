@@ -4,6 +4,7 @@ export const CHANNELS = {
   STRIPE_TRIGGER: "stripeTriggerExec",
   WEBHOOK_TRIGGER: "webhookTriggerExec",
   HTTP_TRIGGER: "httpTriggerExec",
+  SET: "setExec",
   GEMINI: "geminiExec",
   BLACK_FOREST: "blackForestExec",
   OPENAI: "openaiExec",

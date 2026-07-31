@@ -6,6 +6,7 @@ import { GeminiNode } from "@/features/nodes/executionsNodes/components/gemini/n
 import { HTTPReqNode } from "@/features/nodes/executionsNodes/components/httpReq/node";
 import { OpenAINode } from "@/features/nodes/executionsNodes/components/openai/node";
 import { SlackNode } from "@/features/nodes/executionsNodes/components/slack/node";
+import { SetNode } from "@/features/nodes/executionsNodes/components/set/node";
 import { GoogleFormTriggerNode } from "@/features/nodes/triggersNodes/components/googleFormsTrigger/node";
 import { ManualTriggerNode } from "@/features/nodes/triggersNodes/components/manualTrigger/node";
 import { StripeTriggerNode } from "@/features/nodes/triggersNodes/components/stripeTrigger/node";
@@ -17,6 +18,7 @@ export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
   [NodeType.MANUAL_TRIGGER]: ManualTriggerNode,
   [NodeType.HTTP_REQ]: HTTPReqNode,
+  [NodeType.SET]: SetNode,
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerNode,
   [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
   [NodeType.WEBHOOK_TRIGGER]: WebhookTriggerNode,
