@@ -68,8 +68,8 @@ export const TelegramTriggerDialog = ({
         <DialogHeader>
           <DialogTitle>Telegram Trigger Configuration</DialogTitle>
           <DialogDescription>
-            Choose a Telegram bot credential, then register this workflow as
-            the bot&apos;s webhook.
+            Choose a Telegram bot credential, then register this workflow as the
+            bot&apos;s webhook.
           </DialogDescription>
         </DialogHeader>
 
@@ -79,7 +79,7 @@ export const TelegramTriggerDialog = ({
             <Select
               value={selectedCredentialId}
               onValueChange={setSelectedCredentialId}
-              disabled={credentialsLoading}
+              disabled={credentialsLoading || !credentials.length}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select a Telegram bot" />
@@ -101,7 +101,12 @@ export const TelegramTriggerDialog = ({
 
           <Button
             className="w-full"
-            disabled={!selectedCredentialId || registerWebhook.isPending}
+            disabled={
+              credentialsLoading ||
+              !credentials.length ||
+              !selectedCredentialId ||
+              registerWebhook.isPending
+            }
             onClick={() =>
               registerWebhook.mutate({
                 workflowId,

@@ -60,9 +60,9 @@ export const TelegramSendDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: credentials = [] } = useCredentialsByType(
-    CredentialType.TELEGRAM_BOT,
-  );
+  const { data: credentials = [], isLoading: credentialsLoading } =
+    useCredentialsByType(CredentialType.TELEGRAM_BOT);
+
   const form = useForm<TelegramSendFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -119,7 +119,11 @@ export const TelegramSendDialog = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Telegram Bot Credential</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    disabled={credentialsLoading || !credentials.length}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select a Telegram bot" />
