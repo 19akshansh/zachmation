@@ -17,6 +17,8 @@ import { DiscordTriggerNode } from "@/features/nodes/triggersNodes/components/di
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 
+import { ZachurlNode } from "@/features/nodes/executionsNodes/components/zachurl/node";
+
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
   [NodeType.MANUAL_TRIGGER]: ManualTriggerNode,
@@ -34,6 +36,7 @@ export const nodeComponents = {
   [NodeType.ANTHROPIC]: AnthropicNode,
   [NodeType.SLACK]: SlackNode,
   [NodeType.BLACK_LABS]: BlackForestNode,
+  [NodeType.ZACHURL]: ZachurlNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

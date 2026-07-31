@@ -2,7 +2,8 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { GlobeIcon, MousePointerIcon, PencilLineIcon, WebhookIcon } from "lucide-react";
+import { GlobeIcon,
+  LinkIcon, MousePointerIcon, PencilLineIcon, WebhookIcon } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
@@ -111,6 +112,13 @@ const executionNodes: NodeTypeOption[] = [
     description: "Makes a Anthropic(Chat) Request",
     icon: "/anthropic.svg",
     pro: true,
+  },
+  {
+    type: NodeType.ZACHURL,
+    label: "Zachurl",
+    description: "Create a short URL with Zachurl",
+    icon: LinkIcon,
+    pro: false,
   },
   {
     type: NodeType.BLACK_LABS,

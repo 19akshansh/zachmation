@@ -15,6 +15,7 @@ import { SetExecutor } from "../components/set/executor";
 import { telegramTriggerExecutor } from "@/features/nodes/triggersNodes/components/telegramTrigger/executor";
 import { TelegramSendExecutor } from "../components/telegramSend/executor";
 import { discordTriggerExecutor } from "@/features/nodes/triggersNodes/components/discordTrigger/executor";
+import { ZachurlExecutor } from "../components/zachurl/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -28,6 +29,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.TELEGRAM_SEND]: TelegramSendExecutor,
   [NodeType.DISCORD_TRIGGER]: discordTriggerExecutor,
   [NodeType.DISCORD_SEND]: DiscordExecutor,
+  [NodeType.ZACHURL]: ZachurlExecutor,
   [NodeType.GEMINI]: GeminiExecutor,
   [NodeType.ANTHROPIC]: anthropicExecutor,
   [NodeType.OPENAI]: openAIExecutor,
