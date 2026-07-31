@@ -9,6 +9,7 @@ import { SlackNode } from "@/features/nodes/executionsNodes/components/slack/nod
 import { GoogleFormTriggerNode } from "@/features/nodes/triggersNodes/components/googleFormsTrigger/node";
 import { ManualTriggerNode } from "@/features/nodes/triggersNodes/components/manualTrigger/node";
 import { StripeTriggerNode } from "@/features/nodes/triggersNodes/components/stripeTrigger/node";
+import { WebhookTriggerNode } from "@/features/nodes/triggersNodes/components/webhookTrigger/node";
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 
@@ -18,6 +19,7 @@ export const nodeComponents = {
   [NodeType.HTTP_REQ]: HTTPReqNode,
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTriggerNode,
   [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
+  [NodeType.WEBHOOK_TRIGGER]: WebhookTriggerNode,
   [NodeType.GEMINI]: GeminiNode,
   [NodeType.OPENAI]: OpenAINode,
   [NodeType.ANTHROPIC]: AnthropicNode,

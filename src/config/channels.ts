@@ -2,6 +2,7 @@ export const CHANNELS = {
   MANUAL_TRIGGER: "manualTriggerExec",
   GOOGLE_FORM_TRIGGER: "googleFormTriggerExec",
   STRIPE_TRIGGER: "stripeTriggerExec",
+  WEBHOOK_TRIGGER: "webhookTriggerExec",
   HTTP_TRIGGER: "httpTriggerExec",
   GEMINI: "geminiExec",
   BLACK_FOREST: "blackForestExec",

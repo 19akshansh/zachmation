@@ -2,7 +2,7 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { GlobeIcon, MousePointerIcon } from "lucide-react";
+import { GlobeIcon, MousePointerIcon, WebhookIcon } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
@@ -52,6 +52,13 @@ const triggerNodes: NodeTypeOption[] = [
     description: "Triggers a Stripe Event",
     icon: "/stripe.svg",
     pro: true,
+  },
+  {
+    type: NodeType.WEBHOOK_TRIGGER,
+    label: "Webhook Trigger",
+    description: "Triggers from any incoming webhook POST",
+    icon: WebhookIcon,
+    pro: false,
   },
 ];
 
