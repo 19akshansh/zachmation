@@ -4,6 +4,7 @@ export const CHANNELS = {
   STRIPE_TRIGGER: "stripeTriggerExec",
   WEBHOOK_TRIGGER: "webhookTriggerExec",
   TELEGRAM_TRIGGER: "telegramTriggerExec",
+  TELEGRAM_SEND: "telegramSendExec",
   HTTP_TRIGGER: "httpTriggerExec",
   SET: "setExec",
   GEMINI: "geminiExec",

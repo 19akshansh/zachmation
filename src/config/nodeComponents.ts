@@ -12,6 +12,7 @@ import { ManualTriggerNode } from "@/features/nodes/triggersNodes/components/man
 import { StripeTriggerNode } from "@/features/nodes/triggersNodes/components/stripeTrigger/node";
 import { WebhookTriggerNode } from "@/features/nodes/triggersNodes/components/webhookTrigger/node";
 import { TelegramTriggerNode } from "@/features/nodes/triggersNodes/components/telegramTrigger/node";
+import { TelegramSendNode } from "@/features/nodes/executionsNodes/components/telegramSend/node";
 import { NodeType } from "@/generated/prisma/enums";
 import type { NodeTypes } from "@xyflow/react";
 
@@ -24,6 +25,7 @@ export const nodeComponents = {
   [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
   [NodeType.WEBHOOK_TRIGGER]: WebhookTriggerNode,
   [NodeType.TELEGRAM_TRIGGER]: TelegramTriggerNode,
+  [NodeType.TELEGRAM_SEND]: TelegramSendNode,
   [NodeType.GEMINI]: GeminiNode,
   [NodeType.OPENAI]: OpenAINode,
   [NodeType.ANTHROPIC]: AnthropicNode,

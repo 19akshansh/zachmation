@@ -120,6 +120,13 @@ const executionNodes: NodeTypeOption[] = [
     pro: false,
   },
   {
+    type: NodeType.TELEGRAM_SEND,
+    label: "Telegram Send",
+    description: "Send a Telegram message",
+    icon: "/telegram.svg",
+    pro: false,
+  },
+  {
     type: NodeType.SLACK,
     label: "Slack",
     description: "Send a Slack Message",
