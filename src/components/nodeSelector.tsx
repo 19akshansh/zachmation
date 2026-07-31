@@ -2,7 +2,7 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { GlobeIcon, MousePointerIcon } from "lucide-react";
+import { GlobeIcon, MousePointerIcon, PencilLineIcon, WebhookIcon } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
@@ -53,6 +53,27 @@ const triggerNodes: NodeTypeOption[] = [
     icon: "/stripe.svg",
     pro: true,
   },
+  {
+    type: NodeType.WEBHOOK_TRIGGER,
+    label: "Webhook Trigger",
+    description: "Triggers from any incoming webhook POST",
+    icon: WebhookIcon,
+    pro: false,
+  },
+  {
+    type: NodeType.DISCORD_TRIGGER,
+    label: "Discord Trigger",
+    description: "Triggers from a Discord interaction or slash command",
+    icon: "/discord.svg",
+    pro: false,
+  },
+  {
+    type: NodeType.TELEGRAM_TRIGGER,
+    label: "Telegram Trigger",
+    description: "Triggers when your Telegram bot receives an update",
+    icon: "/telegram.svg",
+    pro: false,
+  },
 ];
 
 const executionNodes: NodeTypeOption[] = [
@@ -61,6 +82,13 @@ const executionNodes: NodeTypeOption[] = [
     label: "HTTP Request",
     description: "Makes an HTTP Request",
     icon: GlobeIcon,
+    pro: false,
+  },
+  {
+    type: NodeType.SET,
+    label: "Edit Fields",
+    description: "Add or reshape workflow context fields",
+    icon: PencilLineIcon,
     pro: false,
   },
   {
@@ -92,10 +120,17 @@ const executionNodes: NodeTypeOption[] = [
     pro: true,
   },
   {
-    type: NodeType.DISCORD,
-    label: "Discord",
+    type: NodeType.DISCORD_SEND,
+    label: "Discord Send",
     description: "Send a Discord Message",
     icon: "/discord.svg",
+    pro: false,
+  },
+  {
+    type: NodeType.TELEGRAM_SEND,
+    label: "Telegram Send",
+    description: "Send a Telegram message",
+    icon: "/telegram.svg",
     pro: false,
   },
   {

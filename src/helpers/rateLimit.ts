@@ -1,5 +1,4 @@
 const buckets = new Map<string, { count: number; resetAt: number }>();
-
 const SWEEP_INTERVAL_MS = 10 * 60 * 1000;
 let lastSweep = Date.now();
 
@@ -17,7 +16,6 @@ export function checkRateLimit(
 ): { allowed: boolean; retryAfterMs: number } {
   const now = Date.now();
   sweep(now);
-
   const bucket = buckets.get(key);
 
   if (!bucket || bucket.resetAt <= now) {
