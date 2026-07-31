@@ -14,6 +14,7 @@ import { CopyIcon } from "lucide-react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
 import { generateGoogleFormScript } from "./utils";
+import { envSchem } from "@/config/envSchema";
 
 interface Props {
   open: boolean;
@@ -24,7 +25,7 @@ export const GoogleFormDialogTrigger = ({ open, onOpenChange }: Props) => {
   const params = useParams();
   const workflowId = params.workflowId as string;
 
-  const baseURL = process.env.NEXT_PUBLIC_APP_URL;
+  const baseURL = envSchem.NEXT_PUBLIC_APP_URL;
 
   const webhookUrl = `${baseURL}/api/webhooks/googleForm?workflowId=${workflowId}`;
 
