@@ -80,9 +80,9 @@ export const SlackExecutor: NodeExecutor<SlackData> = async ({
 
       return {
         ...context,
-        [data.variableName]: {
+        [data.variableName]: [{
           text: messageContent,
-        },
+        }],
       };
     });
 

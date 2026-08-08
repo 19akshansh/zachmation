@@ -109,7 +109,7 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
         .json<{ course: unknown }>();
     });
 
-    const result = { ...context, [data.variableName!]: response.course };
+    const result = { ...context, [data.variableName!]: [response.course] };
 
     await step.realtime.publish(`node-success-${nodeId}`, zachcourseChannel.status, {
       nodeId, status: "success",

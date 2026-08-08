@@ -8,6 +8,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { PRO_NODES } from "@/config/proNodes";
 import { withZachCourseStep } from "./steps/zachcourse";
+import type { WorkflowContext } from "@/features/nodes/executionsNodes/types";
 
 export const executeWorkflow = inngest.createFunction(
   {
@@ -99,7 +100,10 @@ export const executeWorkflow = inngest.createFunction(
       return workflow.userId;
     });
 
-    let context = data.initialData || {};
+    const rawInitialData = data.initialData || {};
+    let context: WorkflowContext = Object.fromEntries(
+      Object.entries(rawInitialData).map(([key, value]) => [key, [value]]),
+    );
     const workflowStep = withZachCourseStep(step);
 
     for (const node of sortedNodes) {

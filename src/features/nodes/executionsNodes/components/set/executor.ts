@@ -33,13 +33,13 @@ export const SetExecutor: NodeExecutor<SetData> = async ({
 
   try {
     const result = await step.run(`set-${nodeId}`, async () => {
-      const output: Record<string, unknown> = {};
+      const output: Record<string, unknown[]> = {};
 
       for (const field of data.fields) {
         const key = field.key?.trim();
         if (!key) continue;
 
-        output[key] = Handlebars.compile(field.valueTemplate ?? "")(context);
+        output[key] = [Handlebars.compile(field.valueTemplate ?? "")(context)];
       }
 
       return { ...context, ...output };

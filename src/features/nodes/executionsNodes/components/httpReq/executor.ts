@@ -110,7 +110,7 @@ export const HTTPReqTriggerExecutor: NodeExecutor<HTTPReqTriggerData> = async ({
 
         return {
           ...context,
-          [data.variableName]: responsePayload,
+          [data.variableName]: [responsePayload],
         };
       },
     );

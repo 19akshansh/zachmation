@@ -151,7 +151,7 @@ export const BlackForestExecutor: NodeExecutor<BlackForestData> = async ({
 
     return {
       ...context,
-      [data.variableName]: imageUrl,
+      [data.variableName]: [imageUrl],
     };
   } catch (error: any) {
     await step.realtime.publish(

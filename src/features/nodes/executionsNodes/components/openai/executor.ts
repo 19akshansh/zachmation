@@ -126,9 +126,9 @@ export const openAIExecutor: NodeExecutor<OpenAIData> = async ({
 
     return {
       ...context,
-      [data.variableName]: {
+      [data.variableName]: [{
         text,
-      },
+      }],
     };
   } catch (error) {
     await step.realtime.publish(
