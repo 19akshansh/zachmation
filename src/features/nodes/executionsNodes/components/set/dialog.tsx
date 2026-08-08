@@ -97,7 +97,7 @@ export const SetDialog = ({
               <FormLabel>Fields</FormLabel>
               <FormDescription>
                 Values can reference existing context, for example{" "}
-                {"{{webhook.name}}"}.
+                {"{{webhook.[0].name}}"}.
               </FormDescription>
 
               {fields.map((item, index) => (
@@ -124,7 +124,7 @@ export const SetDialog = ({
                     render={({ field }) => (
                       <FormItem>
                         <FormControl>
-                          <Input placeholder="{{webhook.name}}" {...field} />
+                          <Input placeholder="{{webhook.[0].name}}" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

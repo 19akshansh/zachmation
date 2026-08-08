@@ -66,9 +66,9 @@ export const WebhookDialogTrigger = ({ open, onOpenChange }: Props) => {
           <div className="rounded-lg bg-muted p-4 space-y-2">
             <h4 className="font-medium text-sm">Payload variables</h4>
             <p className="text-sm text-muted-foreground">
-              The JSON payload is available under <code>{"{{webhook}}"}</code>.
+              The JSON payload is available under <code>{"{{webhook.[0]}}"}</code>.
               For example, a payload with a name field can be referenced as{" "}
-              <code>{"{{webhook.name}}"}</code>.
+              <code>{"{{webhook.[0].name}}"}</code>.
             </p>
           </div>
         </div>

@@ -124,7 +124,7 @@ export const TelegramTriggerDialog = ({
           <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
             Incoming updates are available under{" "}
             <code className="rounded bg-background px-1 py-0.5">
-              {"{{telegram}}"}
+              {"{{telegram.[0]}}"}
             </code>
             .
           </div>

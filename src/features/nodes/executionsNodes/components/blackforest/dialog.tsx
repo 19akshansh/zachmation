@@ -141,7 +141,7 @@ export const BlackForestDialog = ({
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}}}`}
+                    {`{{${watchVariableName}.[0]}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

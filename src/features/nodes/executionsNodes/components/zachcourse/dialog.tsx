@@ -60,7 +60,12 @@ const TONE_OPTIONS = [
 
 const LANGUAGE_VALUES = ["en", "hi", "es", "fr", "de", "ja"] as const;
 const EXPERIENCE_VALUES = ["beginner", "intermediate", "advanced"] as const;
-const TONE_VALUES = ["friendly", "professional", "encouraging", "concise"] as const;
+const TONE_VALUES = [
+  "friendly",
+  "professional",
+  "encouraging",
+  "concise",
+] as const;
 
 const formSchema = z.object({
   variableName: z
@@ -146,7 +151,8 @@ export const ZachCourseDialog = ({
         <DialogHeader>
           <DialogTitle>ZachCourse</DialogTitle>
           <DialogDescription>
-            Generate a personalized course using ZachCourse and your Gemini API key.
+            Generate a personalized course using ZachCourse and your Gemini API
+            key.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -243,7 +249,7 @@ export const ZachCourseDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="{{set.topic}}"
+                      placeholder="{{set.[0].topic}}"
                       className="font-mono"
                     />
                   </FormControl>
@@ -263,7 +269,7 @@ export const ZachCourseDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="{{webhook.url}}"
+                      placeholder="{{webhook.[0].url}}"
                       className="font-mono"
                     />
                   </FormControl>
@@ -280,7 +286,7 @@ export const ZachCourseDialog = ({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="{{set.content}}"
+                      placeholder="{{set.[0].content}}"
                       className="min-h-[100px] font-mono text-sm"
                     />
                   </FormControl>
@@ -382,7 +388,7 @@ export const ZachCourseDialog = ({
                   <FormControl>
                     <Textarea
                       {...field}
-                      placeholder="{{set.documentContext}}"
+                      placeholder="{{set.[0].documentContext}}"
                       className="font-mono text-sm"
                     />
                   </FormControl>
@@ -415,7 +421,8 @@ export const ZachCourseDialog = ({
               )}
             />
             <p className="text-xs text-muted-foreground">
-              ZachCourse is deployed at <span className="font-mono">{ZACHCOURSE_BASE_URL}</span>.
+              ZachCourse is deployed at{" "}
+              <span className="font-mono">{ZACHCOURSE_BASE_URL}</span>.
             </p>
             <DialogFooter>
               <Button type="submit">Save</Button>

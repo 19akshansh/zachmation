@@ -80,7 +80,7 @@ export const DiscordTriggerDialog = ({
 
           <p className="text-sm text-muted-foreground">
             Verified interaction payloads are available under {" "}
-            <code className="rounded bg-muted px-1 py-0.5">{"{{discord}}"}</code>.
+            <code className="rounded bg-muted px-1 py-0.5">{"{{discord.[0]}}"}</code>.
           </p>
         </div>
       </DialogContent>

@@ -107,7 +107,7 @@ export const SlackDialog = ({
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.text}}`}
+                    {`{{${watchVariableName}.[0].text}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -146,14 +146,14 @@ export const SlackDialog = ({
                   <FormLabel>Message Content</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Hello there!! {{myGemini.text}}"
+                      placeholder="Hello there!! {{myGemini.[0].text}}"
                       className="min-h-[120px] font-mono text-sm"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    This message is sent. Use {"{{variables}}"} for simple
-                    values. or {"{{json variable}}"} to stringify objects
+                    This message is sent. Use {"{{variables.[0]}}"} for simple
+                    values. or {"{{json variable.[0]}}"} to stringify objects
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
