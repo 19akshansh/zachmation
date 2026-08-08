@@ -9,7 +9,6 @@ import ky from "ky";
 type ZachurlData = {
   variableName?: string;
   credentialId?: string;
-  baseUrl?: string;
   originalUrl?: string;
   customSlug?: string;
 };
@@ -26,9 +25,9 @@ export const ZachurlExecutor: NodeExecutor<ZachurlData> = async ({
     status: "loading",
   });
 
-  if (!data.credentialId || !data.variableName || !data.originalUrl || !data.baseUrl) {
+  if (!data.credentialId || !data.variableName || !data.originalUrl) {
     throw new NonRetriableError(
-      "ZACHURL: Missing credential, variable name, base URL, or original URL",
+      "ZACHURL: Missing credential, variable name, or original URL",
     );
   }
 
@@ -50,7 +49,7 @@ export const ZachurlExecutor: NodeExecutor<ZachurlData> = async ({
       }
 
       const apiKey = decrypt(credential.value);
-      const baseUrl = data.baseUrl!.replace(/\/$/, "");
+      const baseUrl = "https://zachurl.vercel.app";
 
       const response = await ky
         .post(`${baseUrl}/api/v1/urls`, {

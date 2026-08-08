@@ -21,7 +21,6 @@ import { z } from "zod";
 const schema = z.object({
   variableName: z.string().min(1).regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, "Invalid variable name"),
   credentialId: z.string().min(1, "Select a Zachurl credential"),
-  baseUrl: z.url("Enter a valid Zachurl base URL"),
   originalUrl: z.string().min(1, "Enter a URL or template"),
   customSlug: z.string(),
 });
@@ -42,7 +41,6 @@ export const ZachurlDialog = ({
     defaultValues: {
       variableName: defaultValues.variableName || "zachurl",
       credentialId: defaultValues.credentialId || "",
-      baseUrl: defaultValues.baseUrl || "",
       originalUrl: defaultValues.originalUrl || "",
       customSlug: defaultValues.customSlug || "",
     },
@@ -52,7 +50,6 @@ export const ZachurlDialog = ({
     if (open) form.reset({
       variableName: defaultValues.variableName || "zachurl",
       credentialId: defaultValues.credentialId || "",
-      baseUrl: defaultValues.baseUrl || "",
       originalUrl: defaultValues.originalUrl || "",
       customSlug: defaultValues.customSlug || "",
     });
@@ -77,10 +74,6 @@ export const ZachurlDialog = ({
                   <SelectContent>{credentials.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
                 </Select><FormMessage />
               </FormItem>
-            )} />
-            <FormField control={form.control} name="baseUrl" render={({ field }) => (
-              <FormItem><FormLabel>Zachurl Base URL</FormLabel><FormControl><Input {...field} placeholder="https://your-zachurl.app" /></FormControl>
-                <FormDescription>The deployed Zachurl app URL.</FormDescription><FormMessage /></FormItem>
             )} />
             <FormField control={form.control} name="originalUrl" render={({ field }) => (
               <FormItem><FormLabel>Original URL</FormLabel><FormControl><Input {...field} className="font-mono" placeholder="{{webhook.url}}" /></FormControl>
