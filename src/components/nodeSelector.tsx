@@ -2,8 +2,14 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { GlobeIcon,
-  LinkIcon, MousePointerIcon, PencilLineIcon, WebhookIcon } from "lucide-react";
+import {
+  GlobeIcon,
+  GraduationCap,
+  LinkIcon,
+  MousePointerIcon,
+  PencilLineIcon,
+  WebhookIcon,
+} from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
@@ -118,6 +124,13 @@ const executionNodes: NodeTypeOption[] = [
     label: "Zachurl",
     description: "Create a short URL with Zachurl",
     icon: LinkIcon,
+    pro: false,
+  },
+  {
+    type: NodeType.ZACHCOURSE,
+    label: "ZachCourse",
+    description: "Generate a personalized course with ZachCourse",
+    icon: GraduationCap,
     pro: false,
   },
   {
