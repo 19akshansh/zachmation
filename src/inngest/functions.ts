@@ -4,11 +4,210 @@ import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegistry";
-import { Prisma } from "@/generated/prisma/client";
+import { Connection, Node, Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { PRO_NODES } from "@/config/proNodes";
 import { withZachCourseStep } from "./steps/zachcourse";
-import type { WorkflowContext } from "@/features/nodes/executionsNodes/types";
+import type {
+  WorkflowContext,
+  WorkflowStepTools,
+} from "@/features/nodes/executionsNodes/types";
+
+type ExecutableNode = {
+  id: string;
+  name: string;
+  workflowId: string;
+  type: Node["type"];
+  position: Node["position"];
+  data: Node["data"];
+  credentialId: string | null;
+};
+
+type ExecutableConnection = {
+  id: string;
+  workflowId: string;
+  fromNodeId: string;
+  toNodeId: string;
+  fromOutput: string;
+  toInput: string;
+};
+
+type RunNodeSequenceParams = {
+  nodes: ExecutableNode[];
+  connections: ExecutableConnection[];
+  context: WorkflowContext;
+  userId: string;
+  step: WorkflowStepTools;
+  stepScope?: string;
+};
+
+const scopedStep = (
+  step: WorkflowStepTools,
+  scope: string,
+): WorkflowStepTools => {
+  return new Proxy(step, {
+    get(target, property, receiver) {
+      if (property === "run") {
+        return ((name: string, handler: () => unknown) =>
+          target.run(`${scope}:${name}`, handler)) as WorkflowStepTools["run"];
+      }
+
+      return Reflect.get(target, property, receiver);
+    },
+  }) as WorkflowStepTools;
+};
+
+const getReachableNodes = (
+  startNodeIds: string[],
+  connections: ExecutableConnection[],
+): Set<string> => {
+  const adjacency = new Map<string, string[]>();
+
+  for (const connection of connections) {
+    const current = adjacency.get(connection.fromNodeId) || [];
+    current.push(connection.toNodeId);
+    adjacency.set(connection.fromNodeId, current);
+  }
+
+  const reachable = new Set<string>();
+  const queue = [...startNodeIds];
+
+  while (queue.length) {
+    const nodeId = queue.shift()!;
+    if (reachable.has(nodeId)) continue;
+
+    reachable.add(nodeId);
+
+    for (const next of adjacency.get(nodeId) || []) {
+      if (!reachable.has(next)) {
+        queue.push(next);
+      }
+    }
+  }
+
+  return reachable;
+};
+
+const runNodeSequence = async ({
+  nodes,
+  connections,
+  context: initialContext,
+  userId,
+  step,
+  stepScope = "workflow",
+}: RunNodeSequenceParams): Promise<WorkflowContext> => {
+  let context = initialContext;
+  const nodeMap = new Map(nodes.map((node) => [node.id, node]));
+  const sortedIds = nodes.map((node) => node.id);
+  const outgoing = new Map<string, ExecutableConnection[]>();
+
+  for (const connection of connections) {
+    const current = outgoing.get(connection.fromNodeId) || [];
+    current.push(connection);
+    outgoing.set(connection.fromNodeId, current);
+  }
+
+  const skipped = new Set<string>();
+
+  for (const nodeId of sortedIds) {
+    if (skipped.has(nodeId)) continue;
+
+    const node = nodeMap.get(nodeId);
+    if (!node) continue;
+
+    if (node.type === NodeType.LOOP) {
+      const loopData = node.data as {
+        sourceKey?: string;
+        variableName?: string;
+      };
+
+      const sourceKey = loopData.sourceKey?.trim();
+      const variableName = loopData.variableName?.trim();
+
+      if (!sourceKey || !variableName) {
+        throw new NonRetriableError(
+          "LOOP: Source array and result variable are required",
+        );
+      }
+
+      const source = context[sourceKey];
+
+      if (!Array.isArray(source)) {
+        throw new NonRetriableError(
+          `LOOP: Context key "${sourceKey}" is not an array`,
+        );
+      }
+
+      const loopConnections = (outgoing.get(node.id) || []).filter(
+        (connection) => connection.fromOutput === "loop",
+      );
+
+      const doneConnections = (outgoing.get(node.id) || []).filter(
+        (connection) => connection.fromOutput === "done",
+      );
+
+      const loopReachable = getReachableNodes(
+        loopConnections.map((connection) => connection.toNodeId),
+        connections,
+      );
+
+      const doneReachable = getReachableNodes(
+        doneConnections.map((connection) => connection.toNodeId),
+        connections,
+      );
+
+      const bodyIds = new Set(
+        [...loopReachable].filter(
+          (id) => !doneReachable.has(id) && id !== node.id,
+        ),
+      );
+
+      for (const bodyId of bodyIds) {
+        skipped.add(bodyId);
+      }
+
+      const bodyNodes = nodes.filter((bodyNode) => bodyIds.has(bodyNode.id));
+      const results: unknown[] = [];
+
+      for (let index = 0; index < source.length; index++) {
+        const iterationContext: WorkflowContext = {
+          ...context,
+          $item: [source[index]],
+        };
+
+        const iterationResult = await runNodeSequence({
+          nodes: bodyNodes,
+          connections,
+          context: iterationContext,
+          userId,
+          step: scopedStep(step, `${stepScope}:loop:${node.id}:${index}`),
+          stepScope: `${stepScope}:loop:${node.id}:${index}`,
+        });
+
+        results.push(iterationResult);
+      }
+
+      context = {
+        ...context,
+        [variableName]: results,
+      };
+
+      continue;
+    }
+
+    const executor = getExecutor(node.type as NodeType);
+
+    context = await executor({
+      data: node.data as Record<string, unknown>,
+      nodeId: node.id,
+      userId,
+      context,
+      step: stepScope === "workflow" ? step : scopedStep(step, stepScope),
+    });
+  }
+
+  return context;
+};
 
 export const executeWorkflow = inngest.createFunction(
   {
@@ -33,6 +232,7 @@ export const executeWorkflow = inngest.createFunction(
 
   async ({ event, step }) => {
     const inngestEventId = event.id;
+
     const data = event.data as {
       workflowId: string;
       initialData?: Record<string, unknown>;
@@ -40,7 +240,7 @@ export const executeWorkflow = inngest.createFunction(
 
     const workflowId = data.workflowId;
 
-    if (!inngestEventId || !data.workflowId) {
+    if (!inngestEventId || !workflowId) {
       throw new NonRetriableError("Event ID or Workflow ID is missing");
     }
 
@@ -53,7 +253,7 @@ export const executeWorkflow = inngest.createFunction(
       });
     });
 
-    const sortedNodes = await step.run("prepareWorkflow", async () => {
+    const preparedWorkflow = await step.run("prepareWorkflow", async () => {
       const workflow = await prisma.workflow.findUniqueOrThrow({
         where: {
           id: workflowId,
@@ -69,7 +269,9 @@ export const executeWorkflow = inngest.createFunction(
       );
 
       if (containsProNodes) {
-        const subscriptionStatus = await getSubscriptionStatus(workflow.userId);
+        const subscriptionStatus = await getSubscriptionStatus(
+          workflow.userId,
+        );
 
         if (subscriptionStatus === "UNKNOWN") {
           throw new NonRetriableError(
@@ -84,7 +286,35 @@ export const executeWorkflow = inngest.createFunction(
         }
       }
 
-      return topologicalSort(workflow.nodes, workflow.connections);
+      const sortedNodes = topologicalSort(
+        workflow.nodes,
+        workflow.connections,
+      );
+
+      const executableNodes: ExecutableNode[] = sortedNodes.map((node) => ({
+        id: node.id,
+        name: node.name,
+        workflowId: node.workflowId,
+        type: node.type,
+        position: node.position,
+        data: node.data,
+        credentialId: node.credentialId,
+      }));
+
+      const executableConnections: ExecutableConnection[] =
+        workflow.connections.map((connection) => ({
+          id: connection.id,
+          workflowId: connection.workflowId,
+          fromNodeId: connection.fromNodeId,
+          toNodeId: connection.toNodeId,
+          fromOutput: connection.fromOutput,
+          toInput: connection.toInput,
+        }));
+
+      return {
+        nodes: executableNodes,
+        connections: executableConnections,
+      };
     });
 
     const userId = await step.run("getUserId", async () => {
@@ -101,22 +331,20 @@ export const executeWorkflow = inngest.createFunction(
     });
 
     const rawInitialData = data.initialData || {};
-    let context: WorkflowContext = Object.fromEntries(
+
+    const context: WorkflowContext = Object.fromEntries(
       Object.entries(rawInitialData).map(([key, value]) => [key, [value]]),
     );
+
     const workflowStep = withZachCourseStep(step);
 
-    for (const node of sortedNodes) {
-      const executor = getExecutor(node.type as NodeType);
-
-      context = await executor({
-        data: node.data as Record<string, unknown>,
-        nodeId: node.id,
-        userId,
-        context,
-        step: workflowStep,
-      });
-    }
+    const result = await runNodeSequence({
+      nodes: preparedWorkflow.nodes,
+      connections: preparedWorkflow.connections,
+      context,
+      userId,
+      step: workflowStep,
+    });
 
     await step.run("updateExecution", async () => {
       return prisma.execution.update({
@@ -127,14 +355,14 @@ export const executeWorkflow = inngest.createFunction(
         data: {
           status: ExecutionStatus.SUCCESS,
           completedAt: new Date(),
-          output: context as Prisma.InputJsonValue,
+          output: result as Prisma.InputJsonValue,
         },
       });
     });
 
     return {
       workflowId,
-      result: context,
+      result,
     };
   },
 );

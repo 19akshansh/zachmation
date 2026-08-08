@@ -16,4 +16,5 @@ export const CHANNELS = {
   ANTHROPIC: "anthropicExec",
   DISCORD: "discordExec",
   SLACK: "slackExec",
+  LOOP: "loopExec",
 } as const;

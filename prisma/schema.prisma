@@ -127,6 +127,7 @@ enum NodeType {
   DISCORD_SEND
   SLACK
   BLACK_LABS
+  LOOP
 }
 
 model Node {

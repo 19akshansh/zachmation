@@ -8,6 +8,7 @@ import {
   LinkIcon,
   MousePointerIcon,
   PencilLineIcon,
+  Repeat2Icon,
   WebhookIcon,
 } from "lucide-react";
 import { useCallback } from "react";
@@ -131,6 +132,13 @@ const executionNodes: NodeTypeOption[] = [
     label: "ZachCourse",
     description: "Generate a personalized course with ZachCourse",
     icon: "/zachcourse.svg",
+    pro: false,
+  },
+  {
+    type: NodeType.LOOP,
+    label: "Loop",
+    description: "Run a branch once for each item in an array",
+    icon: Repeat2Icon,
     pro: false,
   },
   {
