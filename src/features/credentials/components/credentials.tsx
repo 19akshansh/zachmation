@@ -133,6 +133,9 @@ const credentialLogos: Record<string, string> = {
   [CredentialType.ANTHROPIC]: "/anthropic.svg",
   [CredentialType.HUGGING_FACE]: "/huggingface.svg",
   [CredentialType.IMG_BB]: "/imgbb.png",
+  [CredentialType.TELEGRAM_BOT]: "/telegram.svg",
+  [CredentialType.ZACHURL]: "/zachurl.svg",
+  [CredentialType.ZACHCOURSE]: "/zachcourse.svg",
 };
 
 type CredentialListItem = ReturnType<
