@@ -3,6 +3,7 @@ import { inngest } from "@/inngest/client";
 import { executeWorkflow } from "@/inngest/functions";
 
 export const runtime = "nodejs";
+export const maxDuration = 300;
 
 export const { GET, POST, PUT } = serve({
   client: inngest,

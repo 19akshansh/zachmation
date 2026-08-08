@@ -53,39 +53,47 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
   const ZACHCOURSE_BASE_URL = "https://zachcourse.ai.studio";
 
   try {
-    const result = await step.run(`zachcourse-${nodeId}`, async () => {
-      const credential = await prisma.credential.findFirst({
-        where: { id: data.credentialId, userId, type: "ZACHCOURSE" },
-      });
-      const geminiCredential = await prisma.credential.findFirst({
-        where: {
-          id: data.geminiCredentialId,
-          userId,
-          type: "GEMINI",
-        },
-      });
+    const { apiKey, geminiApiKey } = await step.run(
+      `zachcourse-credentials-${nodeId}`,
+      async () => {
+        const credential = await prisma.credential.findFirst({
+          where: { id: data.credentialId, userId, type: "ZACHCOURSE" },
+        });
+        const geminiCredential = await prisma.credential.findFirst({
+          where: {
+            id: data.geminiCredentialId,
+            userId,
+            type: "GEMINI",
+          },
+        });
 
-      if (!credential) {
-        throw new NonRetriableError(
-          "ZACHCOURSE: Credential not found or not owned by this user",
-        );
-      }
+        if (!credential) {
+          throw new NonRetriableError(
+            "ZACHCOURSE: Credential not found or not owned by this user",
+          );
+        }
 
-      if (!geminiCredential) {
-        throw new NonRetriableError(
-          "ZACHCOURSE: Gemini credential not found or not owned by this user",
-        );
-      }
+        if (!geminiCredential) {
+          throw new NonRetriableError(
+            "ZACHCOURSE: Gemini credential not found or not owned by this user",
+          );
+        }
 
-      const apiKey = decrypt(credential.value);
-      const geminiApiKey = decrypt(geminiCredential.value);
+        return {
+          apiKey: decrypt(credential.value),
+          geminiApiKey: decrypt(geminiCredential.value),
+        };
+      },
+    );
 
-      const response = await ky
+    const response = await step.zachcourse(`zachcourse-generate-${nodeId}`, async () => {
+      return ky
         .post(`${ZACHCOURSE_BASE_URL}/api/v1/courses/generate`, {
           headers: {
             "x-api-key": apiKey,
             "x-user-key": geminiApiKey,
           },
+          timeout: false,
           json: {
             topic,
             ...(sourceUrl ? { sourceUrl } : {}),
@@ -99,9 +107,9 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
           },
         })
         .json<{ course: unknown }>();
-
-      return { ...context, [data.variableName!]: response.course };
     });
+
+    const result = { ...context, [data.variableName!]: response.course };
 
     await step.realtime.publish(`node-success-${nodeId}`, zachcourseChannel.status, {
       nodeId, status: "success",

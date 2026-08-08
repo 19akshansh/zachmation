@@ -7,6 +7,7 @@ import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegist
 import { Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { PRO_NODES } from "@/config/proNodes";
+import { withZachCourseStep } from "./steps/zachcourse";
 
 export const executeWorkflow = inngest.createFunction(
   {
@@ -99,6 +100,7 @@ export const executeWorkflow = inngest.createFunction(
     });
 
     let context = data.initialData || {};
+    const workflowStep = withZachCourseStep(step);
 
     for (const node of sortedNodes) {
       const executor = getExecutor(node.type as NodeType);
@@ -108,7 +110,7 @@ export const executeWorkflow = inngest.createFunction(
         nodeId: node.id,
         userId,
         context,
-        step,
+        step: workflowStep,
       });
     }
 
