@@ -34,6 +34,34 @@ import {
 import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
 import { CredentialType } from "@/generated/prisma/enums";
 
+const ZACHCOURSE_BASE_URL = "https://zachcourse.ai.studio";
+
+const LANGUAGE_OPTIONS = [
+  { value: "en", label: "English" },
+  { value: "hi", label: "Hindi" },
+  { value: "es", label: "Spanish" },
+  { value: "fr", label: "French" },
+  { value: "de", label: "German" },
+  { value: "ja", label: "Japanese" },
+] as const;
+
+const EXPERIENCE_OPTIONS = [
+  { value: "beginner", label: "Beginner" },
+  { value: "intermediate", label: "Intermediate" },
+  { value: "advanced", label: "Advanced" },
+] as const;
+
+const TONE_OPTIONS = [
+  { value: "friendly", label: "Friendly" },
+  { value: "professional", label: "Professional" },
+  { value: "encouraging", label: "Encouraging" },
+  { value: "concise", label: "Concise" },
+] as const;
+
+const LANGUAGE_VALUES = ["en", "hi", "es", "fr", "de", "ja"] as const;
+const EXPERIENCE_VALUES = ["beginner", "intermediate", "advanced"] as const;
+const TONE_VALUES = ["friendly", "professional", "encouraging", "concise"] as const;
+
 const formSchema = z.object({
   variableName: z
     .string()
@@ -42,17 +70,17 @@ const formSchema = z.object({
       /^[A-Za-z_$][A-Za-z0-9_$]*$/,
       "Variable name must start with a letter or underscore and contain only letters, numbers, and underscores.",
     ),
-  credentialId: z.string().min(1, "Credential is required."),
-  baseUrl: z.url("Enter a valid ZachCourse base URL."),
+  credentialId: z.string().min(1, "ZachCourse credential is required."),
+  geminiCredentialId: z.string().min(1, "Gemini API key is required."),
   topic: z.string().min(1, "Topic is required."),
   sourceUrl: z.string().optional(),
   textContent: z.string().optional(),
   documentContext: z.string().optional(),
-  language: z.string().min(1).default("en"),
-  experienceLevel: z.string().min(1).default("beginner"),
+  language: z.enum(LANGUAGE_VALUES).default("en"),
+  experienceLevel: z.enum(EXPERIENCE_VALUES).default("beginner"),
   backgroundContext: z.string().optional(),
   weeklyHours: z.number().int().min(1).max(168).default(5),
-  tone: z.string().min(1).default("friendly"),
+  tone: z.enum(TONE_VALUES).default("friendly"),
 });
 
 export type ZachCourseFormValues = z.output<typeof formSchema>;
@@ -73,13 +101,15 @@ export const ZachCourseDialog = ({
 }: Props) => {
   const { data: credentials = [], isLoading: credentialsLoading } =
     useCredentialsByType(CredentialType.ZACHCOURSE);
+  const { data: geminiCredentials = [], isLoading: geminiCredentialsLoading } =
+    useCredentialsByType(CredentialType.GEMINI);
 
   const form = useForm<ZachCourseFormInput, unknown, ZachCourseFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       variableName: defaultValues.variableName || "zachCourse",
       credentialId: defaultValues.credentialId || "",
-      baseUrl: defaultValues.baseUrl || "",
+      geminiCredentialId: defaultValues.geminiCredentialId || "",
       topic: defaultValues.topic || "",
       sourceUrl: defaultValues.sourceUrl || "",
       textContent: defaultValues.textContent || "",
@@ -97,7 +127,7 @@ export const ZachCourseDialog = ({
       form.reset({
         variableName: defaultValues.variableName || "zachCourse",
         credentialId: defaultValues.credentialId || "",
-        baseUrl: defaultValues.baseUrl || "",
+        geminiCredentialId: defaultValues.geminiCredentialId || "",
         topic: defaultValues.topic || "",
         sourceUrl: defaultValues.sourceUrl || "",
         textContent: defaultValues.textContent || "",
@@ -116,7 +146,7 @@ export const ZachCourseDialog = ({
         <DialogHeader>
           <DialogTitle>ZachCourse</DialogTitle>
           <DialogDescription>
-            Generate a personalized course using your ZachCourse API key.
+            Generate a personalized course using ZachCourse and your Gemini API key.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -173,18 +203,32 @@ export const ZachCourseDialog = ({
             />
             <FormField
               control={form.control}
-              name="baseUrl"
+              name="geminiCredentialId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>ZachCourse Base URL</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="https://your-zachcourse.app"
-                    />
-                  </FormControl>
+                  <FormLabel>Gemini API Key</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={
+                      geminiCredentialsLoading || !geminiCredentials.length
+                    }
+                  >
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select a Gemini credential" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {geminiCredentials.map((credential) => (
+                        <SelectItem key={credential.id} value={credential.id}>
+                          {credential.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormDescription>
-                    The deployed ZachCourse application URL.
+                    Used by ZachCourse to generate the course with Gemini.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -251,9 +295,20 @@ export const ZachCourseDialog = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Language</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="en" />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {LANGUAGE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -264,9 +319,20 @@ export const ZachCourseDialog = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Experience</FormLabel>
-                    <FormControl>
-                      <Input {...field} placeholder="beginner" />
-                    </FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select experience" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {EXPERIENCE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -330,13 +396,27 @@ export const ZachCourseDialog = ({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tone</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="friendly" />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select tone" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {TONE_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            <p className="text-xs text-muted-foreground">
+              ZachCourse is deployed at <span className="font-mono">{ZACHCOURSE_BASE_URL}</span>.
+            </p>
             <DialogFooter>
               <Button type="submit">Save</Button>
             </DialogFooter>

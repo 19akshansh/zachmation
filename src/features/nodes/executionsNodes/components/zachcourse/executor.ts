@@ -9,7 +9,7 @@ import ky from "ky";
 type ZachCourseData = {
   variableName?: string;
   credentialId?: string;
-  baseUrl?: string;
+  geminiCredentialId?: string;
   topic?: string;
   sourceUrl?: string;
   textContent?: string;
@@ -28,9 +28,14 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
     nodeId, status: "loading",
   });
 
-  if (!data.credentialId || !data.variableName || !data.baseUrl || !data.topic) {
+  if (
+    !data.credentialId ||
+    !data.geminiCredentialId ||
+    !data.variableName ||
+    !data.topic
+  ) {
     throw new NonRetriableError(
-      "ZACHCOURSE: Missing credential, variable name, base URL, or topic",
+      "ZACHCOURSE: Missing ZachCourse credential, Gemini API key, variable name, or topic",
     );
   }
 
@@ -45,11 +50,19 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
   const experienceLevel = compile(data.experienceLevel) || "beginner";
   const backgroundContext = compile(data.backgroundContext) || "";
   const tone = compile(data.tone) || "friendly";
+  const ZACHCOURSE_BASE_URL = "https://zachcourse.ai.studio";
 
   try {
     const result = await step.run(`zachcourse-${nodeId}`, async () => {
       const credential = await prisma.credential.findFirst({
         where: { id: data.credentialId, userId, type: "ZACHCOURSE" },
+      });
+      const geminiCredential = await prisma.credential.findFirst({
+        where: {
+          id: data.geminiCredentialId,
+          userId,
+          type: "GEMINI",
+        },
       });
 
       if (!credential) {
@@ -58,12 +71,21 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
         );
       }
 
+      if (!geminiCredential) {
+        throw new NonRetriableError(
+          "ZACHCOURSE: Gemini credential not found or not owned by this user",
+        );
+      }
+
       const apiKey = decrypt(credential.value);
-      const baseUrl = data.baseUrl!.replace(/\/$/, "");
+      const geminiApiKey = decrypt(geminiCredential.value);
 
       const response = await ky
-        .post(`${baseUrl}/api/v1/courses/generate`, {
-          headers: { "x-api-key": apiKey },
+        .post(`${ZACHCOURSE_BASE_URL}/api/v1/courses/generate`, {
+          headers: {
+            "x-api-key": apiKey,
+            "x-user-key": geminiApiKey,
+          },
           json: {
             topic,
             ...(sourceUrl ? { sourceUrl } : {}),
