@@ -123,14 +123,14 @@ const executionNodes: NodeTypeOption[] = [
     type: NodeType.ZACHURL,
     label: "Zachurl",
     description: "Create a short URL with Zachurl",
-    icon: LinkIcon,
+    icon: "/zachurl.svg",
     pro: false,
   },
   {
     type: NodeType.ZACHCOURSE,
     label: "ZachCourse",
     description: "Generate a personalized course with ZachCourse",
-    icon: GraduationCap,
+    icon: "/zachcourse.svg",
     pro: false,
   },
   {
