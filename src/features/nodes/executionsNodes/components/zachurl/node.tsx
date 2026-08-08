@@ -33,7 +33,7 @@ export const ZachurlNode = (props: NodeProps<ZachurlNodeType>) => {
         {...props}
         id={props.id}
         status={props.data.status || "initial"}
-        icon={LinkIcon}
+        icon={"/zachurl.svg"}
         name="Zachurl"
         description="Create a short URL"
         onSettings={() => setOpen(true)}

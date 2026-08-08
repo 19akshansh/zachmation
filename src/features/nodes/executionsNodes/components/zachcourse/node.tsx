@@ -44,7 +44,7 @@ export const ZachCourseNode = (props: NodeProps<ZachCourseNodeType>) => {
         {...props}
         id={props.id}
         status={props.data.status || "initial"}
-        icon={GraduationCap}
+        icon={"/zachcourse.svg"}
         name="ZachCourse"
         description={
           props.data.topic
