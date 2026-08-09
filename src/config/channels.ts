@@ -18,4 +18,5 @@ export const CHANNELS = {
   SLACK: "slackExec",
   LOOP: "loopExec",
   CONDITIONAL: "conditionalExec",
+  MERGE: "mergeExec",
 } as const;

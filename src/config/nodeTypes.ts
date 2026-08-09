@@ -1,5 +1,6 @@
 import {
   GitBranchIcon,
+  GitMergeIcon,
   GlobeIcon,
   MousePointerIcon,
   PencilLineIcon,
@@ -102,6 +103,14 @@ export const executionNodes: NodeTypeOption[] = [
     label: "If / Switch",
     description: "Route execution through a conditional branch",
     icon: GitBranchIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.MERGE,
+    label: "Merge",
+    description: "Combine outputs from multiple branches",
+    icon: GitMergeIcon,
     pro: false,
     pinnable: false,
   },

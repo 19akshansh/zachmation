@@ -19,50 +19,64 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Repeat2Icon } from "lucide-react";
+import { GitMergeIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  sourceKey: z.string().trim().min(1, "Source array is required."),
   variableName: z.string().trim().min(1, "Result variable is required."),
+  input1Key: z.string().trim().min(1, "First input key is required."),
+  input2Key: z.string().trim().min(1, "Second input key is required."),
+  mode: z.enum(["append"]),
 });
 
-export type LoopFormValues = z.infer<typeof formSchema>;
+export type MergeFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (values: LoopFormValues) => void;
-  defaultValues?: Partial<LoopFormValues>;
+  onSubmit: (values: MergeFormValues) => void;
+  defaultValues?: Partial<MergeFormValues>;
 }
 
-export const LoopDialog = ({
+export const MergeDialog = ({
   open,
   onOpenChange,
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const form = useForm<LoopFormValues>({
+  const form = useForm<MergeFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      sourceKey: defaultValues.sourceKey ?? "",
-      variableName: defaultValues.variableName ?? "loopResults",
+      variableName: defaultValues.variableName ?? "merged",
+      input1Key: defaultValues.input1Key ?? "",
+      input2Key: defaultValues.input2Key ?? "",
+      mode: defaultValues.mode ?? "append",
     },
   });
+
   useEffect(() => {
     if (!open) return;
 
     form.reset({
-      sourceKey: defaultValues.sourceKey ?? "",
-      variableName: defaultValues.variableName ?? "loopResults",
+      variableName: defaultValues.variableName ?? "merged",
+      input1Key: defaultValues.input1Key ?? "",
+      input2Key: defaultValues.input2Key ?? "",
+      mode: defaultValues.mode ?? "append",
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  const handleSubmit = (values: LoopFormValues) => {
+  const handleSubmit = (values: MergeFormValues) => {
     onSubmit(values);
     onOpenChange(false);
   };
@@ -73,13 +87,13 @@ export const LoopDialog = ({
         <DialogHeader className="border-b bg-muted/30 px-6 py-5">
           <div className="flex items-start gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-              <Repeat2Icon className="size-5" />
+              <GitMergeIcon className="size-5" />
             </div>
             <div className="space-y-1">
-              <DialogTitle>Loop</DialogTitle>
+              <DialogTitle>Merge</DialogTitle>
               <DialogDescription>
-                Iterate over an array and run the connected loop branch once for
-                each item.
+                Combine outputs from two branches into one workflow context
+                array.
               </DialogDescription>
             </div>
           </div>
@@ -93,32 +107,74 @@ export const LoopDialog = ({
             <div className="rounded-xl border bg-muted/20 p-4">
               <p className="text-sm font-medium">How it works</p>
               <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                The source must already be an array in the workflow context.
-                Each iteration exposes the current item as{" "}
-                <code className="rounded bg-background px-1.5 py-0.5 font-mono text-[11px]">
-                  {`{{$item.[0]}}`}
-                </code>
-                .
+                Each input is a context key containing an array. If a branch was
+                skipped by an If / Switch node, its missing key is treated as an
+                empty array.
               </p>
             </div>
 
             <FormField
               control={form.control}
-              name="sourceKey"
+              name="input1Key"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Source Array</FormLabel>
+                  <FormLabel>Input 1</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="urls"
+                      placeholder="trueResults"
                       autoComplete="off"
                       className="font-mono"
                     />
                   </FormControl>
                   <FormDescription>
-                    Context key containing the array to iterate, for example{" "}
-                    <code>urls</code>.
+                    Context key produced by the first branch.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="input2Key"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Input 2</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="falseResults"
+                      autoComplete="off"
+                      className="font-mono"
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Context key produced by the second branch.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="mode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Merge Mode</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="append">Append arrays</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormDescription>
+                    Concatenates the available input arrays in order.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -134,13 +190,13 @@ export const LoopDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="shortenedUrls"
+                      placeholder="merged"
                       autoComplete="off"
                       className="font-mono"
                     />
                   </FormControl>
                   <FormDescription>
-                    Key where the collected iteration results are stored.
+                    Key where the combined array will be stored.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -155,7 +211,7 @@ export const LoopDialog = ({
               >
                 Cancel
               </Button>
-              <Button type="submit">Save Loop</Button>
+              <Button type="submit">Save Merge</Button>
             </DialogFooter>
           </form>
         </Form>

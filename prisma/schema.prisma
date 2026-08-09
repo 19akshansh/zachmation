@@ -133,6 +133,7 @@ enum NodeType {
   BLACK_LABS
   LOOP
   CONDITIONAL
+  MERGE
 }
 
 model Node {
