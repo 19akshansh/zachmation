@@ -67,39 +67,22 @@ export const LoopNode = (props: NodeProps<LoopNodeType>) => {
         <BaseNode
           status={props.data.status || "initial"}
           onDoubleClick={() => setDialogOpen(true)}
-          className="min-w-[220px] overflow-visible border-border/70 bg-card shadow-sm transition-shadow hover:shadow-md"
+          className="min-w-[180px] overflow-visible border-border/70 bg-card shadow-sm transition-shadow hover:shadow-md"
         >
-          <BaseNodeContent className="p-0">
-            <div className="flex items-center gap-3 border-b bg-muted/20 px-3 py-3">
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15">
-                <Repeat2Icon className="size-4.5" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold leading-none">Loop</p>
-                <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                  {sourceKey ? `over ${sourceKey}` : "Configure source array"}
-                </p>
-              </div>
+          <BaseNodeContent className="gap-0 p-0">
+            <div className="flex items-center gap-2 border-b bg-muted/20 px-2.5 py-2">
+              <Repeat2Icon className="size-3.5 shrink-0 text-primary" />
+              <span className="min-w-0 flex-1 truncate font-mono text-[11px] font-medium">
+                {sourceKey || "source"}
+              </span>
+              <span className="shrink-0 truncate font-mono text-[11px] text-muted-foreground">
+                → {variableName || "—"}
+              </span>
             </div>
 
-            <div className="space-y-2 px-3 py-3">
-              <div className="flex items-center justify-between gap-3 rounded-md bg-muted/40 px-2.5 py-2 text-xs">
-                <span className="text-muted-foreground">Source</span>
-                <span className="max-w-[130px] truncate font-mono font-medium">
-                  {sourceKey || "—"}
-                </span>
-              </div>
-              <div className="flex items-center justify-between gap-3 rounded-md bg-muted/40 px-2.5 py-2 text-xs">
-                <span className="text-muted-foreground">Results</span>
-                <span className="max-w-[130px] truncate font-mono font-medium">
-                  {variableName || "—"}
-                </span>
-              </div>
-            </div>
-
-            <div className="space-y-1 border-t px-3 py-2.5">
-              <div className="relative flex h-7 items-center justify-end pr-5 text-xs font-medium text-muted-foreground">
-                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-primary">
+            <div className="flex flex-col">
+              <div className="relative flex h-6 items-center justify-end border-b border-dashed pr-5 text-[10px] font-medium text-muted-foreground">
+                <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-primary">
                   loop
                 </span>
                 <BaseHandle
@@ -109,8 +92,8 @@ export const LoopNode = (props: NodeProps<LoopNodeType>) => {
                   className="!right-[-5px]"
                 />
               </div>
-              <div className="relative flex h-7 items-center justify-end pr-5 text-xs font-medium text-muted-foreground">
-                <span className="rounded-full bg-muted px-2 py-0.5">
+              <div className="relative flex h-6 items-center justify-end pr-5 text-[10px] font-medium text-muted-foreground">
+                <span className="rounded-full bg-muted px-1.5 py-0.5">
                   done
                 </span>
                 <BaseHandle

@@ -52,10 +52,6 @@ export const LoopDialog = ({
       variableName: defaultValues.variableName ?? "loopResults",
     },
   });
-
-  // Reset only when the dialog opens. `defaultValues` can be recreated by the
-  // React Flow parent on every node update; including it here causes the form
-  // to reset while the user is typing.
   useEffect(() => {
     if (!open) return;
 
@@ -63,7 +59,6 @@ export const LoopDialog = ({
       sourceKey: defaultValues.sourceKey ?? "",
       variableName: defaultValues.variableName ?? "loopResults",
     });
-    // The form instance is stable for this mounted dialog.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 

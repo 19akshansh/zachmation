@@ -6,7 +6,7 @@ import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegistry";
 import { Connection, Node, Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
-import { PRO_NODES } from "@/config/proNodes";
+import { PRO_NODES } from "@/config/nodeTypes";
 import { withZachCourseStep } from "./steps/zachcourse";
 import { sendWorkflowExecution } from "./utils";
 import type {
@@ -22,6 +22,7 @@ type ExecutableNode = {
   position: Node["position"];
   data: Node["data"];
   credentialId: string | null;
+  pinnedData: unknown;
 };
 
 type ExecutableConnection = {
@@ -196,6 +197,17 @@ const runNodeSequence = async ({
       continue;
     }
 
+    if (node.pinnedData !== null && node.pinnedData !== undefined) {
+      const variableName = (node.data as Record<string, unknown>).variableName;
+      if (typeof variableName === "string" && variableName.trim()) {
+        context = {
+          ...context,
+          [variableName.trim()]: node.pinnedData as unknown[],
+        };
+        continue;
+      }
+    }
+
     const executor = getExecutor(node.type as NodeType);
 
     context = await executor({
@@ -322,6 +334,7 @@ export const executeWorkflow = inngest.createFunction(
         position: node.position,
         data: node.data,
         credentialId: node.credentialId,
+        pinnedData: node.pinnedData,
       }));
 
       const executableConnections: ExecutableConnection[] =

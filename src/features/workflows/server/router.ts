@@ -1,6 +1,7 @@
 import { generateSlug } from "random-word-slugs";
 import type { Edge, Node } from "@xyflow/react";
 import prisma from "@/lib/db";
+import { Prisma } from "@/generated/prisma/client";
 import {
   createTRPCRouter,
   proNodesProcedure,
@@ -12,7 +13,7 @@ import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/enums";
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { TRPCError } from "@trpc/server";
-import { PRO_NODES } from "@/config/proNodes";
+import { PINNABLE_NODES, PRO_NODES } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import { envSchem } from "@/config/envSchema";
 
@@ -214,6 +215,14 @@ export const workflowsRouter = createTRPCRouter({
       });
 
       return await prisma.$transaction(async (tx) => {
+        const existingNodes = await tx.node.findMany({
+          where: { workflowId: id },
+          select: { id: true, pinnedData: true },
+        });
+        const pinnedByNodeId = new Map(
+          existingNodes.map((node) => [node.id, node.pinnedData]),
+        );
+
         await tx.node.deleteMany({
           where: { workflowId: id },
         });
@@ -226,6 +235,7 @@ export const workflowsRouter = createTRPCRouter({
             type: node.type,
             position: node.position,
             data: node.data || {},
+            pinnedData: pinnedByNodeId.get(node.id) ?? Prisma.JsonNull,
           })),
         });
 
@@ -345,7 +355,10 @@ export const workflowsRouter = createTRPCRouter({
         id: node.id,
         type: node.type,
         position: node.position as { x: number; y: number },
-        data: (node.data as Record<string, unknown>) || {},
+        data: {
+          ...((node.data as Record<string, unknown>) || {}),
+          __pinned: node.pinnedData !== null,
+        },
       }));
 
       const edges: Edge[] = workflow.connections.map((connection) => ({
@@ -371,6 +384,107 @@ export const workflowsRouter = createTRPCRouter({
       orderBy: { name: "asc" },
     });
   }),
+  pinNode: protectedProcedure
+    .input(z.object({ nodeId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const node = await prisma.node.findFirst({
+        where: {
+          id: input.nodeId,
+          workflow: { userId: ctx.auth.user.id },
+        },
+        select: {
+          id: true,
+          workflowId: true,
+          type: true,
+          data: true,
+        },
+      });
+
+      if (!node) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Node not found.",
+        });
+      }
+
+
+      if (!PINNABLE_NODES.has(node.type)) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This node type cannot be pinned.",
+        });
+      }
+
+      const variableName = (node.data as Record<string, unknown> | null)
+        ?.variableName;
+      if (typeof variableName !== "string" || !variableName.trim()) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Configure a variable name before pinning this node.",
+        });
+      }
+
+      const execution = await prisma.execution.findFirst({
+        where: {
+          workflowId: node.workflowId,
+          workflow: { userId: ctx.auth.user.id },
+          status: "SUCCESS",
+          output: { not: Prisma.JsonNull },
+        },
+        orderBy: { startedAt: "desc" },
+        select: { output: true },
+      });
+
+      if (
+        !execution?.output ||
+        typeof execution.output !== "object" ||
+        Array.isArray(execution.output)
+      ) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Run the workflow successfully before pinning this node.",
+        });
+      }
+
+      const value = (execution.output as Record<string, unknown>)[
+        variableName.trim()
+      ];
+      if (value === undefined) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: `No output named "${variableName}" was found in the latest successful execution.`,
+        });
+      }
+
+      await prisma.node.update({
+        where: { id: node.id },
+        data: { pinnedData: value as Prisma.InputJsonValue },
+      });
+
+      return { nodeId: node.id, pinned: true, value };
+    }),
+  unpinNode: protectedProcedure
+    .input(z.object({ nodeId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const node = await prisma.node.findFirst({
+        where: {
+          id: input.nodeId,
+          workflow: { userId: ctx.auth.user.id },
+        },
+        select: { id: true },
+      });
+
+      if (!node) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Node not found." });
+      }
+
+      await prisma.node.update({
+        where: { id: node.id },
+        data: { pinnedData: Prisma.JsonNull },
+      });
+
+      return { nodeId: node.id, pinned: false };
+    }),
   getMany: protectedProcedure
     .input(
       z.object({

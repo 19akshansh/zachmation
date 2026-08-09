@@ -133,6 +133,24 @@ export const useUpdateWorkflow = () => {
   );
 };
 
+export const usePinNode = () => {
+  const trpc = useTRPC();
+  return useMutation(
+    trpc.workflows.pinNode.mutationOptions({
+      onError: (error) => toast.error(error.message),
+    }),
+  );
+};
+
+export const useUnpinNode = () => {
+  const trpc = useTRPC();
+  return useMutation(
+    trpc.workflows.unpinNode.mutationOptions({
+      onError: (error) => toast.error(error.message),
+    }),
+  );
+};
+
 export const useExecuteWorkflow = () => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();

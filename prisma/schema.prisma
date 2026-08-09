@@ -143,6 +143,7 @@ model Node {
   type NodeType
   position Json
   data Json @default("{}")
+  pinnedData Json?
 
   credentialId String?
   credential Credential? @relation(fields: [credentialId], references: [id])

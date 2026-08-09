@@ -1,4 +1,4 @@
-import { PRO_NODES } from "@/config/proNodes";
+import { PRO_NODES } from "@/config/nodeTypes";
 import { NodeType } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
