@@ -47,6 +47,11 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
       "CONDITIONAL nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",
     );
   },
+  [NodeType.STICKY_NOTE]: async () => {
+    throw new NonRetriableError(
+      "SICKY NOTE nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",
+    );
+  },
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

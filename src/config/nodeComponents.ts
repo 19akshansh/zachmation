@@ -22,6 +22,7 @@ import { ZachCourseNode } from "@/features/nodes/executionsNodes/components/zach
 import { LoopNode } from "@/features/nodes/executionsNodes/components/loop/node";
 import { ConditionalNode } from "@/features/nodes/executionsNodes/components/conditional/node";
 import { MergeNode } from "@/features/nodes/executionsNodes/components/merge/node";
+import { StickyNoteNode } from "@/features/nodes/executionsNodes/components/stickyNote/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -45,6 +46,7 @@ export const nodeComponents = {
   [NodeType.LOOP]: LoopNode,
   [NodeType.CONDITIONAL]: ConditionalNode,
   [NodeType.MERGE]: MergeNode,
+  [NodeType.STICKY_NOTE]: StickyNoteNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

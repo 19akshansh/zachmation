@@ -5,6 +5,7 @@ import {
   MousePointerIcon,
   PencilLineIcon,
   Repeat2Icon,
+  StickyNoteIcon,
   WebhookIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
@@ -111,6 +112,14 @@ export const executionNodes: NodeTypeOption[] = [
     label: "Merge",
     description: "Combine outputs from multiple branches",
     icon: GitMergeIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.STICKY_NOTE,
+    label: "Sticky Note",
+    description: "Add a note to your workflow canvas",
+    icon: StickyNoteIcon,
     pro: false,
     pinnable: false,
   },

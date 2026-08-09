@@ -455,7 +455,14 @@ export const executeWorkflow = inngest.createFunction(
         }
       }
 
-      const sortedNodes = topologicalSort(workflow.nodes, workflow.connections);
+      const executableWorkflowNodes = workflow.nodes.filter(
+        (node) => node.type !== NodeType.STICKY_NOTE,
+      );
+
+      const sortedNodes = topologicalSort(
+        executableWorkflowNodes,
+        workflow.connections,
+      );
 
       const executableNodes: ExecutableNode[] = sortedNodes.map((node) => ({
         id: node.id,

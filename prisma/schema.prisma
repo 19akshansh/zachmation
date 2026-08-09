@@ -134,6 +134,7 @@ enum NodeType {
   LOOP
   CONDITIONAL
   MERGE
+  STICKY_NOTE
 }
 
 model Node {
