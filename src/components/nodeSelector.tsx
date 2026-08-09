@@ -2,10 +2,9 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
-import { Separator } from "./ui/separator";
 
 import {
   Sheet,
@@ -37,6 +36,13 @@ export function NodeSelector({
 }: NodeSelectorProps) {
   const { setNodes, getNodes, screenToFlowPosition } = useReactFlow();
   const { hasActivePROSubscription, isLoading } = useHasActivePROSubscription();
+
+  const hasTrigger = useMemo(() => {
+    const nodes = getNodes();
+    return nodes.some((node) => triggerNodes.some((t) => t.type === node.type));
+  }, [getNodes, open]);
+
+  const nodeOptions = hasTrigger ? executionNodes : triggerNodes;
 
   const handleNodeSelect = useCallback(
     (selection: NodeTypeOption) => {
@@ -91,13 +97,19 @@ export function NodeSelector({
         className="w-full sm:max-w-md overflow-y-auto p-4"
       >
         <SheetHeader>
-          <SheetTitle>What triggers this {"WORKFLOW"} ?</SheetTitle>
+          <SheetTitle>
+            {hasTrigger
+              ? "What should happen next?"
+              : "What triggers this WORKFLOW?"}
+          </SheetTitle>
           <SheetDescription>
-            A {"TRIGGER"} is a step that starts your {"WORKFLOW"}
+            {hasTrigger
+              ? "Add a step that runs after your trigger."
+              : "A TRIGGER is a step that starts your WORKFLOW"}
           </SheetDescription>
         </SheetHeader>
-        <div>
-          {triggerNodes.map((nodeType) => {
+        <div className="flex flex-col gap-1 mt-4">
+          {nodeOptions.map((nodeType) => {
             const proOnly =
               nodeType.pro && (isLoading || !hasActivePROSubscription);
             const Icon = nodeType.icon;
@@ -105,10 +117,10 @@ export function NodeSelector({
               <div
                 key={nodeType.type}
                 className={cn(
-                  "w-full justify-start h-auto py-5 px-4 rounded border-l-4",
+                  "w-full flex items-center gap-3 justify-start h-auto py-3 px-4 rounded border-l-4",
                   proOnly
                     ? "opacity-60 cursor-not-allowed"
-                    : "cursor-pointer border-transparent hover:border-l-primary",
+                    : "cursor-pointer border-transparent hover:border-l-primary hover:bg-muted/50",
                 )}
                 onClick={() => {
                   if (proOnly) {
@@ -119,89 +131,25 @@ export function NodeSelector({
                   handleNodeSelect(nodeType);
                 }}
               >
-                <div className="flex items-center gap-6 w-full overflow-hidden">
-                  {typeof Icon === "string" ? (
-                    <img
-                      src={Icon}
-                      alt={nodeType.label}
-                      className="size-5 object-contain rounded-sm"
-                    />
-                  ) : (
-                    <Icon className="size-5" />
-                  )}
-                  <div className="flex flex-col items-start text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">
-                        {nodeType.label}
-                      </span>
-
-                      {nodeType.pro && (
-                        <span className="rounded-md border border-primary px-2 py-0.5 text-xs text-primary">
-                          PRO
-                        </span>
-                      )}
-                    </div>
-
-                    <span className="text-xs text-muted-foreground">
-                      {nodeType.description}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-        <Separator />
-        <div>
-          {executionNodes.map((nodeType) => {
-            const proOnly =
-              nodeType.pro && (isLoading || !hasActivePROSubscription);
-            const Icon = nodeType.icon;
-            return (
-              <div
-                key={nodeType.type}
-                className={cn(
-                  "w-full justify-start h-auto py-5 px-4 rounded border-l-4",
-                  proOnly
-                    ? "opacity-60 cursor-not-allowed"
-                    : "cursor-pointer border-transparent hover:border-l-primary",
+                {typeof Icon === "string" ? (
+                  <img src={Icon} alt="" className="size-5 shrink-0" />
+                ) : (
+                  <Icon className="size-5 shrink-0" />
                 )}
-                onClick={() => {
-                  if (proOnly) {
-                    toast.error("This node requires PRO.");
-                    return;
-                  }
-
-                  handleNodeSelect(nodeType);
-                }}
-              >
-                <div className="flex items-center gap-6 w-full overflow-hidden">
-                  {typeof Icon === "string" ? (
-                    <img
-                      src={Icon}
-                      alt={nodeType.label}
-                      className="size-5 object-contain rounded-sm"
-                    />
-                  ) : (
-                    <Icon className="size-5" />
-                  )}
-                  <div className="flex flex-col items-start text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm">
-                        {nodeType.label}
+                <div className="flex flex-col text-left">
+                  <span className="font-medium text-sm">
+                    {nodeType.label}
+                    {nodeType.pro ? (
+                      <span className="ml-2 text-xs text-muted-foreground">
+                        PRO
                       </span>
-
-                      {nodeType.pro && (
-                        <span className="rounded-md border border-primary px-2 py-0.5 text-xs text-primary">
-                          PRO
-                        </span>
-                      )}
-                    </div>
-
+                    ) : null}
+                  </span>
+                  {nodeType.description ? (
                     <span className="text-xs text-muted-foreground">
                       {nodeType.description}
                     </span>
-                  </div>
+                  ) : null}
                 </div>
               </div>
             );

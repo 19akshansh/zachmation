@@ -1,3 +1,4 @@
+import { NonRetriableError } from "inngest";
 import { NodeType } from "@/generated/prisma/enums";
 import { NodeExecutor } from "../types";
 import { manualReqTriggerExecutor } from "@/features/nodes/triggersNodes/components/manualTrigger/executor";
@@ -39,6 +40,11 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.OPENAI]: openAIExecutor,
   [NodeType.SLACK]: SlackExecutor,
   [NodeType.BLACK_LABS]: BlackForestExecutor,
+  [NodeType.CONDITIONAL]: async () => {
+    throw new NonRetriableError(
+      "CONDITIONAL nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",
+    );
+  },
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

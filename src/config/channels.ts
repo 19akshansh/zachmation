@@ -17,4 +17,5 @@ export const CHANNELS = {
   DISCORD: "discordExec",
   SLACK: "slackExec",
   LOOP: "loopExec",
+  CONDITIONAL: "conditionalExec",
 } as const;

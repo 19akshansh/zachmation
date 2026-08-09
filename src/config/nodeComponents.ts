@@ -20,6 +20,7 @@ import type { NodeTypes } from "@xyflow/react";
 import { ZachurlNode } from "@/features/nodes/executionsNodes/components/zachurl/node";
 import { ZachCourseNode } from "@/features/nodes/executionsNodes/components/zachcourse/node";
 import { LoopNode } from "@/features/nodes/executionsNodes/components/loop/node";
+import { ConditionalNode } from "@/features/nodes/executionsNodes/components/conditional/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -41,6 +42,7 @@ export const nodeComponents = {
   [NodeType.ZACHURL]: ZachurlNode,
   [NodeType.ZACHCOURSE]: ZachCourseNode,
   [NodeType.LOOP]: LoopNode,
+  [NodeType.CONDITIONAL]: ConditionalNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

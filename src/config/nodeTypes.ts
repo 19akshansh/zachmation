@@ -1,4 +1,5 @@
 import {
+  GitBranchIcon,
   GlobeIcon,
   MousePointerIcon,
   PencilLineIcon,
@@ -93,6 +94,14 @@ export const executionNodes: NodeTypeOption[] = [
     label: "Loop",
     description: "Run a branch once for each item in an array",
     icon: Repeat2Icon,
+    pro: false,
+    pinnable: false,
+  },
+   {
+    type: NodeType.CONDITIONAL,
+    label: "If / Switch",
+    description: "Route execution through a conditional branch",
+    icon: GitBranchIcon,
     pro: false,
     pinnable: false,
   },

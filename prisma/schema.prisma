@@ -132,6 +132,7 @@ enum NodeType {
   SLACK
   BLACK_LABS
   LOOP
+  CONDITIONAL
 }
 
 model Node {
