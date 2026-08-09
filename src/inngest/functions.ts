@@ -8,6 +8,7 @@ import { Connection, Node, Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { PRO_NODES } from "@/config/proNodes";
 import { withZachCourseStep } from "./steps/zachcourse";
+import { sendWorkflowExecution } from "./utils";
 import type {
   WorkflowContext,
   WorkflowStepTools,
@@ -216,8 +217,10 @@ export const executeWorkflow = inngest.createFunction(
       event: "workflows/workflow.exec",
     },
     retries: 0,
-    onFailure: async ({ event, step }) => {
-      return prisma.execution.update({
+    onFailure: async ({ event }) => {
+      const failedWorkflowId = event.data.event.data.workflowId as string;
+
+      const execution = await prisma.execution.update({
         where: {
           inngestEventId: event.data.event.id,
         },
@@ -227,6 +230,26 @@ export const executeWorkflow = inngest.createFunction(
           errorStack: event.data.error.stack,
         },
       });
+
+      const workflow = await prisma.workflow.findUnique({
+        where: { id: failedWorkflowId },
+        select: { errorWorkflowId: true },
+      });
+
+      if (workflow?.errorWorkflowId) {
+        await sendWorkflowExecution({
+          workflowId: workflow.errorWorkflowId,
+          initialData: {
+            errorContext: {
+              failedWorkflowId,
+              error: event.data.error.message,
+              executionId: execution.id,
+            },
+          },
+        });
+      }
+
+      return execution;
     },
   },
 

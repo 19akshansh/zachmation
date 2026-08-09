@@ -22,6 +22,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { editorAtom } from "../store/atoms";
 import { NodeType } from "@/generated/prisma/enums";
 import { toast } from "sonner";
+import { WorkflowSettingsDialog } from "./workflowSettingsDialog";
 
 export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
   const editor = useAtomValue(editorAtom);
@@ -36,17 +37,13 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
       const rawNodes = editor.getNodes?.() ?? [];
       const rawEdges = editor.getEdges?.() ?? [];
 
-      // Clean runtime/transient state before saving
       const cleanedNodes = rawNodes.map((node) => ({
         id: node.id,
-
         type: NodeType[node.type as keyof typeof NodeType],
-
         position: {
           x: node.position.x,
           y: node.position.y,
         },
-
         data: {
           ...node.data,
           status: "initial",
@@ -65,7 +62,6 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
         edges: cleanedEdges,
       });
 
-      // Reset visual state after successful save
       editor.setNodes(cleanedNodes);
       editor.setEdges(cleanedEdges);
     } catch (error) {
@@ -185,7 +181,10 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
       <div className="flex flex-row items-center justify-between gap-x-4 w-full">
         <EditorBreadcrumbs workflowId={workflowId} />
 
-        <EditorSaveButton workflowId={workflowId} />
+        <div className="flex items-center gap-2">
+          <WorkflowSettingsDialog workflowId={workflowId} />
+          <EditorSaveButton workflowId={workflowId} />
+        </div>
       </div>
     </header>
   );

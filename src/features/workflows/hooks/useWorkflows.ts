@@ -61,6 +61,38 @@ export const useRemoveWorkflow = () => {
   );
 };
 
+
+export const useErrorWorkflows = () => {
+  const trpc = useTRPC();
+
+  return useSuspenseQuery(
+    trpc.workflows.getErrorWorkflows.queryOptions(),
+  );
+};
+
+export const useSetErrorWorkflow = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.setErrorWorkflow.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(
+          data.errorWorkflowId
+            ? "Error workflow configured."
+            : "Error workflow disabled.",
+        );
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
+        );
+      },
+      onError: (error) => {
+        toast.error(`Failed to update error workflow: ${error.message}`);
+      },
+    }),
+  );
+};
+
 export const useUpdateWorkflowName = () => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();

@@ -182,6 +182,7 @@ export const workflowsRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
+        errorWorkflowId: z.string().nullable().optional(),
         nodes: z.array(
           z.object({
             id: z.string(),
@@ -238,12 +239,92 @@ export const workflowsRouter = createTRPCRouter({
           })),
         });
 
+        if (input.errorWorkflowId !== undefined) {
+          if (input.errorWorkflowId === id) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "A workflow cannot use itself as its error handler.",
+            });
+          }
+
+          if (input.errorWorkflowId) {
+            const errorWorkflow = await tx.workflow.findUnique({
+              where: {
+                id: input.errorWorkflowId,
+                userId: ctx.auth.user.id,
+              },
+              select: { id: true },
+            });
+
+            if (!errorWorkflow) {
+              throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Error workflow not found.",
+              });
+            }
+          }
+        }
+
         await tx.workflow.update({
           where: { id },
-          data: { updatedAt: new Date() },
+          data: {
+            updatedAt: new Date(),
+            ...(input.errorWorkflowId !== undefined
+              ? { errorWorkflowId: input.errorWorkflowId }
+              : {}),
+          },
         });
 
         return workflow;
+      });
+    }),
+  setErrorWorkflow: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        errorWorkflowId: z.string().nullable(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUnique({
+        where: { id: input.id, userId: ctx.auth.user.id },
+        select: { id: true },
+      });
+
+      if (!workflow) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Workflow not found.",
+        });
+      }
+
+      if (input.errorWorkflowId === input.id) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "A workflow cannot use itself as its error handler.",
+        });
+      }
+
+      if (input.errorWorkflowId) {
+        const errorWorkflow = await prisma.workflow.findUnique({
+          where: {
+            id: input.errorWorkflowId,
+            userId: ctx.auth.user.id,
+          },
+          select: { id: true },
+        });
+
+        if (!errorWorkflow) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Error workflow not found.",
+          });
+        }
+      }
+
+      return prisma.workflow.update({
+        where: { id: input.id },
+        data: { errorWorkflowId: input.errorWorkflowId },
       });
     }),
   getOne: protectedProcedure
@@ -278,10 +359,18 @@ export const workflowsRouter = createTRPCRouter({
       return {
         id: workflow.id,
         name: workflow.name,
+        errorWorkflowId: workflow.errorWorkflowId,
         edges,
         nodes,
       };
     }),
+  getErrorWorkflows: protectedProcedure.query(async ({ ctx }) => {
+    return prisma.workflow.findMany({
+      where: { userId: ctx.auth.user.id },
+      select: { id: true, name: true },
+      orderBy: { name: "asc" },
+    });
+  }),
   getMany: protectedProcedure
     .input(
       z.object({
