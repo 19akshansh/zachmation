@@ -135,6 +135,7 @@ enum NodeType {
   CONDITIONAL
   MERGE
   STICKY_NOTE
+  WAIT
 }
 
 model Node {

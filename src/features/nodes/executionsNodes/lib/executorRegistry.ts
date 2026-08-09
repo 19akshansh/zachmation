@@ -20,6 +20,7 @@ import { ZachurlExecutor } from "../components/zachurl/executor";
 import { ZachCourseExecutor } from "../components/zachcourse/executor";
 import { LoopExecutor } from "../components/loop/executor";
 import { MergeExecutor } from "../components/merge/executor";
+import { WaitExecutor } from "../components/wait/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -42,6 +43,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.SLACK]: SlackExecutor,
   [NodeType.BLACK_LABS]: BlackForestExecutor,
   [NodeType.MERGE]: MergeExecutor,
+  [NodeType.WAIT]: WaitExecutor,
   [NodeType.CONDITIONAL]: async () => {
     throw new NonRetriableError(
       "CONDITIONAL nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",

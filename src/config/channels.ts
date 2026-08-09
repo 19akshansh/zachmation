@@ -19,4 +19,5 @@ export const CHANNELS = {
   LOOP: "loopExec",
   CONDITIONAL: "conditionalExec",
   MERGE: "mergeExec",
+  WAIT: "waitExec",
 } as const;

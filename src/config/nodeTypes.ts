@@ -1,6 +1,7 @@
 import {
   GitBranchIcon,
   GitMergeIcon,
+  Clock3Icon,
   GlobeIcon,
   MousePointerIcon,
   PencilLineIcon,
@@ -99,7 +100,7 @@ export const executionNodes: NodeTypeOption[] = [
     pro: false,
     pinnable: false,
   },
-   {
+  {
     type: NodeType.CONDITIONAL,
     label: "If / Switch",
     description: "Route execution through a conditional branch",
@@ -120,6 +121,15 @@ export const executionNodes: NodeTypeOption[] = [
     label: "Sticky Note",
     description: "Add a note to your workflow canvas",
     icon: StickyNoteIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.WAIT,
+    label: "Wait / Delay",
+    description:
+      "Pause the workflow for a duration or until a webhook resumes it",
+    icon: Clock3Icon,
     pro: false,
     pinnable: false,
   },
