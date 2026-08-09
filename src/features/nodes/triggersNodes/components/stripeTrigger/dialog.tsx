@@ -71,31 +71,31 @@ export const StripeDialogTrigger = ({ open, onOpenChange }: Props) => {
             <ul className="text-sm text-muted-foreground space-y-1">
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.amount}}"}
+                  {"{{stripe.[0].amount}}"}
                 </code>{" "}
                 - Payment Amount
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.currency}}"}
+                  {"{{stripe.[0].currency}}"}
                 </code>{" "}
                 - Currency Code
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.customerId}}"}
+                  {"{{stripe.[0].customerId}}"}
                 </code>{" "}
                 - Customer ID
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{json.stripe}}"}
+                  {"{{json.stripe.[0]}}"}
                 </code>{" "}
                 - Full event data as JSON
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{stripe.eventType}}"}
+                  {"{{stripe.[0].eventType}}"}
                 </code>{" "}
                 - Event type (e.g., payment_intent.succeeded)
               </li>

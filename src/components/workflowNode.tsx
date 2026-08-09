@@ -3,7 +3,7 @@
 import { NodeToolbar, Position } from "@xyflow/react";
 import type { ReactNode } from "react";
 import { Button } from "./ui/button";
-import { SettingsIcon, TrashIcon } from "lucide-react";
+import { PinIcon, PinOffIcon, SettingsIcon, TrashIcon } from "lucide-react";
 
 interface WorkflowNodeProps {
   children: ReactNode;
@@ -12,6 +12,9 @@ interface WorkflowNodeProps {
   onSettings?: () => void;
   name?: string;
   description?: string;
+  pinned?: boolean;
+  onPin?: () => void;
+  pinDisabled?: boolean;
 }
 
 export function WorkflowNode({
@@ -21,6 +24,9 @@ export function WorkflowNode({
   onSettings,
   name,
   description,
+  pinned = false,
+  onPin,
+  pinDisabled = false,
 }: WorkflowNodeProps) {
   return (
     <>
@@ -29,6 +35,21 @@ export function WorkflowNode({
           <Button size={"sm"} variant={"ghost"} onClick={onSettings}>
             <SettingsIcon className="size-4" />
           </Button>
+          {onPin && (
+            <Button
+              size="sm"
+              variant={pinned ? "secondary" : "ghost"}
+              onClick={onPin}
+              disabled={pinDisabled}
+              title={pinned ? "Unpin output" : "Pin latest output"}
+            >
+              {pinned ? (
+                <PinOffIcon className="size-4" />
+              ) : (
+                <PinIcon className="size-4" />
+              )}
+            </Button>
+          )}
           <Button
             size="sm"
             variant="ghost"

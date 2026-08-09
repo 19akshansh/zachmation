@@ -106,6 +106,10 @@ model Workflow {
 
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  errorWorkflowId String?
+  errorWorkflow Workflow? @relation("WorkflowErrorHandler", fields: [errorWorkflowId], references: [id], onDelete: SetNull)
+  handlesErrorsFor Workflow[] @relation("WorkflowErrorHandler")
 }
 
 enum NodeType {
@@ -127,6 +131,7 @@ enum NodeType {
   DISCORD_SEND
   SLACK
   BLACK_LABS
+  LOOP
 }
 
 model Node {
@@ -138,6 +143,7 @@ model Node {
   type NodeType
   position Json
   data Json @default("{}")
+  pinnedData Json?
 
   credentialId String?
   credential Credential? @relation(fields: [credentialId], references: [id])

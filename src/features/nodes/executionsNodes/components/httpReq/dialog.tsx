@@ -118,7 +118,7 @@ export const HTTPReqDialog = ({
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}
-                    {`{{${watchVariableName}.httpResponse.data}}`}
+                    {`{{${watchVariableName}.[0].httpResponse.data}}`}
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -163,12 +163,12 @@ export const HTTPReqDialog = ({
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="https://api.example.com/users/{{httpResponse.data.id}}"
+                      placeholder="https://api.example.com/users/{{httpResponse.[0].data.id}}"
                     />
                   </FormControl>
                   <FormDescription>
-                    Static URL or use {"{{variable}}"} for simple values or{" "}
-                    {"{{json vaariable}}"} to stringify objects
+                    Static URL or use {"{{variable.[0]}}"} for simple values or{" "}
+                    {"{{json vaariable.[0]}}"} to stringify objects
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -185,14 +185,14 @@ export const HTTPReqDialog = ({
                       <Textarea
                         {...field}
                         placeholder={
-                          '{\n "userId": "{{httpResponse.data.id}}",\n "name": "{{httpResponse.data.name}}",\n "items": "{{httpResponse.data.items}}"\n}'
+                          '{\n "userId": "{{httpResponse.[0].data.id}}",\n "name": "{{httpResponse.[0].data.name}}",\n "items": "{{httpResponse.[0].data.items}}"\n}'
                         }
                         className="min-h-[120px] font-mono text-sm"
                       />
                     </FormControl>
                     <FormDescription>
-                      JSON with template variables. Use {"{{variable}}"} for
-                      simple values or {"{{json vaariable}}"} to stringify
+                      JSON with template variables. Use {"{{variable.[0]}}"} for
+                      simple values or {"{{json vaariable.[0]}}"} to stringify
                       objects
                     </FormDescription>
                     <FormMessage />

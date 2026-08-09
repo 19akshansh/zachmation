@@ -68,7 +68,7 @@ export const TelegramSendDialog = ({
     defaultValues: {
       variableName: defaultValues.variableName || "",
       credentialId: defaultValues.credentialId || "",
-      chatId: defaultValues.chatId || "{{telegram.message.chat.id}}",
+      chatId: defaultValues.chatId || "{{telegram.[0].message.chat.id}}",
       message: defaultValues.message || "Got it!",
     },
   });
@@ -77,7 +77,7 @@ export const TelegramSendDialog = ({
       form.reset({
         variableName: defaultValues.variableName || "",
         credentialId: defaultValues.credentialId || "",
-        chatId: defaultValues.chatId || "{{telegram.message.chat.id}}",
+        chatId: defaultValues.chatId || "{{telegram.[0].message.chat.id}}",
         message: defaultValues.message || "Got it!",
       });
   }, [open, defaultValues, form]);
@@ -151,7 +151,7 @@ export const TelegramSendDialog = ({
                     <Input {...field} className="font-mono" />
                   </FormControl>
                   <FormDescription>
-                    Handlebars supported, e.g. {"{{telegram.message.chat.id}}"}.
+                    Handlebars supported, e.g. {"{{telegram.[0].message.chat.id}}"}.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

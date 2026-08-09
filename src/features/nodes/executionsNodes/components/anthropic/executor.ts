@@ -135,9 +135,9 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
 
     return {
       ...context,
-      [data.variableName]: {
+      [data.variableName]: [{
         text,
-      },
+      }],
     };
   } catch (error) {
     await step.realtime.publish(

@@ -63,7 +63,7 @@ export const ZachurlExecutor: NodeExecutor<ZachurlData> = async ({
 
       return {
         ...context,
-        [data.variableName!]: response,
+        [data.variableName!]: [response],
       };
     });
 

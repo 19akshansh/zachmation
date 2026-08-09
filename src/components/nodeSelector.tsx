@@ -2,14 +2,6 @@
 
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
-import {
-  GlobeIcon,
-  GraduationCap,
-  LinkIcon,
-  MousePointerIcon,
-  PencilLineIcon,
-  WebhookIcon,
-} from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
 import { NodeType } from "@/generated/prisma/enums";
@@ -26,142 +18,11 @@ import {
 import { useHasActivePROSubscription } from "@/features/subscriptions/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 
-export type NodeTypeOption = {
-  type: NodeType;
-  label: string;
-  description: string;
-  icon:
-    | React.ComponentType<{
-        className?: string;
-      }>
-    | string;
-  pro?: boolean;
-};
-
-const triggerNodes: NodeTypeOption[] = [
-  {
-    type: NodeType.MANUAL_TRIGGER,
-    label: "Execute Workflow Manually",
-    description: "Runs the flow on clicking a button, Good for first start",
-    icon: MousePointerIcon,
-    pro: false,
-  },
-  {
-    type: NodeType.GOOGLE_FORM_TRIGGER,
-    label: "Google Form Trigger",
-    description: "Triggers a Google Form Submission",
-    icon: "/gforms.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.STRIPE_TRIGGER,
-    label: "Stripe Event",
-    description: "Triggers a Stripe Event",
-    icon: "/stripe.svg",
-    pro: true,
-  },
-  {
-    type: NodeType.WEBHOOK_TRIGGER,
-    label: "Webhook Trigger",
-    description: "Triggers from any incoming webhook POST",
-    icon: WebhookIcon,
-    pro: false,
-  },
-  {
-    type: NodeType.DISCORD_TRIGGER,
-    label: "Discord Trigger",
-    description: "Triggers from a Discord interaction or slash command",
-    icon: "/discord.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.TELEGRAM_TRIGGER,
-    label: "Telegram Trigger",
-    description: "Triggers when your Telegram bot receives an update",
-    icon: "/telegram.svg",
-    pro: false,
-  },
-];
-
-const executionNodes: NodeTypeOption[] = [
-  {
-    type: NodeType.HTTP_REQ,
-    label: "HTTP Request",
-    description: "Makes an HTTP Request",
-    icon: GlobeIcon,
-    pro: false,
-  },
-  {
-    type: NodeType.SET,
-    label: "Edit Fields",
-    description: "Add or reshape workflow context fields",
-    icon: PencilLineIcon,
-    pro: false,
-  },
-  {
-    type: NodeType.GEMINI,
-    label: "GEMINI Chat",
-    description: "Makes a GEMINI(Chat) Request",
-    icon: "/gemini.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.OPENAI,
-    label: "OPENAI Chat",
-    description: "Makes a OPENAI(Chat) Request",
-    icon: "/openai.svg",
-    pro: true,
-  },
-  {
-    type: NodeType.ANTHROPIC,
-    label: "Anthropic Chat",
-    description: "Makes a Anthropic(Chat) Request",
-    icon: "/anthropic.svg",
-    pro: true,
-  },
-  {
-    type: NodeType.ZACHURL,
-    label: "Zachurl",
-    description: "Create a short URL with Zachurl",
-    icon: "/zachurl.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.ZACHCOURSE,
-    label: "ZachCourse",
-    description: "Generate a personalized course with ZachCourse",
-    icon: "/zachcourse.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.BLACK_LABS,
-    label: "Black Labs Image Gen",
-    description: "Makes a Black Labs(Image) Request",
-    icon: "/blackforest.svg",
-    pro: true,
-  },
-  {
-    type: NodeType.DISCORD_SEND,
-    label: "Discord Send",
-    description: "Send a Discord Message",
-    icon: "/discord.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.TELEGRAM_SEND,
-    label: "Telegram Send",
-    description: "Send a Telegram message",
-    icon: "/telegram.svg",
-    pro: false,
-  },
-  {
-    type: NodeType.SLACK,
-    label: "Slack",
-    description: "Send a Slack Message",
-    icon: "/slack.svg",
-    pro: true,
-  },
-];
+import {
+  type NodeTypeOption,
+  triggerNodes,
+  executionNodes,
+} from "@/config/nodeTypes";
 
 interface NodeSelectorProps {
   open: boolean;
