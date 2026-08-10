@@ -28,4 +28,7 @@ export const CHANNELS = {
   GOOGLE_SHEETS: "googleSheetsExec",
   CRON_TRIGGER: "cronTriggerExec",
   POSTGRES_QUERY: "postgresQueryExec",
+  AIRTABLE: "airtableExec",
+  NOTION: "notionExec",
+  GITHUB: "githubExec",
 } as const;

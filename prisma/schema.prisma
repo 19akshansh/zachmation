@@ -96,6 +96,9 @@ enum CredentialType {
   GOOGLE_SHEETS
   POSTGRES
   CRON_TRIGGER
+  AIRTABLE
+  NOTION
+  GITHUB
 }
 
 model Workflow {
@@ -148,6 +151,9 @@ enum NodeType {
   GOOGLE_SHEETS
   POSTGRES_QUERY
   CRON_TRIGGER
+  AIRTABLE
+  NOTION
+  GITHUB
 }
 
 model Node {

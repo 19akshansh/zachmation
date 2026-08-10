@@ -32,6 +32,9 @@ import { EmailSendNode } from "@/features/nodes/executionsNodes/components/email
 import { GoogleSheetsNode } from "@/features/nodes/executionsNodes/components/googleSheets/node";
 import { CronTriggerNode } from "@/features/nodes/triggersNodes/components/cronTrigger/node";
 import { PostgresQueryNode } from "@/features/nodes/executionsNodes/components/postgresQuery/node";
+import { AirtableNode } from "@/features/nodes/executionsNodes/components/airtable/node";
+import { NotionNode } from "@/features/nodes/executionsNodes/components/notion/node";
+import { GitHubNode } from "@/features/nodes/executionsNodes/components/github/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -64,6 +67,9 @@ export const nodeComponents = {
   [NodeType.EMAIL_SEND]: EmailSendNode,
   [NodeType.GOOGLE_SHEETS]: GoogleSheetsNode,
   [NodeType.POSTGRES_QUERY]: PostgresQueryNode,
+  [NodeType.AIRTABLE]: AirtableNode,
+  [NodeType.NOTION]: NotionNode,
+  [NodeType.GITHUB]: GitHubNode,
   [NodeType.CRON_TRIGGER]: CronTriggerNode,
 } as const satisfies NodeTypes;
 
