@@ -22,6 +22,7 @@ import { LoopExecutor } from "../components/loop/executor";
 import { MergeExecutor } from "../components/merge/executor";
 import { WaitExecutor } from "../components/wait/executor";
 import { SandboxedCodeExecutor } from "../components/sandboxedCode/executor";
+import { FilterExecutor } from "../components/filter/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -56,6 +57,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
     );
   },
   [NodeType.SANDBOXED_CODE]: SandboxedCodeExecutor,
+  [NodeType.FILTER]: FilterExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

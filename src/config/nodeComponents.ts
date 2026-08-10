@@ -25,6 +25,7 @@ import { MergeNode } from "@/features/nodes/executionsNodes/components/merge/nod
 import { WaitNode } from "@/features/nodes/executionsNodes/components/wait/node";
 import { StickyNoteNode } from "@/features/nodes/executionsNodes/components/stickyNote/node";
 import { SandboxedCodeNode } from "@/features/nodes/executionsNodes/components/sandboxedCode/node";
+import { FilterNode } from "@/features/nodes/executionsNodes/components/filter/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -51,6 +52,7 @@ export const nodeComponents = {
   [NodeType.STICKY_NOTE]: StickyNoteNode,
   [NodeType.WAIT]: WaitNode,
   [NodeType.SANDBOXED_CODE]: SandboxedCodeNode,
+  [NodeType.FILTER]: FilterNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

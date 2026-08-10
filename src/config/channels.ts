@@ -21,4 +21,5 @@ export const CHANNELS = {
   MERGE: "mergeExec",
   WAIT: "waitExec",
   SANDBOXED_CODE: "sandboxedCodeExec",
+  FILTER: "filterExec",
 } as const;
