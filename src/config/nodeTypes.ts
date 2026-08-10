@@ -13,6 +13,7 @@ import {
   ListTreeIcon,
   CalendarClockIcon,
   MailIcon,
+  TimerIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -30,6 +31,14 @@ export type NodeTypeOption = {
 };
 
 export const triggerNodes: NodeTypeOption[] = [
+  {
+    type: NodeType.CRON_TRIGGER,
+    label: "Schedule / Cron",
+    description: "Runs the workflow on a recurring cron schedule",
+    icon: TimerIcon,
+    pro: false,
+    pinnable: false,
+  },
   {
     type: NodeType.MANUAL_TRIGGER,
     label: "Execute Workflow Manually",
