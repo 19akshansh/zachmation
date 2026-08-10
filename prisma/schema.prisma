@@ -19,6 +19,7 @@ model User {
   accounts      Account[]
   workflows     Workflow[]
   credentials   Credential[]
+  workflowMemory WorkflowMemory[]
 
   @@unique([email])
   @@map("user")
@@ -154,6 +155,8 @@ enum NodeType {
   AIRTABLE
   NOTION
   GITHUB
+  VECTOR_STORE
+  AGENT
 }
 
 model Node {
@@ -196,6 +199,21 @@ model Connection {
   updatedAt DateTime @updatedAt
 
   @@unique([fromNodeId, toNodeId, fromOutput, toInput])  
+}
+
+model WorkflowMemory {
+  id        String   @id
+  userId    String
+  namespace String
+  content   String
+  metadata  Json?
+  embedding Unsupported("vector(768)")
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([userId, namespace])
+  @@map("workflow_memory")
 }
 
 enum ExecutionStatus {

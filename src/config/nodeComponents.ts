@@ -35,6 +35,8 @@ import { PostgresQueryNode } from "@/features/nodes/executionsNodes/components/p
 import { AirtableNode } from "@/features/nodes/executionsNodes/components/airtable/node";
 import { NotionNode } from "@/features/nodes/executionsNodes/components/notion/node";
 import { GitHubNode } from "@/features/nodes/executionsNodes/components/github/node";
+import { VectorStoreNode } from "@/features/nodes/executionsNodes/components/vectorStore/node";
+import { AgentNode } from "@/features/nodes/executionsNodes/components/agent/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -70,6 +72,8 @@ export const nodeComponents = {
   [NodeType.AIRTABLE]: AirtableNode,
   [NodeType.NOTION]: NotionNode,
   [NodeType.GITHUB]: GitHubNode,
+  [NodeType.VECTOR_STORE]: VectorStoreNode,
+  [NodeType.AGENT]: AgentNode,
   [NodeType.CRON_TRIGGER]: CronTriggerNode,
 } as const satisfies NodeTypes;
 

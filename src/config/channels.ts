@@ -31,4 +31,6 @@ export const CHANNELS = {
   AIRTABLE: "airtableExec",
   NOTION: "notionExec",
   GITHUB: "githubExec",
+  VECTOR_STORE: "vectorStoreExec",
+  AGENT: "agentExec",
 } as const;
