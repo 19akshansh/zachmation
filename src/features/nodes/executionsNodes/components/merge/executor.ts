@@ -21,10 +21,14 @@ export const MergeExecutor: NodeExecutor<MergeData> = async ({
   });
 
   if (!data.variableName || !data.input1Key || !data.input2Key) {
-    await step.realtime.publish(`node-error-config-${nodeId}`, mergeChannel.status, {
-      nodeId,
-      status: "error",
-    });
+    await step.realtime.publish(
+      `node-error-config-${nodeId}`,
+      mergeChannel.status,
+      {
+        nodeId,
+        status: "error",
+      },
+    );
     throw new NonRetriableError("MERGE: Missing variable name or input keys");
   }
 
@@ -46,11 +50,15 @@ export const MergeExecutor: NodeExecutor<MergeData> = async ({
 
     return result;
   } catch (error) {
-    await step.realtime.publish(`node-error-runtime-${nodeId}`, mergeChannel.status, {
-      nodeId,
-      status: "error",
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+    await step.realtime.publish(
+      `node-error-runtime-${nodeId}`,
+      mergeChannel.status,
+      {
+        nodeId,
+        status: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+    );
     throw error;
   }
 };

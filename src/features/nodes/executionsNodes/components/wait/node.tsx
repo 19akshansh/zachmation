@@ -81,7 +81,9 @@ export const WaitNode = (props: NodeProps<WaitNodeType>) => {
               <div className="min-w-0">
                 <p className="text-sm font-semibold leading-none">Wait</p>
                 <p className="mt-1 truncate text-[11px] text-muted-foreground">
-                  {mode === "webhook" ? "Resume by webhook" : `Delay ${durationSeconds}s`}
+                  {mode === "webhook"
+                    ? "Resume by webhook"
+                    : `Delay ${durationSeconds}s`}
                 </p>
               </div>
             </div>

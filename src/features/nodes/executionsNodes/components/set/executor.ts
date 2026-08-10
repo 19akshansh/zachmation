@@ -69,10 +69,14 @@ export const SetExecutor: NodeExecutor<SetData> = async ({
   });
 
   if (!data.fields || data.fields.length === 0) {
-    await step.realtime.publish(`node-error-fields-${nodeId}`, setChannel.status, {
-      nodeId,
-      status: "error",
-    });
+    await step.realtime.publish(
+      `node-error-fields-${nodeId}`,
+      setChannel.status,
+      {
+        nodeId,
+        status: "error",
+      },
+    );
     throw new NonRetriableError("SET: No fields configured");
   }
 
@@ -86,9 +90,7 @@ export const SetExecutor: NodeExecutor<SetData> = async ({
 
         const value = resolveValue(field, context);
 
-        output[key] = field.type === "array"
-          ? (value as unknown[])
-          : [value];
+        output[key] = field.type === "array" ? (value as unknown[]) : [value];
       }
 
       return { ...context, ...output };
@@ -101,11 +103,15 @@ export const SetExecutor: NodeExecutor<SetData> = async ({
 
     return result;
   } catch (error) {
-    await step.realtime.publish(`node-error-runtime-${nodeId}`, setChannel.status, {
-      nodeId,
-      status: "error",
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+    await step.realtime.publish(
+      `node-error-runtime-${nodeId}`,
+      setChannel.status,
+      {
+        nodeId,
+        status: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+    );
     throw error;
   }
 };

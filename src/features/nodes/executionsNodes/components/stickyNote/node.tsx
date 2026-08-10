@@ -1,6 +1,11 @@
 "use client";
 
-import { NodeResizer, type Node, type NodeProps, useReactFlow } from "@xyflow/react";
+import {
+  NodeResizer,
+  type Node,
+  type NodeProps,
+  useReactFlow,
+} from "@xyflow/react";
 import { StickyNoteIcon } from "lucide-react";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";

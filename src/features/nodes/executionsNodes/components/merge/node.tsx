@@ -59,7 +59,9 @@ export const MergeNode = (props: NodeProps<MergeNodeType>) => {
       <WorkflowNode
         name="Merge"
         description={
-          variableName ? `Combine into ${variableName}` : "Combine branch outputs"
+          variableName
+            ? `Combine into ${variableName}`
+            : "Combine branch outputs"
         }
         onDelete={handleDelete}
         onSettings={() => setDialogOpen(true)}

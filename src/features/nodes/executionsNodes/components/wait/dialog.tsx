@@ -185,9 +185,7 @@ export const WaitDialog = ({
                           }
                         />
                       </FormControl>
-                      <FormDescription>
-                        Minimum 1 second.
-                      </FormDescription>
+                      <FormDescription>Minimum 1 second.</FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -199,7 +197,10 @@ export const WaitDialog = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Unit</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue />
@@ -223,7 +224,11 @@ export const WaitDialog = ({
                   POST any JSON payload to this URL to resume this workflow.
                 </p>
                 <div className="flex gap-2">
-                  <Input value={webhookUrl} readOnly className="font-mono text-xs" />
+                  <Input
+                    value={webhookUrl}
+                    readOnly
+                    className="font-mono text-xs"
+                  />
                   <Button type="button" variant="outline" onClick={handleCopy}>
                     <CopyIcon className="mr-2 size-4" />
                     {copied ? "Copied" : "Copy"}

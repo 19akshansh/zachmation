@@ -67,10 +67,14 @@ export const ZachurlExecutor: NodeExecutor<ZachurlData> = async ({
       };
     });
 
-    await step.realtime.publish(`node-success-${nodeId}`, zachurlChannel.status, {
-      nodeId,
-      status: "success",
-    });
+    await step.realtime.publish(
+      `node-success-${nodeId}`,
+      zachurlChannel.status,
+      {
+        nodeId,
+        status: "success",
+      },
+    );
     return result;
   } catch (error) {
     await step.realtime.publish(`node-error-${nodeId}`, zachurlChannel.status, {

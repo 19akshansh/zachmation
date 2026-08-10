@@ -22,11 +22,20 @@ type ZachCourseData = {
 };
 
 export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
-  data, nodeId, userId, context, step,
+  data,
+  nodeId,
+  userId,
+  context,
+  step,
 }) => {
-  await step.realtime.publish(`node-loading-${nodeId}`, zachcourseChannel.status, {
-    nodeId, status: "loading",
-  });
+  await step.realtime.publish(
+    `node-loading-${nodeId}`,
+    zachcourseChannel.status,
+    {
+      nodeId,
+      status: "loading",
+    },
+  );
 
   if (
     !data.credentialId ||
@@ -86,41 +95,53 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
       },
     );
 
-    const response = await step.zachcourse(`zachcourse-generate-${nodeId}`, async () => {
-      return ky
-        .post(`${ZACHCOURSE_BASE_URL}/api/v1/courses/generate`, {
-          headers: {
-            "x-api-key": apiKey,
-            "x-user-key": geminiApiKey,
-          },
-          timeout: false,
-          json: {
-            topic,
-            ...(sourceUrl ? { sourceUrl } : {}),
-            ...(textContent ? { textContent } : {}),
-            ...(documentContext ? { documentContext } : {}),
-            language,
-            experienceLevel,
-            backgroundContext,
-            weeklyHours: data.weeklyHours ?? 5,
-            tone,
-          },
-        })
-        .json<{ course: unknown }>();
-    });
+    const response = await step.zachcourse(
+      `zachcourse-generate-${nodeId}`,
+      async () => {
+        return ky
+          .post(`${ZACHCOURSE_BASE_URL}/api/v1/courses/generate`, {
+            headers: {
+              "x-api-key": apiKey,
+              "x-user-key": geminiApiKey,
+            },
+            timeout: false,
+            json: {
+              topic,
+              ...(sourceUrl ? { sourceUrl } : {}),
+              ...(textContent ? { textContent } : {}),
+              ...(documentContext ? { documentContext } : {}),
+              language,
+              experienceLevel,
+              backgroundContext,
+              weeklyHours: data.weeklyHours ?? 5,
+              tone,
+            },
+          })
+          .json<{ course: unknown }>();
+      },
+    );
 
     const result = { ...context, [data.variableName!]: [response.course] };
 
-    await step.realtime.publish(`node-success-${nodeId}`, zachcourseChannel.status, {
-      nodeId, status: "success",
-    });
+    await step.realtime.publish(
+      `node-success-${nodeId}`,
+      zachcourseChannel.status,
+      {
+        nodeId,
+        status: "success",
+      },
+    );
     return result;
   } catch (error) {
-    await step.realtime.publish(`node-error-${nodeId}`, zachcourseChannel.status, {
-      nodeId,
-      status: "error",
-      error: error instanceof Error ? error.message : "Unknown error",
-    });
+    await step.realtime.publish(
+      `node-error-${nodeId}`,
+      zachcourseChannel.status,
+      {
+        nodeId,
+        status: "error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
+    );
     throw error;
   }
 };

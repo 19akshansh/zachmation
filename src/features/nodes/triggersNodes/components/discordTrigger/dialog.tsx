@@ -41,7 +41,9 @@ export const DiscordTriggerDialog = ({
     }
     onSubmit(normalized);
     onOpenChange(false);
-    toast.success("Discord trigger configured. Save the workflow before verification.");
+    toast.success(
+      "Discord trigger configured. Save the workflow before verification.",
+    );
   };
 
   return (
@@ -79,8 +81,11 @@ export const DiscordTriggerDialog = ({
           </Button>
 
           <p className="text-sm text-muted-foreground">
-            Verified interaction payloads are available under {" "}
-            <code className="rounded bg-muted px-1 py-0.5">{"{{discord.[0]}}"}</code>.
+            Verified interaction payloads are available under{" "}
+            <code className="rounded bg-muted px-1 py-0.5">
+              {"{{discord.[0]}}"}
+            </code>
+            .
           </p>
         </div>
       </DialogContent>

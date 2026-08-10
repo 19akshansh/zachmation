@@ -61,10 +61,14 @@ export const WaitExecutor: NodeExecutor<WaitData> = async ({
   });
 
   if (!resumeEvent) {
-    await step.realtime.publish(`node-error-timeout-${nodeId}`, waitChannel.status, {
-      nodeId,
-      status: "error",
-    });
+    await step.realtime.publish(
+      `node-error-timeout-${nodeId}`,
+      waitChannel.status,
+      {
+        nodeId,
+        status: "error",
+      },
+    );
     throw new NonRetriableError("WAIT: Timed out waiting for resume webhook");
   }
 

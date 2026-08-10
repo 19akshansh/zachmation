@@ -14,7 +14,10 @@ export const webhookTriggerExecutor: NodeExecutor<WebhookTriggerData> = async ({
     { nodeId, status: "loading" },
   );
 
-  const result = await step.run(`webhookTrigger-${nodeId}`, async () => context);
+  const result = await step.run(
+    `webhookTrigger-${nodeId}`,
+    async () => context,
+  );
 
   await step.realtime.publish(
     `node-success-${nodeId}`,

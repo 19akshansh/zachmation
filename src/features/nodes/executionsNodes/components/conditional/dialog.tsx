@@ -94,7 +94,9 @@ const formSchema = z
           message: "Add at least one case.",
         });
       }
-      const labels = values.cases.map((item) => item.label.trim().toLowerCase());
+      const labels = values.cases.map((item) =>
+        item.label.trim().toLowerCase(),
+      );
       if (new Set(labels).size !== labels.length) {
         ctx.addIssue({
           code: "custom",
@@ -182,7 +184,10 @@ export const ConditionalDialog = ({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="mt-4 space-y-6">
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="mt-4 space-y-6"
+          >
             <FormField
               control={form.control}
               name="mode"
@@ -197,11 +202,15 @@ export const ConditionalDialog = ({
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="if">If — true / false</SelectItem>
-                      <SelectItem value="switch">Switch — multiple cases</SelectItem>
+                      <SelectItem value="switch">
+                        Switch — multiple cases
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    If creates <code>true</code> and <code>false</code> outputs. Switch creates one output per case plus <code>default</code>.
+                    If creates <code>true</code> and <code>false</code> outputs.
+                    Switch creates one output per case plus <code>default</code>
+                    .
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -217,9 +226,15 @@ export const ConditionalDialog = ({
                     <FormItem>
                       <FormLabel>Left Value</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="{{set.[0].status}}" className="font-mono" />
+                        <Input
+                          {...field}
+                          placeholder="{{set.[0].status}}"
+                          className="font-mono"
+                        />
                       </FormControl>
-                      <FormDescription>Handlebars templates are supported.</FormDescription>
+                      <FormDescription>
+                        Handlebars templates are supported.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -231,18 +246,29 @@ export const ConditionalDialog = ({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Operator</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
                         <FormControl>
-                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value="equals">Equals</SelectItem>
-                          <SelectItem value="notEquals">Does not equal</SelectItem>
+                          <SelectItem value="notEquals">
+                            Does not equal
+                          </SelectItem>
                           <SelectItem value="contains">Contains</SelectItem>
-                          <SelectItem value="greaterThan">Greater than</SelectItem>
+                          <SelectItem value="greaterThan">
+                            Greater than
+                          </SelectItem>
                           <SelectItem value="lessThan">Less than</SelectItem>
                           <SelectItem value="isEmpty">Is empty</SelectItem>
-                          <SelectItem value="isNotEmpty">Is not empty</SelectItem>
+                          <SelectItem value="isNotEmpty">
+                            Is not empty
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -250,7 +276,7 @@ export const ConditionalDialog = ({
                   )}
                 />
 
-                {!['isEmpty', 'isNotEmpty'].includes(operator) && (
+                {!["isEmpty", "isNotEmpty"].includes(operator) && (
                   <FormField
                     control={form.control}
                     name="rightValue"
@@ -258,7 +284,11 @@ export const ConditionalDialog = ({
                       <FormItem>
                         <FormLabel>Right Value</FormLabel>
                         <FormControl>
-                          <Input {...field} placeholder="active" className="font-mono" />
+                          <Input
+                            {...field}
+                            placeholder="active"
+                            className="font-mono"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -275,9 +305,15 @@ export const ConditionalDialog = ({
                     <FormItem>
                       <FormLabel>Switch Value</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="{{webhook.[0].status}}" className="font-mono" />
+                        <Input
+                          {...field}
+                          placeholder="{{webhook.[0].status}}"
+                          className="font-mono"
+                        />
                       </FormControl>
-                      <FormDescription>Evaluated once, then compared against each case.</FormDescription>
+                      <FormDescription>
+                        Evaluated once, then compared against each case.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -287,27 +323,42 @@ export const ConditionalDialog = ({
                   <div className="flex items-center justify-between">
                     <div>
                       <FormLabel>Cases</FormLabel>
-                      <FormDescription>Each label becomes an output handle.</FormDescription>
+                      <FormDescription>
+                        Each label becomes an output handle.
+                      </FormDescription>
                     </div>
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => append({ label: `case${fields.length + 1}`, value: "" })}
+                      onClick={() =>
+                        append({ label: `case${fields.length + 1}`, value: "" })
+                      }
                     >
                       <PlusIcon className="mr-1.5 size-4" /> Add case
                     </Button>
                   </div>
 
                   {fields.map((field, index) => (
-                    <div key={field.id} className="grid grid-cols-[1fr_1.4fr_auto] gap-2 items-start rounded-lg border bg-background p-3">
+                    <div
+                      key={field.id}
+                      className="grid grid-cols-[1fr_1.4fr_auto] gap-2 items-start rounded-lg border bg-background p-3"
+                    >
                       <FormField
                         control={form.control}
                         name={`cases.${index}.label`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs">Output Label</FormLabel>
-                            <FormControl><Input {...field} placeholder="active" className="font-mono" /></FormControl>
+                            <FormLabel className="text-xs">
+                              Output Label
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="active"
+                                className="font-mono"
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -317,8 +368,16 @@ export const ConditionalDialog = ({
                         name={`cases.${index}.value`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-xs">Match Value</FormLabel>
-                            <FormControl><Input {...field} placeholder="active" className="font-mono" /></FormControl>
+                            <FormLabel className="text-xs">
+                              Match Value
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                placeholder="active"
+                                className="font-mono"
+                              />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -336,7 +395,9 @@ export const ConditionalDialog = ({
                       </Button>
                     </div>
                   ))}
-                  <FormMessage>{form.formState.errors.cases?.message}</FormMessage>
+                  <FormMessage>
+                    {form.formState.errors.cases?.message}
+                  </FormMessage>
                 </div>
               </div>
             )}

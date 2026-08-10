@@ -15,7 +15,11 @@ type ZachurlNodeType = Node<ZachurlNodeData>;
 export const ZachurlNode = (props: NodeProps<ZachurlNodeType>) => {
   const [open, setOpen] = useState(false);
   const { setNodes } = useReactFlow();
-  useNodeStatus({ nodeId: props.id, channel: CHANNELS.ZACHURL, topics: ["status"] });
+  useNodeStatus({
+    nodeId: props.id,
+    channel: CHANNELS.ZACHURL,
+    topics: ["status"],
+  });
 
   return (
     <>
@@ -23,11 +27,15 @@ export const ZachurlNode = (props: NodeProps<ZachurlNodeType>) => {
         open={open}
         onOpenChange={setOpen}
         defaultValues={props.data}
-        onSubmit={(values) => setNodes((nodes) =>
-          nodes.map((node) => node.id === props.id
-            ? { ...node, data: { ...node.data, ...values } }
-            : node)
-        )}
+        onSubmit={(values) =>
+          setNodes((nodes) =>
+            nodes.map((node) =>
+              node.id === props.id
+                ? { ...node, data: { ...node.data, ...values } }
+                : node,
+            ),
+          )
+        }
       />
       <BaseExecutionNode
         {...props}

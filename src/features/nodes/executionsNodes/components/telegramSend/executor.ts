@@ -68,10 +68,12 @@ export const TelegramSendExecutor: NodeExecutor<TelegramSendData> = async ({
 
       return {
         ...context,
-        [data.variableName!]: [{
-          text: messageText.slice(0, 4096),
-          telegramResponse: response,
-        }],
+        [data.variableName!]: [
+          {
+            text: messageText.slice(0, 4096),
+            telegramResponse: response,
+          },
+        ],
       };
     });
     await step.realtime.publish(

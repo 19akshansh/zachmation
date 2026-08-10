@@ -9,7 +9,9 @@ import { NodeStatus } from "@/components/reactFlow/node-status-indicator";
 import { useNodeStatus } from "../../hooks/useNodeStatus";
 import { CHANNELS } from "@/config/channels";
 
-export type ZachCourseData = Partial<ZachCourseFormValues> & { status?: NodeStatus };
+export type ZachCourseData = Partial<ZachCourseFormValues> & {
+  status?: NodeStatus;
+};
 export type ZachCourseNodeType = Node<ZachCourseData>;
 
 export const ZachCourseNode = (props: NodeProps<ZachCourseNodeType>) => {

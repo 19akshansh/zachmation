@@ -47,8 +47,7 @@ export const WorkflowSettingsDialog = ({
     try {
       await setErrorWorkflow.mutateAsync({
         id: workflowId,
-        errorWorkflowId:
-          errorWorkflowId === "none" ? null : errorWorkflowId,
+        errorWorkflowId: errorWorkflowId === "none" ? null : errorWorkflowId,
       });
       setOpen(false);
     } catch {
