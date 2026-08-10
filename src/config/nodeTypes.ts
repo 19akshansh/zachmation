@@ -14,6 +14,7 @@ import {
   CalendarClockIcon,
   MailIcon,
   TimerIcon,
+  BrainCircuitIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -224,6 +225,14 @@ export const executionNodes: NodeTypeOption[] = [
     label: "GitHub",
     description: "Create, list, comment on, or close GitHub issues",
     icon: "/github.svg",
+    pro: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.VECTOR_STORE,
+    label: "Vector Store",
+    description: "Store and search workflow memory using semantic embeddings",
+    icon: BrainCircuitIcon,
     pro: false,
     pinnable: true,
   },

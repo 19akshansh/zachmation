@@ -32,6 +32,7 @@ import { PostgresQueryExecutor } from "../components/postgresQuery/executor";
 import { NotionExecutor } from "../components/notion/executor";
 import { GitHubExecutor } from "../components/github/executor";
 import { AirtableExecutor } from "../components/airtable/executor";
+import { VectorStoreExecutor } from "../components/vectorStore/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -76,6 +77,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.NOTION]: NotionExecutor,
   [NodeType.GITHUB]: GitHubExecutor,
   [NodeType.AIRTABLE]: AirtableExecutor,
+  [NodeType.VECTOR_STORE]: VectorStoreExecutor
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {
