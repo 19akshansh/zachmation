@@ -14,6 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
+import { Badge } from "./ui/badge";
 import { useHasActivePROSubscription } from "@/features/subscriptions/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 
@@ -140,9 +141,12 @@ export function NodeSelector({
                   <span className="font-medium text-sm">
                     {nodeType.label}
                     {nodeType.pro ? (
-                      <span className="ml-2 text-xs text-muted-foreground">
+                      <Badge
+                        variant="outline"
+                        className="ml-2 border-blue-500/40 text-blue-400 bg-blue-500/10"
+                      >
                         PRO
-                      </span>
+                      </Badge>
                     ) : null}
                   </span>
                   {nodeType.description ? (
