@@ -1,5 +1,6 @@
 "use client";
 
+import { MailIcon } from "lucide-react";
 import {
   EntityHeader,
   EntityContainer,
@@ -136,6 +137,9 @@ const credentialLogos: Record<string, string> = {
   [CredentialType.TELEGRAM_BOT]: "/telegram.svg",
   [CredentialType.ZACHURL]: "/zachurl.svg",
   [CredentialType.ZACHCOURSE]: "/zachcourse.svg",
+  [CredentialType.SMTP]: "/smtp.svg",
+  [CredentialType.GOOGLE_SHEETS]: "/googleSheets.svg",
+  [CredentialType.POSTGRES]: "/postgres.svg",
 };
 
 type CredentialListItem = ReturnType<
@@ -151,7 +155,7 @@ export const CredentialItem = ({ data }: { data: CredentialListItem }) => {
     });
   };
 
-  const logo = credentialLogos[data.type] || "/openai.svg";
+  const logo = credentialLogos[data.type];
 
   return (
     <EntityItem
@@ -164,8 +168,12 @@ export const CredentialItem = ({ data }: { data: CredentialListItem }) => {
         </>
       }
       image={
-        <div className="size-8 flex items-center justify-center">
-          <Image src={logo} alt={data.type} width={24} height={24} />
+        <div className="flex size-8 items-center justify-center">
+          {logo ? (
+            <Image src={logo} alt={data.type} width={24} height={24} />
+          ) : (
+            <MailIcon className="size-5 text-muted-foreground" />
+          )}
         </div>
       }
       onRemove={handleRemove}

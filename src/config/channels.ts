@@ -24,4 +24,11 @@ export const CHANNELS = {
   FILTER: "filterExec",
   LIST_SHAPE: "listShapeExec",
   DATE_TIME: "dateTimeExec",
+  EMAIL_SEND: "emailSendExec",
+  GOOGLE_SHEETS: "googleSheetsExec",
+  CRON_TRIGGER: "cronTriggerExec",
+  POSTGRES_QUERY: "postgresQueryExec",
+  AIRTABLE: "airtableExec",
+  NOTION: "notionExec",
+  GITHUB: "githubExec",
 } as const;

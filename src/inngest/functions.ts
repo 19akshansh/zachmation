@@ -1,4 +1,5 @@
 import Handlebars from "handlebars";
+import { CronExpressionParser } from "cron-parser";
 import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
@@ -357,6 +358,69 @@ const runNodeSequence = async ({
 
   return context;
 };
+
+export const checkScheduledWorkflows = inngest.createFunction(
+  {
+    id: "checkScheduledWorkflows",
+    triggers: {
+      cron: "*/5 * * * *",
+    },
+  },
+  async ({ step }) => {
+    const cronNodes = await step.run("findCronNodes", async () => {
+      return prisma.node.findMany({
+        where: { type: NodeType.CRON_TRIGGER },
+        select: {
+          id: true,
+          workflowId: true,
+          data: true,
+          createdAt: true,
+          lastTriggeredAt: true,
+        },
+      });
+    });
+
+    const now = new Date();
+
+    for (const node of cronNodes) {
+      const cronExpression = (
+        node.data as { cronExpression?: string }
+      )?.cronExpression?.trim();
+
+      if (!cronExpression) continue;
+
+      const isDue = await step.run(`checkDue-${node.id}`, async () => {
+        try {
+          const interval = CronExpressionParser.parse(cronExpression, {
+            currentDate: node.lastTriggeredAt ?? node.createdAt,
+          });
+          const nextRun = interval.next().toDate();
+          return nextRun <= now;
+        } catch {
+          return false;
+        }
+      });
+
+      if (!isDue) continue;
+
+      await step.run(`trigger-${node.id}`, async () => {
+        await sendWorkflowExecution({
+          workflowId: node.workflowId,
+          initialData: {
+            cron: {
+              firedAt: now.toISOString(),
+            },
+          },
+        });
+
+        await prisma.node.update({
+          where: { id: node.id },
+          data: { lastTriggeredAt: now },
+        });
+      });
+    }
+  },
+);
 
 export const executeWorkflow = inngest.createFunction(
   {

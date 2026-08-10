@@ -12,6 +12,8 @@ import {
   ListFilterIcon,
   ListTreeIcon,
   CalendarClockIcon,
+  MailIcon,
+  TimerIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -29,6 +31,14 @@ export type NodeTypeOption = {
 };
 
 export const triggerNodes: NodeTypeOption[] = [
+  {
+    type: NodeType.CRON_TRIGGER,
+    label: "Schedule / Cron",
+    description: "Runs the workflow on a recurring cron schedule",
+    icon: TimerIcon,
+    pro: false,
+    pinnable: false,
+  },
   {
     type: NodeType.MANUAL_TRIGGER,
     label: "Execute Workflow Manually",
@@ -168,6 +178,54 @@ export const executionNodes: NodeTypeOption[] = [
     icon: CalendarClockIcon,
     pro: false,
     pinnable: false,
+  },
+  {
+    type: NodeType.EMAIL_SEND,
+    label: "Email / SMTP",
+    description: "Send an email through an SMTP credential",
+    icon: MailIcon,
+    pro: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.GOOGLE_SHEETS,
+    label: "Google Sheets",
+    description: "Read or append spreadsheet rows",
+    icon: "/googleSheets.svg",
+    pro: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.POSTGRES_QUERY,
+    label: "Postgres Query",
+    description: "Run a parameterized SELECT or INSERT query",
+    icon: "/postgres.svg",
+    pro: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.AIRTABLE,
+    label: "Airtable",
+    description: "List, create, update, or delete Airtable records",
+    icon: "/airtable.svg",
+    pro: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.NOTION,
+    label: "Notion",
+    description: "Query databases and create or update Notion pages",
+    icon: "/notion.svg",
+    pro: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.GITHUB,
+    label: "GitHub",
+    description: "Create, list, comment on, or close GitHub issues",
+    icon: "/github.svg",
+    pro: false,
+    pinnable: true,
   },
   {
     type: NodeType.GEMINI,

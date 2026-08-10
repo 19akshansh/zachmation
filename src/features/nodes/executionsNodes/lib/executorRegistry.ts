@@ -25,6 +25,13 @@ import { SandboxedCodeExecutor } from "../components/sandboxedCode/executor";
 import { FilterExecutor } from "../components/filter/executor";
 import { ListShapeExecutor } from "../components/listShape/executor";
 import { DateTimeExecutor } from "../components/dateTime/executor";
+import { EmailSendExecutor } from "../components/emailSend/executor";
+import { GoogleSheetsExecutor } from "../components/googleSheets/executor";
+import { CronTriggerExecutor } from "../../triggersNodes/components/cronTrigger/executor";
+import { PostgresQueryExecutor } from "../components/postgresQuery/executor";
+import { NotionExecutor } from "../components/notion/executor";
+import { GitHubExecutor } from "../components/github/executor";
+import { AirtableExecutor } from "../components/airtable/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -62,6 +69,13 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.FILTER]: FilterExecutor,
   [NodeType.LIST_SHAPE]: ListShapeExecutor,
   [NodeType.DATE_TIME]: DateTimeExecutor,
+  [NodeType.EMAIL_SEND]: EmailSendExecutor,
+  [NodeType.GOOGLE_SHEETS]: GoogleSheetsExecutor,
+  [NodeType.CRON_TRIGGER]: CronTriggerExecutor,
+  [NodeType.POSTGRES_QUERY]: PostgresQueryExecutor,
+  [NodeType.NOTION]: NotionExecutor,
+  [NodeType.GITHUB]: GitHubExecutor,
+  [NodeType.AIRTABLE]: AirtableExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

@@ -28,6 +28,13 @@ import { SandboxedCodeNode } from "@/features/nodes/executionsNodes/components/s
 import { FilterNode } from "@/features/nodes/executionsNodes/components/filter/node";
 import { ListShapeNode } from "@/features/nodes/executionsNodes/components/listShape/node";
 import { DateTimeNode } from "@/features/nodes/executionsNodes/components/dateTime/node";
+import { EmailSendNode } from "@/features/nodes/executionsNodes/components/emailSend/node";
+import { GoogleSheetsNode } from "@/features/nodes/executionsNodes/components/googleSheets/node";
+import { CronTriggerNode } from "@/features/nodes/triggersNodes/components/cronTrigger/node";
+import { PostgresQueryNode } from "@/features/nodes/executionsNodes/components/postgresQuery/node";
+import { AirtableNode } from "@/features/nodes/executionsNodes/components/airtable/node";
+import { NotionNode } from "@/features/nodes/executionsNodes/components/notion/node";
+import { GitHubNode } from "@/features/nodes/executionsNodes/components/github/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -57,6 +64,13 @@ export const nodeComponents = {
   [NodeType.FILTER]: FilterNode,
   [NodeType.LIST_SHAPE]: ListShapeNode,
   [NodeType.DATE_TIME]: DateTimeNode,
+  [NodeType.EMAIL_SEND]: EmailSendNode,
+  [NodeType.GOOGLE_SHEETS]: GoogleSheetsNode,
+  [NodeType.POSTGRES_QUERY]: PostgresQueryNode,
+  [NodeType.AIRTABLE]: AirtableNode,
+  [NodeType.NOTION]: NotionNode,
+  [NodeType.GITHUB]: GitHubNode,
+  [NodeType.CRON_TRIGGER]: CronTriggerNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

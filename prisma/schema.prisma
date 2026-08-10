@@ -92,6 +92,13 @@ enum CredentialType {
   TELEGRAM_BOT
   ZACHURL
   ZACHCOURSE
+  SMTP
+  GOOGLE_SHEETS
+  POSTGRES
+  CRON_TRIGGER
+  AIRTABLE
+  NOTION
+  GITHUB
 }
 
 model Workflow {
@@ -140,6 +147,13 @@ enum NodeType {
   FILTER
   LIST_SHAPE
   DATE_TIME
+  EMAIL_SEND
+  GOOGLE_SHEETS
+  POSTGRES_QUERY
+  CRON_TRIGGER
+  AIRTABLE
+  NOTION
+  GITHUB
 }
 
 model Node {
@@ -161,6 +175,7 @@ model Node {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  lastTriggeredAt DateTime?
 }
 
 model Connection {
