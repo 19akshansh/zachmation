@@ -35,31 +35,33 @@ import { z } from "zod";
 import { CredentialType } from "@/generated/prisma/enums";
 import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
 
-const formSchema = z.object({
-  credentialId: z.string().min(1, "Gemini credential is required."),
-  operation: z.enum(["store", "search"]),
-  namespace: z.string().trim().min(1, "Namespace is required."),
-  content: z.string().optional(),
-  query: z.string().optional(),
-  limit: z.number().int().min(1).max(20),
-  variableName: z.string().trim().min(1, "Result variable is required."),
-}).superRefine((values, ctx) => {
-  if (values.operation === "store" && !values.content?.trim()) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["content"],
-      message: "Content is required when storing memory.",
-    });
-  }
+const formSchema = z
+  .object({
+    credentialId: z.string().min(1, "Gemini credential is required."),
+    operation: z.enum(["store", "search"]),
+    namespace: z.string().trim().min(1, "Namespace is required."),
+    content: z.string().optional(),
+    query: z.string().optional(),
+    limit: z.number().int().min(1).max(20),
+    variableName: z.string().trim().min(1, "Result variable is required."),
+  })
+  .superRefine((values, ctx) => {
+    if (values.operation === "store" && !values.content?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["content"],
+        message: "Content is required when storing memory.",
+      });
+    }
 
-  if (values.operation === "search" && !values.query?.trim()) {
-    ctx.addIssue({
-      code: "custom",
-      path: ["query"],
-      message: "Query is required when searching memory.",
-    });
-  }
-});
+    if (values.operation === "search" && !values.query?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["query"],
+        message: "Query is required when searching memory.",
+      });
+    }
+  });
 
 export type VectorStoreFormValues = z.infer<typeof formSchema>;
 
@@ -126,8 +128,8 @@ export const VectorStoreDialog = ({
             <div className="space-y-1">
               <DialogTitle>Vector Store</DialogTitle>
               <DialogDescription>
-                Store workflow knowledge as embeddings or search it by
-                semantic similarity.
+                Store workflow knowledge as embeddings or search it by semantic
+                similarity.
               </DialogDescription>
             </div>
           </div>

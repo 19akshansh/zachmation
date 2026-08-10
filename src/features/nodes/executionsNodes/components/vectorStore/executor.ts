@@ -4,10 +4,7 @@ import prisma from "@/lib/db";
 import { decrypt } from "@/lib/encryption";
 import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { vectorStoreChannel } from "@/inngest/channels/executions/vectorStore";
-import {
-  searchMemory,
-  storeMemory,
-} from "@/lib/vectorMemory";
+import { searchMemory, storeMemory } from "@/lib/vectorMemory";
 
 type VectorStoreData = {
   variableName?: string;
@@ -32,7 +29,12 @@ export const VectorStoreExecutor: NodeExecutor<VectorStoreData> = async ({
     { nodeId, status: "loading" },
   );
 
-  if (!data.operation || !data.namespace || !data.variableName || !data.credentialId) {
+  if (
+    !data.operation ||
+    !data.namespace ||
+    !data.variableName ||
+    !data.credentialId
+  ) {
     await step.realtime.publish(
       `node-error-config-${nodeId}`,
       vectorStoreChannel.status,
@@ -43,7 +45,7 @@ export const VectorStoreExecutor: NodeExecutor<VectorStoreData> = async ({
     );
   }
 
-  const variableName = data.variableName
+  const variableName = data.variableName;
 
   try {
     const result = await step.run(`vector-store-${nodeId}`, async () => {
@@ -65,16 +67,12 @@ export const VectorStoreExecutor: NodeExecutor<VectorStoreData> = async ({
       const namespace = Handlebars.compile(data.namespace)(context);
 
       if (!namespace.trim()) {
-        throw new NonRetriableError(
-          "VECTOR_STORE: Namespace cannot be empty",
-        );
+        throw new NonRetriableError("VECTOR_STORE: Namespace cannot be empty");
       }
 
       if (data.operation === "store") {
         if (!data.content?.trim()) {
-          throw new NonRetriableError(
-            "VECTOR_STORE (store): Missing content",
-          );
+          throw new NonRetriableError("VECTOR_STORE (store): Missing content");
         }
 
         const content = Handlebars.compile(data.content)(context);
@@ -98,9 +96,7 @@ export const VectorStoreExecutor: NodeExecutor<VectorStoreData> = async ({
       }
 
       if (!data.query?.trim()) {
-        throw new NonRetriableError(
-          "VECTOR_STORE (search): Missing query",
-        );
+        throw new NonRetriableError("VECTOR_STORE (search): Missing query");
       }
 
       const query = Handlebars.compile(data.query)(context);

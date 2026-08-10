@@ -156,6 +156,7 @@ enum NodeType {
   NOTION
   GITHUB
   VECTOR_STORE
+  AGENT
 }
 
 model Node {
@@ -201,14 +202,15 @@ model Connection {
 }
 
 model WorkflowMemory {
-  id String @id
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id
+  userId    String
   namespace String
-  content String
-  metadata Json?
+  content   String
+  metadata  Json?
   embedding Unsupported("vector(768)")
   createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@index([userId, namespace])
   @@map("workflow_memory")

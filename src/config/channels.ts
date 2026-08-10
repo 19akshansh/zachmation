@@ -32,4 +32,5 @@ export const CHANNELS = {
   NOTION: "notionExec",
   GITHUB: "githubExec",
   VECTOR_STORE: "vectorStoreExec",
+  AGENT: "agentExec",
 } as const;
