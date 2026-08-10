@@ -93,6 +93,7 @@ enum CredentialType {
   ZACHURL
   ZACHCOURSE
   SMTP
+  GOOGLE_SHEETS
 }
 
 model Workflow {
@@ -142,6 +143,7 @@ enum NodeType {
   LIST_SHAPE
   DATE_TIME
   EMAIL_SEND
+  GOOGLE_SHEETS
 }
 
 model Node {

@@ -1,8 +1,8 @@
 "use client";
 
-import { Loader2Icon } from "lucide-react";
+import { Loader2Icon, ExternalLinkIcon } from "lucide-react";
 import { CredentialType } from "@/generated/prisma/enums";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useCreateCredential,
   useUpdateCredential,
@@ -10,6 +10,7 @@ import {
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import z from "zod";
 import {
   Card,
@@ -39,6 +40,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
+import { toast } from "sonner";
 
 const formSchema = z
   .object({
@@ -144,10 +146,16 @@ const credentialTypeOptions = [
     label: "SMTP",
     logo: "/smtp.svg",
   },
+  {
+    value: CredentialType.GOOGLE_SHEETS,
+    label: "Google Sheets",
+    logo: "/googleSheets.svg",
+  },
 ];
 
 export const CredentialForm = ({ initialData }: CredentialFormProps) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const createCredential = useCreateCredential();
   const updateCredential = useUpdateCredential();
   const { handleError, modal } = useUpgradeModal();
@@ -180,6 +188,17 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
   });
 
   const selectedType = form.watch("type");
+
+  useEffect(() => {
+    if (searchParams.get("type") === CredentialType.GOOGLE_SHEETS) {
+      form.setValue("type", CredentialType.GOOGLE_SHEETS);
+    }
+
+    const error = searchParams.get("error");
+    if (error) {
+      toast.error(error.replaceAll("_", " "));
+    }
+  }, [form, searchParams]);
 
   const onSubmit = async (values: FormValues) => {
     const value =
@@ -298,7 +317,74 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                   </FormItem>
                 )}
               />
-              {selectedType === CredentialType.SMTP ? (
+              {selectedType === CredentialType.GOOGLE_SHEETS ? (
+                <div className="space-y-5 rounded-lg border p-4">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-medium">
+                      Connect Google Sheets
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Connect your Google account with OAuth. Zachmation stores
+                      the encrypted OAuth tokens and uses them only when a
+                      Google Sheets node runs. Your spreadsheets remain in your
+                      Google Drive.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg bg-muted p-4 space-y-3">
+                    <h4 className="text-sm font-medium">Setup Instructions</h4>
+                    <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                      <li>
+                        Enter a name for this Google Sheets connection above.
+                      </li>
+                      <li>
+                        Click{" "}
+                        <span className="font-medium text-foreground">
+                          Connect Google Account
+                        </span>
+                        .
+                      </li>
+                      <li>
+                        Sign in to Google and review the requested Sheets
+                        permission.
+                      </li>
+                      <li>Allow access and return to Zachmation.</li>
+                    </ol>
+                  </div>
+
+                  <Button
+                    type="button"
+                    className="w-full"
+                    onClick={() => {
+                      const name = form.getValues("name").trim();
+                      if (!name) {
+                        form.setError("name", {
+                          type: "manual",
+                          message: "Name is required before connecting Google.",
+                        });
+                        return;
+                      }
+
+                      const params = new URLSearchParams({ name });
+                      if (initialData?.id) {
+                        params.set("credentialId", initialData.id);
+                      }
+
+                      window.location.href = `/api/googleSheets/oauth/start?${params.toString()}`;
+                    }}
+                  >
+                    <ExternalLinkIcon className="mr-2 size-4" />
+                    {isEdit
+                      ? "Reconnect Google Account"
+                      : "Connect Google Account"}
+                  </Button>
+
+                  <p className="text-xs text-muted-foreground">
+                    You can revoke Zachmation's access later from your Google
+                    Account security settings.
+                  </p>
+                </div>
+              ) : selectedType === CredentialType.SMTP ? (
                 <div className="space-y-5 rounded-lg border p-4">
                   <div>
                     <h3 className="text-sm font-medium">SMTP Configuration</h3>
@@ -433,24 +519,26 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
               )}
 
               <div className="flex gap-3">
-                <Button
-                  type="submit"
-                  disabled={
-                    createCredential.isPending || updateCredential.isPending
-                  }
-                >
-                  {(createCredential.isPending ||
-                    updateCredential.isPending) && (
-                    <Loader2Icon className="size-4 animate-spin" />
-                  )}
-                  {createCredential.isPending
-                    ? "Creating..."
-                    : updateCredential.isPending
-                      ? "Updating..."
-                      : isEdit
-                        ? "Update"
-                        : "Create"}
-                </Button>
+                {selectedType !== CredentialType.GOOGLE_SHEETS && (
+                  <Button
+                    type="submit"
+                    disabled={
+                      createCredential.isPending || updateCredential.isPending
+                    }
+                  >
+                    {(createCredential.isPending ||
+                      updateCredential.isPending) && (
+                      <Loader2Icon className="size-4 animate-spin" />
+                    )}
+                    {createCredential.isPending
+                      ? "Creating..."
+                      : updateCredential.isPending
+                        ? "Updating..."
+                        : isEdit
+                          ? "Update"
+                          : "Create"}
+                  </Button>
+                )}
                 <Button type="button" variant={"outline"} asChild>
                   <Link href="/credentials" prefetch>
                     Cancel

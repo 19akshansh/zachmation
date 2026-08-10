@@ -179,6 +179,14 @@ export const executionNodes: NodeTypeOption[] = [
     pinnable: true,
   },
   {
+    type: NodeType.GOOGLE_SHEETS,
+    label: "Google Sheets",
+    description: "Read or append spreadsheet rows",
+    icon: "/googleSheets.svg",
+    pro: false,
+    pinnable: false,
+  },
+  {
     type: NodeType.GEMINI,
     label: "GEMINI Chat",
     description: "Makes a GEMINI(Chat) Request",

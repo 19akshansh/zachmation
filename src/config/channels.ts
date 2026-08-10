@@ -25,4 +25,5 @@ export const CHANNELS = {
   LIST_SHAPE: "listShapeExec",
   DATE_TIME: "dateTimeExec",
   EMAIL_SEND: "emailSendExec",
+  GOOGLE_SHEETS: "googleSheetsExec",
 } as const;
