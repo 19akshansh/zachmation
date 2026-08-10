@@ -7,9 +7,12 @@ const EMBEDDING_DIMENSIONS = 768;
 
 const defaultEmbeddingModel = google.textEmbeddingModel(EMBEDDING_MODEL_ID);
 
+type EmbeddingTaskType = "RETRIEVAL_DOCUMENT" | "RETRIEVAL_QUERY";
+
 export async function generateEmbedding(
   text: string,
   geminiApiKey?: string,
+  taskType: EmbeddingTaskType = "RETRIEVAL_DOCUMENT",
 ): Promise<number[]> {
   const model = geminiApiKey
     ? createGoogleGenerativeAI({ apiKey: geminiApiKey }).textEmbeddingModel(
@@ -23,6 +26,7 @@ export async function generateEmbedding(
     providerOptions: {
       google: {
         outputDimensionality: EMBEDDING_DIMENSIONS,
+        taskType,
       },
     },
   });
@@ -65,7 +69,11 @@ export async function storeMemory(params: {
   const chunks = chunkText(params.content);
 
   for (const chunk of chunks) {
-    const embedding = await generateEmbedding(chunk, params.geminiApiKey);
+    const embedding = await generateEmbedding(
+      chunk,
+      params.geminiApiKey,
+      "RETRIEVAL_DOCUMENT",
+    );
     const vectorString = `[${embedding.join(",")}]`;
 
     await prisma.$executeRaw`
@@ -104,6 +112,7 @@ export async function searchMemory(params: {
   const queryEmbedding = await generateEmbedding(
     params.query,
     params.geminiApiKey,
+    "RETRIEVAL_QUERY",
   );
   const vectorString = `[${queryEmbedding.join(",")}]`;
 
