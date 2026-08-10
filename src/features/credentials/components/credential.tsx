@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2Icon, ExternalLinkIcon } from "lucide-react";
+import { DatabaseIcon, Loader2Icon, ExternalLinkIcon } from "lucide-react";
 import { CredentialType } from "@/generated/prisma/enums";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
@@ -150,6 +150,11 @@ const credentialTypeOptions = [
     value: CredentialType.GOOGLE_SHEETS,
     label: "Google Sheets",
     logo: "/googleSheets.svg",
+  },
+  {
+    value: CredentialType.POSTGRES,
+    label: "Postgres",
+    logo: "/postgres.svg",
   },
 ];
 
@@ -383,6 +388,67 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                     You can revoke Zachmation's access later from your Google
                     Account security settings.
                   </p>
+                </div>
+              ) : selectedType === CredentialType.POSTGRES ? (
+                <div className="space-y-5 rounded-lg border p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <DatabaseIcon className="size-4" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-medium">
+                        Postgres Connection
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        Store a Postgres connection string encrypted in the
+                        credential vault.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-muted p-4 space-y-2">
+                    <h4 className="text-sm font-medium">Setup</h4>
+                    <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground">
+                      <li>
+                        Copy the connection string from your Postgres provider.
+                      </li>
+                      <li>Paste it below and save the credential.</li>
+                      <li>Use this credential from a Postgres Query node.</li>
+                    </ol>
+                    <p className="text-xs text-muted-foreground">
+                      Example:{" "}
+                      <code>postgresql://user:password@host:5432/database</code>
+                    </p>
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="value"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Connection String</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="password"
+                            placeholder={
+                              isEdit
+                                ? "Leave blank to keep the existing connection"
+                                : "postgresql://user:password@host:5432/database"
+                            }
+                            className="font-mono"
+                          />
+                        </FormControl>
+                        {isEdit && !field.value && (
+                          <p className="text-xs text-muted-foreground">
+                            The saved connection string is never sent back to
+                            this page.
+                          </p>
+                        )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               ) : selectedType === CredentialType.SMTP ? (
                 <div className="space-y-5 rounded-lg border p-4">

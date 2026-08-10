@@ -139,6 +139,7 @@ const credentialLogos: Record<string, string> = {
   [CredentialType.ZACHCOURSE]: "/zachcourse.svg",
   [CredentialType.SMTP]: "/smtp.svg",
   [CredentialType.GOOGLE_SHEETS]: "/googleSheets.svg",
+  [CredentialType.POSTGRES]: "/postgres.svg",
 };
 
 type CredentialListItem = ReturnType<

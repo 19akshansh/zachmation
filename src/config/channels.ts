@@ -27,4 +27,5 @@ export const CHANNELS = {
   EMAIL_SEND: "emailSendExec",
   GOOGLE_SHEETS: "googleSheetsExec",
   CRON_TRIGGER: "cronTriggerExec",
+  POSTGRES_QUERY: "postgresQueryExec",
 } as const;

@@ -193,7 +193,15 @@ export const executionNodes: NodeTypeOption[] = [
     description: "Read or append spreadsheet rows",
     icon: "/googleSheets.svg",
     pro: false,
-    pinnable: false,
+    pinnable: true,
+  },
+  {
+    type: NodeType.POSTGRES_QUERY,
+    label: "Postgres Query",
+    description: "Run a parameterized SELECT or INSERT query",
+    icon: "/postgres.svg",
+    pro: false,
+    pinnable: true,
   },
   {
     type: NodeType.GEMINI,

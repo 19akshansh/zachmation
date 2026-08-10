@@ -31,6 +31,7 @@ import { DateTimeNode } from "@/features/nodes/executionsNodes/components/dateTi
 import { EmailSendNode } from "@/features/nodes/executionsNodes/components/emailSend/node";
 import { GoogleSheetsNode } from "@/features/nodes/executionsNodes/components/googleSheets/node";
 import { CronTriggerNode } from "@/features/nodes/triggersNodes/components/cronTrigger/node";
+import { PostgresQueryNode } from "@/features/nodes/executionsNodes/components/postgresQuery/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -62,6 +63,7 @@ export const nodeComponents = {
   [NodeType.DATE_TIME]: DateTimeNode,
   [NodeType.EMAIL_SEND]: EmailSendNode,
   [NodeType.GOOGLE_SHEETS]: GoogleSheetsNode,
+  [NodeType.POSTGRES_QUERY]: PostgresQueryNode,
   [NodeType.CRON_TRIGGER]: CronTriggerNode,
 } as const satisfies NodeTypes;
 
