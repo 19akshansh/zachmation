@@ -61,9 +61,7 @@ export const ListShapeExecutor: NodeExecutor<ListShapeData> = async ({
     const result = await step.run(`list-shape-${nodeId}`, async () => {
       if (data.mode === "sort") {
         if (!data.fieldPath) {
-          throw new NonRetriableError(
-            "LIST_SHAPE (sort): Missing field path",
-          );
+          throw new NonRetriableError("LIST_SHAPE (sort): Missing field path");
         }
 
         const sorted = [...source].sort((a, b) => {
@@ -109,9 +107,7 @@ export const ListShapeExecutor: NodeExecutor<ListShapeData> = async ({
 
       return {
         ...context,
-        [data.variableName!]: [
-          { [data.aggregateFieldName]: packed },
-        ],
+        [data.variableName!]: [{ [data.aggregateFieldName]: packed }],
       };
     });
 

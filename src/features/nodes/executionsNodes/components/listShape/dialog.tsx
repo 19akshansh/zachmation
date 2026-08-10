@@ -194,8 +194,8 @@ export const ListShapeDialog = ({
                     />
                   </FormControl>
                   <FormDescription>
-                    Field used by the operation. Nested paths are supported,
-                    for example <code>user.id</code>.
+                    Field used by the operation. Nested paths are supported, for
+                    example <code>user.id</code>.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
