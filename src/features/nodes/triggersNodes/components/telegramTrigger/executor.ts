@@ -3,18 +3,19 @@ import { telegramTriggerChannel } from "@/inngest/channels/triggers/telegramTrig
 
 type TelegramTriggerData = Record<string, unknown>;
 
-export const telegramTriggerExecutor: NodeExecutor<TelegramTriggerData> = async ({
-  nodeId,
-  context,
-  step,
-}) => {
+export const telegramTriggerExecutor: NodeExecutor<
+  TelegramTriggerData
+> = async ({ nodeId, context, step }) => {
   await step.realtime.publish(
     `node-loading-${nodeId}`,
     telegramTriggerChannel.status,
     { nodeId, status: "loading" },
   );
 
-  const result = await step.run(`telegramTrigger-${nodeId}`, async () => context);
+  const result = await step.run(
+    `telegramTrigger-${nodeId}`,
+    async () => context,
+  );
 
   await step.realtime.publish(
     `node-success-${nodeId}`,

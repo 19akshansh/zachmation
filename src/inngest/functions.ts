@@ -1,18 +1,21 @@
+import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
-import { topologicalSort } from "./utils";
+import { getReachableSubgraph, topologicalSort } from "./utils";
 import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegistry";
 import { Connection, Node, Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
 import { PRO_NODES } from "@/config/nodeTypes";
+import { CHANNELS } from "@/config/channels";
 import { withZachCourseStep } from "./steps/zachcourse";
 import { sendWorkflowExecution } from "./utils";
 import type {
   WorkflowContext,
   WorkflowStepTools,
 } from "@/features/nodes/executionsNodes/types";
+import { conditionalChannel } from "./channels/executions/conditional";
 
 type ExecutableNode = {
   id: string;
@@ -88,6 +91,60 @@ const getReachableNodes = (
   }
 
   return reachable;
+};
+
+type ConditionalData = {
+  mode: "if" | "switch";
+  leftValue?: string;
+  operator?:
+    | "equals"
+    | "notEquals"
+    | "contains"
+    | "greaterThan"
+    | "lessThan"
+    | "isEmpty"
+    | "isNotEmpty";
+  rightValue?: string;
+  switchValue?: string;
+  cases?: { label: string; value: string }[];
+};
+
+const resolveTemplate = (template: string, context: WorkflowContext) =>
+  Handlebars.compile(template ?? "")(context);
+
+const evaluateConditional = (
+  data: ConditionalData,
+  context: WorkflowContext,
+): string => {
+  if (data.mode === "switch") {
+    const resolved = resolveTemplate(data.switchValue ?? "", context);
+    const matched = (data.cases ?? []).find(
+      (item) => resolveTemplate(item.value, context) === resolved,
+    );
+    return matched?.label ?? "default";
+  }
+
+  const left = resolveTemplate(data.leftValue ?? "", context);
+  const right = resolveTemplate(data.rightValue ?? "", context);
+
+  switch (data.operator) {
+    case "equals":
+      return left === right ? "true" : "false";
+    case "notEquals":
+      return left !== right ? "true" : "false";
+    case "contains":
+      return left.includes(right) ? "true" : "false";
+    case "greaterThan":
+      return Number(left) > Number(right) ? "true" : "false";
+    case "lessThan":
+      return Number(left) < Number(right) ? "true" : "false";
+    case "isEmpty":
+      return left.trim() === "" ? "true" : "false";
+    case "isNotEmpty":
+      return left.trim() !== "" ? "true" : "false";
+    default:
+      return "false";
+  }
 };
 
 const runNodeSequence = async ({
@@ -197,6 +254,85 @@ const runNodeSequence = async ({
       continue;
     }
 
+    if (node.type === NodeType.CONDITIONAL) {
+      const conditionalData = node.data as ConditionalData;
+      const outputLabels =
+        conditionalData.mode === "if"
+          ? ["true", "false"]
+          : [
+              ...(conditionalData.cases ?? []).map((item) => item.label),
+              "default",
+            ];
+
+      if (
+        !["if", "switch"].includes(conditionalData.mode) ||
+        outputLabels.length === 0
+      ) {
+        throw new NonRetriableError("CONDITIONAL: Invalid configuration");
+      }
+
+      await step.realtime.publish(
+        `node-loading-${node.id}`,
+        conditionalChannel.status,
+        {
+          nodeId: node.id,
+          status: "loading",
+        },
+      );
+
+      try {
+        const chosenOutput = evaluateConditional(conditionalData, context);
+        const chosenReachable = getReachableSubgraph(
+          nodes,
+          connections,
+          node.id,
+          chosenOutput,
+        );
+
+        for (const label of outputLabels) {
+          if (label === chosenOutput) continue;
+
+          const unchosenReachable = getReachableSubgraph(
+            nodes,
+            connections,
+            node.id,
+            label,
+          );
+
+          for (const reachableId of unchosenReachable) {
+            if (!chosenReachable.has(reachableId)) {
+              skipped.add(reachableId);
+            }
+          }
+        }
+
+        await step.realtime.publish(
+          `node-success-${node.id}`,
+          conditionalChannel.status,
+          {
+            nodeId: node.id,
+            status: "success",
+            output: chosenOutput,
+          },
+        );
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Unknown error";
+        await step.realtime.publish(
+          `node-error-${node.id}`,
+          conditionalChannel.status,
+          {
+            nodeId: node.id,
+            status: "error",
+            error: message,
+          },
+        );
+        throw error;
+      }
+
+      continue;
+    }
+
     if (node.pinnedData !== null && node.pinnedData !== undefined) {
       const variableName = (node.data as Record<string, unknown>).variableName;
       if (typeof variableName === "string" && variableName.trim()) {
@@ -215,7 +351,7 @@ const runNodeSequence = async ({
       nodeId: node.id,
       userId,
       context,
-      step: stepScope === "workflow" ? step : scopedStep(step, stepScope),
+      step,
     });
   }
 
@@ -304,9 +440,7 @@ export const executeWorkflow = inngest.createFunction(
       );
 
       if (containsProNodes) {
-        const subscriptionStatus = await getSubscriptionStatus(
-          workflow.userId,
-        );
+        const subscriptionStatus = await getSubscriptionStatus(workflow.userId);
 
         if (subscriptionStatus === "UNKNOWN") {
           throw new NonRetriableError(
@@ -321,8 +455,12 @@ export const executeWorkflow = inngest.createFunction(
         }
       }
 
+      const executableWorkflowNodes = workflow.nodes.filter(
+        (node) => node.type !== NodeType.STICKY_NOTE,
+      );
+
       const sortedNodes = topologicalSort(
-        workflow.nodes,
+        executableWorkflowNodes,
         workflow.connections,
       );
 

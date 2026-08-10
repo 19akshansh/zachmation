@@ -407,7 +407,6 @@ export const workflowsRouter = createTRPCRouter({
         });
       }
 
-
       if (!PINNABLE_NODES.has(node.type)) {
         throw new TRPCError({
           code: "BAD_REQUEST",

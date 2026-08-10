@@ -69,7 +69,7 @@ export const LoopDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden border-border/60 p-0 shadow-2xl sm:max-w-[540px]">
+      <DialogContent className="max-h-[88vh] overflow-y-auto sm:max-w-[700px]">
         <DialogHeader className="border-b bg-muted/30 px-6 py-5">
           <div className="flex items-start gap-3">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
@@ -78,8 +78,8 @@ export const LoopDialog = ({
             <div className="space-y-1">
               <DialogTitle>Loop</DialogTitle>
               <DialogDescription>
-                Iterate over an array and run the connected loop branch once
-                for each item.
+                Iterate over an array and run the connected loop branch once for
+                each item.
               </DialogDescription>
             </div>
           </div>
@@ -148,7 +148,11 @@ export const LoopDialog = ({
             />
 
             <DialogFooter className="border-t pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
                 Cancel
               </Button>
               <Button type="submit">Save Loop</Button>

@@ -14,7 +14,10 @@ export const discordTriggerExecutor: NodeExecutor<DiscordTriggerData> = async ({
     { nodeId, status: "loading" },
   );
 
-  const result = await step.run(`discordTrigger-${nodeId}`, async () => context);
+  const result = await step.run(
+    `discordTrigger-${nodeId}`,
+    async () => context,
+  );
 
   await step.realtime.publish(
     `node-success-${nodeId}`,

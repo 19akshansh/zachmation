@@ -5,7 +5,6 @@ import { type LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { memo, type ReactNode } from "react";
 import { NodeType } from "@/generated/prisma/enums";
-import { PINNABLE_NODES } from "@/config/nodeTypes";
 import {
   usePinNode,
   useUnpinNode,
@@ -22,6 +21,7 @@ interface BaseExecutionNodeProps extends NodeProps {
   icon: LucideIcon | string;
   name: string;
   description?: string;
+  pinnable?: boolean;
   children?: ReactNode;
   status?: NodeStatus;
   onSettings?: () => void;
@@ -36,6 +36,7 @@ export const BaseExecutionNode = memo(
     icon: Icon,
     name,
     description,
+    pinnable,
     children,
     status = "initial",
     onSettings,
@@ -46,7 +47,7 @@ export const BaseExecutionNode = memo(
     const unpinNode = useUnpinNode();
 
     const nodeData = (data ?? {}) as Record<string, unknown>;
-    const canPin = PINNABLE_NODES.has(type as NodeType);
+    const canPin = pinnable === true || nodeData.pinnable === true;
     const variableName =
       typeof nodeData.variableName === "string"
         ? nodeData.variableName.trim()

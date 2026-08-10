@@ -86,9 +86,11 @@ export const DiscordExecutor: NodeExecutor<DiscordData> = async ({
 
       return {
         ...context,
-        [data.variableName]: [{
-          text: messageContent.slice(0, 2000),
-        }],
+        [data.variableName]: [
+          {
+            text: messageContent.slice(0, 2000),
+          },
+        ],
       };
     });
 

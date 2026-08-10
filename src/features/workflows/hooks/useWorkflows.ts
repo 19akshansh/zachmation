@@ -61,13 +61,10 @@ export const useRemoveWorkflow = () => {
   );
 };
 
-
 export const useErrorWorkflows = () => {
   const trpc = useTRPC();
 
-  return useSuspenseQuery(
-    trpc.workflows.getErrorWorkflows.queryOptions(),
-  );
+  return useSuspenseQuery(trpc.workflows.getErrorWorkflows.queryOptions());
 };
 
 export const useSetErrorWorkflow = () => {

@@ -1,12 +1,15 @@
-import { Connection, Node } from "@/generated/prisma/client";
 import toposort from "toposort";
 import { inngest } from "./client";
 import { createId } from "@paralleldrive/cuid2";
 
-export const topologicalSort = (
-  nodes: Node[],
-  connections: Connection[],
-): Node[] => {
+export const topologicalSort = <T extends { id: string }>(
+  nodes: T[],
+  connections: Array<{
+    fromNodeId: string;
+    toNodeId: string;
+    fromOutput: string;
+  }>,
+): T[] => {
   if (connections.length === 0) {
     return nodes;
   }
@@ -41,6 +44,45 @@ export const topologicalSort = (
 
   const nodeMap = new Map(nodes.map((n) => [n.id, n]));
   return sortedNodeIds.map((id) => nodeMap.get(id)!).filter(Boolean);
+};
+
+export const getReachableSubgraph = (
+  nodes: Array<{ id: string }>,
+  connections: Array<{
+    fromNodeId: string;
+    toNodeId: string;
+    fromOutput: string;
+  }>,
+  startNodeId: string,
+  outputLabel: string,
+): Set<string> => {
+  const reachable = new Set<string>();
+  const queue = connections
+    .filter(
+      (connection) =>
+        connection.fromNodeId === startNodeId &&
+        connection.fromOutput === outputLabel,
+    )
+    .map((connection) => connection.toNodeId);
+
+  while (queue.length) {
+    const nodeId = queue.shift()!;
+    if (reachable.has(nodeId)) continue;
+    if (!nodes.some((node) => node.id === nodeId)) continue;
+
+    reachable.add(nodeId);
+
+    for (const connection of connections) {
+      if (
+        connection.fromNodeId === nodeId &&
+        !reachable.has(connection.toNodeId)
+      ) {
+        queue.push(connection.toNodeId);
+      }
+    }
+  }
+
+  return reachable;
 };
 
 export const sendWorkflowExecution = async (data: {

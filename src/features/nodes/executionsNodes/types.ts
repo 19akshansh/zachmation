@@ -3,7 +3,8 @@ import type { ZachCourseStepTools } from "@/inngest/steps/zachcourse";
 
 export type WorkflowContext = Record<string, unknown[]>;
 export type StepTools = GetStepTools<Inngest.Any>;
-export type WorkflowStepTools = StepTools & Pick<ZachCourseStepTools, "zachcourse">;
+export type WorkflowStepTools = StepTools &
+  Pick<ZachCourseStepTools, "zachcourse">;
 
 export interface NodeExecutorParams<TData = Record<string, unknown>> {
   data: TData;

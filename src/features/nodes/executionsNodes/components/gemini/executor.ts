@@ -125,9 +125,11 @@ export const GeminiExecutor: NodeExecutor<GeminiData> = async ({
 
     return {
       ...context,
-      [data.variableName]: [{
-        text,
-      }],
+      [data.variableName]: [
+        {
+          text,
+        },
+      ],
     };
   } catch (error) {
     await step.realtime.publish(

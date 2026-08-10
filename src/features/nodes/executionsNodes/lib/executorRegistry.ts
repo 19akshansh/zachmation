@@ -1,3 +1,4 @@
+import { NonRetriableError } from "inngest";
 import { NodeType } from "@/generated/prisma/enums";
 import { NodeExecutor } from "../types";
 import { manualReqTriggerExecutor } from "@/features/nodes/triggersNodes/components/manualTrigger/executor";
@@ -18,6 +19,9 @@ import { discordTriggerExecutor } from "@/features/nodes/triggersNodes/component
 import { ZachurlExecutor } from "../components/zachurl/executor";
 import { ZachCourseExecutor } from "../components/zachcourse/executor";
 import { LoopExecutor } from "../components/loop/executor";
+import { MergeExecutor } from "../components/merge/executor";
+import { WaitExecutor } from "../components/wait/executor";
+import { SandboxedCodeExecutor } from "../components/sandboxedCode/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -39,6 +43,19 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.OPENAI]: openAIExecutor,
   [NodeType.SLACK]: SlackExecutor,
   [NodeType.BLACK_LABS]: BlackForestExecutor,
+  [NodeType.MERGE]: MergeExecutor,
+  [NodeType.WAIT]: WaitExecutor,
+  [NodeType.CONDITIONAL]: async () => {
+    throw new NonRetriableError(
+      "CONDITIONAL nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",
+    );
+  },
+  [NodeType.STICKY_NOTE]: async () => {
+    throw new NonRetriableError(
+      "SICKY NOTE nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",
+    );
+  },
+  [NodeType.SANDBOXED_CODE]: SandboxedCodeExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

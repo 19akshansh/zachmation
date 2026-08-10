@@ -132,6 +132,11 @@ enum NodeType {
   SLACK
   BLACK_LABS
   LOOP
+  CONDITIONAL
+  MERGE
+  STICKY_NOTE
+  WAIT
+  SANDBOXED_CODE
 }
 
 model Node {

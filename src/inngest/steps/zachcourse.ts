@@ -3,10 +3,7 @@ import type { GetStepTools, Inngest } from "inngest";
 type BaseStepTools = GetStepTools<Inngest.Any>;
 
 export type ZachCourseStepTools = BaseStepTools & {
-  zachcourse: <T>(
-    id: string,
-    handler: () => Promise<T> | T,
-  ) => Promise<T>;
+  zachcourse: <T>(id: string, handler: () => Promise<T> | T) => Promise<T>;
 };
 
 export const withZachCourseStep = (

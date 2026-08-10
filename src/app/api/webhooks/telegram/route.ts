@@ -26,9 +26,7 @@ export async function POST(request: NextRequest) {
     });
 
     const nodeData = node?.data as
-      | { telegramSecretToken?: string }
-      | null
-      | undefined;
+      { telegramSecretToken?: string } | null | undefined;
     const expectedSecret = nodeData?.telegramSecretToken;
     const receivedSecret = request.headers.get(
       "x-telegram-bot-api-secret-token",

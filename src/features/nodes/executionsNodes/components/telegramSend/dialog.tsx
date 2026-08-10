@@ -151,7 +151,8 @@ export const TelegramSendDialog = ({
                     <Input {...field} className="font-mono" />
                   </FormControl>
                   <FormDescription>
-                    Handlebars supported, e.g. {"{{telegram.[0].message.chat.id}}"}.
+                    Handlebars supported, e.g.{" "}
+                    {"{{telegram.[0].message.chat.id}}"}.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
