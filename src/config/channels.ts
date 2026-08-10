@@ -20,4 +20,5 @@ export const CHANNELS = {
   CONDITIONAL: "conditionalExec",
   MERGE: "mergeExec",
   WAIT: "waitExec",
+  SANDBOXED_CODE: "sandboxedCodeExec",
 } as const;

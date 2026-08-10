@@ -21,6 +21,7 @@ import { ZachCourseExecutor } from "../components/zachcourse/executor";
 import { LoopExecutor } from "../components/loop/executor";
 import { MergeExecutor } from "../components/merge/executor";
 import { WaitExecutor } from "../components/wait/executor";
+import { SandboxedCodeExecutor } from "../components/sandboxedCode/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -54,6 +55,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
       "SICKY NOTE nodes must be handled by the workflow engine's inline branch logic, not the executor registry.",
     );
   },
+  [NodeType.SANDBOXED_CODE]: SandboxedCodeExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

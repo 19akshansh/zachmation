@@ -7,6 +7,7 @@ import {
   PencilLineIcon,
   Repeat2Icon,
   StickyNoteIcon,
+  Code2Icon,
   WebhookIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
@@ -130,6 +131,14 @@ export const executionNodes: NodeTypeOption[] = [
     description:
       "Pause the workflow for a duration or until a webhook resumes it",
     icon: Clock3Icon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.SANDBOXED_CODE,
+    label: "Code",
+    description: "Run sandboxed JavaScript or Python against workflow context",
+    icon: Code2Icon,
     pro: false,
     pinnable: false,
   },

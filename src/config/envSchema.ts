@@ -19,6 +19,9 @@ const envSchema = z.object({
     .min(1, "POLAR_PRO_PRODUCT_SLUG is required"),
   POLAR_SUCCESS_URL: z.url("POLAR_SUCCESS_URL must be a valid URL"),
   ENCRYPTION_KEY: z.string().min(1, "ENCRYPTION_KEY is required"),
+  CODESERVER_API_URL: z.url("CODESERVER_API_URL must be a valid URL"),
+  CODESERVER_APIKEY: z.string().min(1, "CODESERVER_APIKEY is required"),
+  CODESERVER_TIMEOUT_MS: z.coerce.number().int().positive().default(15000),
 });
 
 export const envSchem = envSchema.parse({
@@ -38,6 +41,9 @@ export const envSchem = envSchema.parse({
   POLAR_PRO_PRODUCT_SLUG: process.env.POLAR_PRO_PRODUCT_SLUG,
   POLAR_SUCCESS_URL: process.env.POLAR_SUCCESS_URL,
   ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
+  CODESERVER_API_URL: process.env.CODESERVER_API_URL,
+  CODESERVER_APIKEY: process.env.CODESERVER_APIKEY,
+  CODESERVER_TIMEOUT_MS: process.env.CODESERVER_TIMEOUT_MS,
 });
 
 export type Env = z.infer<typeof envSchema>;
