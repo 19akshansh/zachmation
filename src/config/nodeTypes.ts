@@ -11,6 +11,7 @@ import {
   WebhookIcon,
   ListFilterIcon,
   ListTreeIcon,
+  CalendarClockIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -157,6 +158,14 @@ export const executionNodes: NodeTypeOption[] = [
     label: "List Shape",
     description: "Sort, aggregate, or remove duplicate array items",
     icon: ListTreeIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.DATE_TIME,
+    label: "Date & Time",
+    description: "Format or shift dates in a context array",
+    icon: CalendarClockIcon,
     pro: false,
     pinnable: false,
   },

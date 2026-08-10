@@ -139,6 +139,7 @@ enum NodeType {
   SANDBOXED_CODE
   FILTER
   LIST_SHAPE
+  DATE_TIME
 }
 
 model Node {
