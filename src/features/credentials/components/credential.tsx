@@ -21,6 +21,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -36,16 +37,55 @@ import {
 } from "@/components/ui/select";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 
-const formSchema = z.object({
-  name: z
-    .string()
-    .min(1, { message: "Name is required" })
-    .max(25, { message: "Name must be less than 25 characters" }),
-  type: z.enum(CredentialType),
-  value: z.string(),
-});
+const formSchema = z
+  .object({
+    name: z
+      .string()
+      .min(1, { message: "Name is required" })
+      .max(25, { message: "Name must be less than 25 characters" }),
+    type: z.enum(CredentialType),
+    value: z.string(),
+    smtpHost: z.string().optional(),
+    smtpPort: z.string().optional(),
+    smtpUsername: z.string().optional(),
+    smtpPassword: z.string().optional(),
+    smtpSecure: z.boolean(),
+  })
+  .superRefine((values, ctx) => {
+    if (values.type !== CredentialType.SMTP) return;
+
+    if (!values.smtpHost?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["smtpHost"],
+        message: "SMTP host is required",
+      });
+    }
+    if (!values.smtpPort?.trim() || Number.isNaN(Number(values.smtpPort))) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["smtpPort"],
+        message: "Valid SMTP port is required",
+      });
+    }
+    if (!values.smtpUsername?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["smtpUsername"],
+        message: "SMTP username is required",
+      });
+    }
+    if (!values.smtpPassword?.trim() && !values.value.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["smtpPassword"],
+        message: "SMTP password is required",
+      });
+    }
+  });
 
 type FormValues = z.infer<typeof formSchema>;
 
@@ -99,6 +139,11 @@ const credentialTypeOptions = [
     label: "Zachcourse",
     logo: "/zachcourse.svg",
   },
+  {
+    value: CredentialType.SMTP,
+    label: "SMTP",
+    logo: "/smtp.svg",
+  },
 ];
 
 export const CredentialForm = ({ initialData }: CredentialFormProps) => {
@@ -116,16 +161,41 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
           name: initialData.name,
           type: initialData.type,
           value: "",
+          smtpHost: "",
+          smtpPort: "587",
+          smtpUsername: "",
+          smtpPassword: "",
+          smtpSecure: false,
         }
       : {
           name: "",
           type: CredentialType.OPENAI,
           value: "",
+          smtpHost: "",
+          smtpPort: "587",
+          smtpUsername: "",
+          smtpPassword: "",
+          smtpSecure: false,
         },
   });
 
+  const selectedType = form.watch("type");
+
   const onSubmit = async (values: FormValues) => {
-    if (!isEdit && !values.value.trim()) {
+    const value =
+      values.type === CredentialType.SMTP
+        ? values.smtpPassword?.trim()
+          ? JSON.stringify({
+              host: values.smtpHost!.trim(),
+              port: Number(values.smtpPort),
+              username: values.smtpUsername!.trim(),
+              password: values.smtpPassword,
+              secure: values.smtpSecure,
+            })
+          : values.value
+        : values.value;
+
+    if (!isEdit && !value.trim()) {
       form.setError("value", {
         type: "manual",
         message: "API Key or credential is required",
@@ -136,17 +206,26 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
     if (isEdit && initialData?.id) {
       await updateCredential.mutateAsync({
         id: initialData.id,
-        ...values,
+        name: values.name,
+        type: values.type,
+        value,
       });
     } else {
-      await createCredential.mutateAsync(values, {
-        onSuccess: (data) => {
-          router.push(`/credentials/${data.id}`);
+      await createCredential.mutateAsync(
+        {
+          name: values.name,
+          type: values.type,
+          value,
         },
-        onError: (error) => {
-          handleError(error);
+        {
+          onSuccess: (data) => {
+            router.push(`/credentials/${data.id}`);
+          },
+          onError: (error) => {
+            handleError(error);
+          },
         },
-      });
+      );
     }
   };
 
@@ -197,12 +276,18 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                         {credentialTypeOptions.map((option) => (
                           <SelectItem key={option.value} value={option.value}>
                             <div className="flex items-center gap-2">
-                              <Image
-                                src={option.logo}
-                                alt={option.label}
-                                width={24}
-                                height={24}
-                              />
+                              {option.logo ? (
+                                <Image
+                                  src={option.logo}
+                                  alt={option.label}
+                                  width={24}
+                                  height={24}
+                                />
+                              ) : (
+                                <span className="flex size-6 items-center justify-center rounded bg-muted text-[10px] font-semibold">
+                                  SMTP
+                                </span>
+                              )}
                               {option.label}
                             </div>
                           </SelectItem>
@@ -213,33 +298,139 @@ export const CredentialForm = ({ initialData }: CredentialFormProps) => {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="value"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Value</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder={
-                          isEdit
-                            ? "Leave blank to keep the existing secret"
-                            : "Enter API key or credential value"
-                        }
-                        {...field}
-                      />
-                    </FormControl>
-                    {isEdit && !field.value && (
-                      <p className="text-xs text-muted-foreground">
-                        The saved secret is never sent back to this page. Enter
-                        a new value only when you want to replace it.
-                      </p>
+              {selectedType === CredentialType.SMTP ? (
+                <div className="space-y-5 rounded-lg border p-4">
+                  <div>
+                    <h3 className="text-sm font-medium">SMTP Configuration</h3>
+                    <p className="text-xs text-muted-foreground">
+                      Store the complete SMTP configuration encrypted in the
+                      credential vault.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <FormField
+                      control={form.control}
+                      name="smtpHost"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Host</FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="smtp.gmail.com" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="smtpPort"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Port</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              inputMode="numeric"
+                              placeholder="587"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="smtpUsername"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Username</FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="you@example.com" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="smtpPassword"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password / App Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type="password"
+                            placeholder={
+                              isEdit
+                                ? "Leave blank to keep the existing secret"
+                                : "Enter SMTP password"
+                            }
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          For Gmail, use an App Password rather than your normal
+                          account password.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="smtpSecure"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center gap-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Use secure TLS connection</FormLabel>
+                          <FormDescription>
+                            Usually true for port 465 and false for port 587.
+                          </FormDescription>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Value</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder={
+                            isEdit
+                              ? "Leave blank to keep the existing secret"
+                              : "Enter API key or credential value"
+                          }
+                          {...field}
+                        />
+                      </FormControl>
+                      {isEdit && !field.value && (
+                        <p className="text-xs text-muted-foreground">
+                          The saved secret is never sent back to this page.
+                          Enter a new value only when you want to replace it.
+                        </p>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <div className="flex gap-3">
                 <Button

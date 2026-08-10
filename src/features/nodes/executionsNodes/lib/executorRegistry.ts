@@ -25,6 +25,7 @@ import { SandboxedCodeExecutor } from "../components/sandboxedCode/executor";
 import { FilterExecutor } from "../components/filter/executor";
 import { ListShapeExecutor } from "../components/listShape/executor";
 import { DateTimeExecutor } from "../components/dateTime/executor";
+import { EmailSendExecutor } from "../components/emailSend/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.MANUAL_TRIGGER]: manualReqTriggerExecutor,
@@ -62,6 +63,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor<any>> = {
   [NodeType.FILTER]: FilterExecutor,
   [NodeType.LIST_SHAPE]: ListShapeExecutor,
   [NodeType.DATE_TIME]: DateTimeExecutor,
+  [NodeType.EMAIL_SEND]: EmailSendExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor<any> => {

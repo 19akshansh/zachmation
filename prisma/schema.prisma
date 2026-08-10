@@ -92,6 +92,7 @@ enum CredentialType {
   TELEGRAM_BOT
   ZACHURL
   ZACHCOURSE
+  SMTP
 }
 
 model Workflow {
@@ -140,6 +141,7 @@ enum NodeType {
   FILTER
   LIST_SHAPE
   DATE_TIME
+  EMAIL_SEND
 }
 
 model Node {

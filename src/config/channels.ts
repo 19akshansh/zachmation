@@ -24,4 +24,5 @@ export const CHANNELS = {
   FILTER: "filterExec",
   LIST_SHAPE: "listShapeExec",
   DATE_TIME: "dateTimeExec",
+  EMAIL_SEND: "emailSendExec",
 } as const;

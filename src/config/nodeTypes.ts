@@ -12,6 +12,7 @@ import {
   ListFilterIcon,
   ListTreeIcon,
   CalendarClockIcon,
+  MailIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -168,6 +169,14 @@ export const executionNodes: NodeTypeOption[] = [
     icon: CalendarClockIcon,
     pro: false,
     pinnable: false,
+  },
+  {
+    type: NodeType.EMAIL_SEND,
+    label: "Email / SMTP",
+    description: "Send an email through an SMTP credential",
+    icon: MailIcon,
+    pro: false,
+    pinnable: true,
   },
   {
     type: NodeType.GEMINI,
