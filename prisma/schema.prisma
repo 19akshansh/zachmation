@@ -137,6 +137,9 @@ enum NodeType {
   STICKY_NOTE
   WAIT
   SANDBOXED_CODE
+  FILTER
+  LIST_SHAPE
+  DATE_TIME
 }
 
 model Node {

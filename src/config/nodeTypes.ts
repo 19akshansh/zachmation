@@ -9,6 +9,9 @@ import {
   StickyNoteIcon,
   Code2Icon,
   WebhookIcon,
+  ListFilterIcon,
+  ListTreeIcon,
+  CalendarClockIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -139,6 +142,30 @@ export const executionNodes: NodeTypeOption[] = [
     label: "Code",
     description: "Run sandboxed JavaScript or Python against workflow context",
     icon: Code2Icon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.FILTER,
+    label: "Filter",
+    description: "Keep only array items that match a condition",
+    icon: ListFilterIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.LIST_SHAPE,
+    label: "List Shape",
+    description: "Sort, aggregate, or remove duplicate array items",
+    icon: ListTreeIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.DATE_TIME,
+    label: "Date & Time",
+    description: "Format or shift dates in a context array",
+    icon: CalendarClockIcon,
     pro: false,
     pinnable: false,
   },
