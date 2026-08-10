@@ -138,6 +138,7 @@ enum NodeType {
   WAIT
   SANDBOXED_CODE
   FILTER
+  LIST_SHAPE
 }
 
 model Node {

@@ -10,6 +10,7 @@ import {
   Code2Icon,
   WebhookIcon,
   ListFilterIcon,
+  ListTreeIcon,
 } from "lucide-react";
 import { NodeType } from "@/generated/prisma/enums";
 
@@ -148,6 +149,14 @@ export const executionNodes: NodeTypeOption[] = [
     label: "Filter",
     description: "Keep only array items that match a condition",
     icon: ListFilterIcon,
+    pro: false,
+    pinnable: false,
+  },
+  {
+    type: NodeType.LIST_SHAPE,
+    label: "List Shape",
+    description: "Sort, aggregate, or remove duplicate array items",
+    icon: ListTreeIcon,
     pro: false,
     pinnable: false,
   },

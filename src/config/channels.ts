@@ -22,4 +22,5 @@ export const CHANNELS = {
   WAIT: "waitExec",
   SANDBOXED_CODE: "sandboxedCodeExec",
   FILTER: "filterExec",
+  LIST_SHAPE: "listShapeExec",
 } as const;
