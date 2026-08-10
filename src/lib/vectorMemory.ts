@@ -2,7 +2,10 @@ import { embed } from "ai";
 import { google, createGoogleGenerativeAI } from "@ai-sdk/google";
 import prisma from "@/lib/db";
 
-const defaultEmbeddingModel = google.textEmbeddingModel("text-embedding-004");
+const EMBEDDING_MODEL_ID = "gemini-embedding-001";
+const EMBEDDING_DIMENSIONS = 768;
+
+const defaultEmbeddingModel = google.textEmbeddingModel(EMBEDDING_MODEL_ID);
 
 export async function generateEmbedding(
   text: string,
@@ -10,13 +13,18 @@ export async function generateEmbedding(
 ): Promise<number[]> {
   const model = geminiApiKey
     ? createGoogleGenerativeAI({ apiKey: geminiApiKey }).textEmbeddingModel(
-        "text-embedding-004",
+        EMBEDDING_MODEL_ID,
       )
     : defaultEmbeddingModel;
 
   const { embedding } = await embed({
     model,
     value: text,
+    providerOptions: {
+      google: {
+        outputDimensionality: EMBEDDING_DIMENSIONS,
+      },
+    },
   });
 
   return embedding;
@@ -27,16 +35,24 @@ export function chunkText(
   chunkSize = 500,
   overlap = 100,
 ): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) return [];
+
+  if (trimmed.length <= chunkSize) {
+    return [trimmed];
+  }
+
   const chunks: string[] = [];
   let start = 0;
 
-  while (start < text.length) {
-    const end = Math.min(start + chunkSize, text.length);
-    chunks.push(text.slice(start, end).trim());
+  while (start < trimmed.length) {
+    const end = Math.min(start + chunkSize, trimmed.length);
+    const chunk = trimmed.slice(start, end).trim();
+    if (chunk.length > 0) chunks.push(chunk);
     start += chunkSize - overlap;
   }
 
-  return chunks.filter((chunk) => chunk.length > 50);
+  return chunks;
 }
 
 export async function storeMemory(params: {
