@@ -21,10 +21,11 @@ import { useSuspenseWorkflow } from "@/features/workflows/hooks/useWorkflows";
 import "@xyflow/react/dist/style.css";
 import { useCallback, useMemo, useState } from "react";
 import { nodeComponents } from "@/config/nodeComponents";
+import { NodeType } from "@/generated/prisma/enums";
+import { isManualExecutableNode } from "@/config/nodeTypes";
 import { AddNodeButton } from "./addNodeButton";
 import { useSetAtom } from "jotai";
 import { editorAtom } from "../store/atoms";
-import { NodeType } from "@/generated/prisma/enums";
 import { ExecuteWorkflowButton } from "./execWorkflowButton";
 
 export const EditorLoading = () => {
@@ -62,7 +63,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   );
 
   const hasManualTrigger = useMemo(() => {
-    return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER);
+    return nodes.some((node) => isManualExecutableNode(node.type as NodeType));
   }, [nodes]);
 
   return (

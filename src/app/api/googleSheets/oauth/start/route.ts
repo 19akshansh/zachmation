@@ -1,3 +1,5 @@
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { NextResponse, type NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest) {
       select: { id: true, type: true },
     });
 
-    if (!credential || credential.type !== "GOOGLE_SHEETS") {
+    if (!credential || credential.type !== getNodeCredentialTypes(NodeType.GOOGLE_SHEETS)[0]) {
       return NextResponse.redirect(
         new URL("/credentials/new?error=invalid_credential", request.url),
       );

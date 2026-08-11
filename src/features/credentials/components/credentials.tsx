@@ -24,6 +24,7 @@ import { CredentialType } from "@/generated/prisma/browser";
 import { RelativeTime } from "@/components/relativeTime";
 import Image from "next/image";
 import { CredentialForm } from "./credential";
+import { credentialLogos } from "@/config/credentialTypes";
 
 export const CredentialsList = () => {
   const credentials = useSuspenseCredentials();
@@ -128,19 +129,7 @@ export const CredentialsEmpty = () => {
   );
 };
 
-const credentialLogos: Record<string, string> = {
-  [CredentialType.OPENAI]: "/openai.svg",
-  [CredentialType.GEMINI]: "/gemini.svg",
-  [CredentialType.ANTHROPIC]: "/anthropic.svg",
-  [CredentialType.HUGGING_FACE]: "/huggingface.svg",
-  [CredentialType.IMG_BB]: "/imgbb.png",
-  [CredentialType.TELEGRAM_BOT]: "/telegram.svg",
-  [CredentialType.ZACHURL]: "/zachurl.svg",
-  [CredentialType.ZACHCOURSE]: "/zachcourse.svg",
-  [CredentialType.SMTP]: "/smtp.svg",
-  [CredentialType.GOOGLE_SHEETS]: "/googleSheets.svg",
-  [CredentialType.POSTGRES]: "/postgres.svg",
-};
+
 
 type CredentialListItem = ReturnType<
   typeof useSuspenseCredentials

@@ -4,6 +4,8 @@ import { NonRetriableError } from "inngest";
 import { telegramSendChannel } from "@/inngest/channels/executions/telegramSend";
 import { decode } from "html-entities";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import ky from "ky";
 
@@ -52,7 +54,7 @@ export const TelegramSendExecutor: NodeExecutor<TelegramSendData> = async ({
   try {
     const result = await step.run(`telegram-send-${nodeId}`, async () => {
       const credential = await prisma.credential.findFirst({
-        where: { id: data.credentialId, userId, type: "TELEGRAM_BOT" },
+        where: { id: data.credentialId, userId, type: getNodeCredentialTypes(NodeType.TELEGRAM_SEND)[0] },
       });
       if (!credential)
         throw new NonRetriableError(

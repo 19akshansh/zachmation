@@ -2,6 +2,8 @@ import { Pool } from "pg";
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { postgresQueryChannel } from "@/inngest/channels/executions/postgresQuery";
@@ -69,7 +71,7 @@ export const PostgresQueryExecutor: NodeExecutor<PostgresQueryData> = async ({
         where: {
           id: data.credentialId,
           userId,
-          type: "POSTGRES",
+          type: getNodeCredentialTypes(NodeType.POSTGRES_QUERY)[0],
         },
       });
 

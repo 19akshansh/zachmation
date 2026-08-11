@@ -4,8 +4,7 @@ import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import { type LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { memo, type ReactNode } from "react";
-import { NodeType } from "@/generated/prisma/enums";
-import { PINNABLE_NODES } from "@/config/nodeTypes";
+import { isPinnableNode } from "@/config/nodeTypes";
 import {
   usePinNode,
   useUnpinNode,
@@ -49,7 +48,7 @@ export const BaseExecutionNode = memo(
 
     const nodeData = (data ?? {}) as Record<string, unknown>;
     const canPin =
-      PINNABLE_NODES.has(type as NodeType) ||
+      isPinnableNode(type as import("@/generated/prisma/enums").NodeType) ||
       pinnable === true ||
       nodeData.pinnable === true;
     const variableName =

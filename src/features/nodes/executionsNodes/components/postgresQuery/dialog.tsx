@@ -32,8 +32,8 @@ import { DatabaseIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CredentialType } from "@/generated/prisma/enums";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
 
 const formSchema = z.object({
   credentialId: z.string().min(1, "Postgres credential is required."),
@@ -64,9 +64,7 @@ export const PostgresQueryDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: credentials = [], isLoading } = useCredentialsByType(
-    CredentialType.POSTGRES,
-  );
+  const { data: credentials = [], isLoading } = useCredentialsByNodeType(NodeType.POSTGRES_QUERY);
 
   const form = useForm<PostgresQueryFormValues>({
     resolver: zodResolver(formSchema),

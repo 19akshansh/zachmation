@@ -1,3 +1,5 @@
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { headers, cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
@@ -115,7 +117,7 @@ export async function GET(request: NextRequest) {
           where: {
             id: oauthState.credentialId,
             userId: session.user.id,
-            type: "GOOGLE_SHEETS",
+            type: getNodeCredentialTypes(NodeType.GOOGLE_SHEETS)[0],
           },
         })
       : null;
@@ -167,7 +169,7 @@ export async function GET(request: NextRequest) {
         data: {
           name: oauthState.name,
           userId: session.user.id,
-          type: "GOOGLE_SHEETS",
+          type: getNodeCredentialTypes(NodeType.GOOGLE_SHEETS)[0],
           value: encrypt(credentialValue),
         },
         select: { id: true },

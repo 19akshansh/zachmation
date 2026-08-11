@@ -26,8 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
-import { CredentialType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -55,9 +55,7 @@ export const ZachurlDialog = ({
   onSubmit: (values: ZachurlFormValues) => void;
   defaultValues?: Partial<ZachurlFormValues>;
 }) => {
-  const { data: credentials = [], isLoading } = useCredentialsByType(
-    CredentialType.ZACHURL,
-  );
+  const { data: credentials = [], isLoading } = useCredentialsByNodeType(NodeType.ZACHURL);
   const form = useForm<ZachurlFormValues>({
     resolver: zodResolver(schema),
     defaultValues: {

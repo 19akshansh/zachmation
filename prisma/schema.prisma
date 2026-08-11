@@ -107,6 +107,7 @@ model Workflow {
   name String
   isActive Boolean @default(false)
   tags String[] @default([])
+  publicSlug String? @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

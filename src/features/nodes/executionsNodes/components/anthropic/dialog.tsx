@@ -35,8 +35,8 @@ import {
   ANTHROPIC_MODELS,
   type AnthropicModelId,
 } from "@/config/ai/anthropicModels";
-import { CredentialType } from "@/generated/prisma/enums";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
 import Image from "next/image";
 
 const ANTHROPIC_MODEL_IDS = ANTHROPIC_MODELS.map((model) => model.id) as [
@@ -78,7 +78,7 @@ export const AnthropicDialog = ({
   defaultValues = {},
 }: Props) => {
   const { data: credentials, isLoading: credentialsLoading } =
-    useCredentialsByType(CredentialType.ANTHROPIC);
+    useCredentialsByNodeType(NodeType.ANTHROPIC);
 
   const form = useForm<AnthropicFormValues>({
     resolver: zodResolver(formSchema),

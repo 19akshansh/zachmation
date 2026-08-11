@@ -4,6 +4,8 @@ import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { generateText, stepCountIs, tool, type ToolSet } from "ai";
 import { z } from "zod";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { agentChannel } from "@/inngest/channels/ai/agent";
@@ -51,7 +53,7 @@ export const AgentExecutor: NodeExecutor<AgentData> = async ({
       where: {
         id: data.credentialId,
         userId,
-        type: "GEMINI",
+        type: getNodeCredentialTypes(NodeType.AGENT)[0],
       },
     }),
   );

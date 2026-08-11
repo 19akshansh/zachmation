@@ -16,6 +16,7 @@ import {
   useCreateWorkflow,
   useDuplicateWorkflow,
   useExportWorkflow,
+  useImportWorkflow,
   useRemoveWorkflow,
   useSuspenseWorkflows,
   useWorkflowTags,
@@ -25,12 +26,20 @@ import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/useWorkflowsParams";
 import { UseEntitySearch } from "@/hooks/useEnititySearch";
 import type { Workflow as WorkflowType } from "@/generated/prisma/browser";
-import { CopyIcon, DownloadIcon, WorkflowIcon } from "lucide-react";
+import {
+  CopyIcon,
+  DownloadIcon,
+  ExternalLinkIcon,
+  UploadIcon,
+  Share2Icon,
+  WorkflowIcon,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { RelativeTime } from "@/components/relativeTime";
 import { toast } from "sonner";
+import { useRef } from "react";
 
 export const WorkflowsList = () => {
   const workflows = useSuspenseWorkflows();
@@ -67,8 +76,10 @@ export const WorkflowsList = () => {
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   const createWorkflow = useCreateWorkflow();
+  const importWorkflow = useImportWorkflow();
   const router = useRouter();
   const { handleError, modal } = useUpgradeModal();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreate = () => {
     createWorkflow.mutate(undefined, {
@@ -81,9 +92,44 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
     });
   };
 
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Workflow file must be smaller than 2 MB.");
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(
+        await file.text(),
+      ) as Parameters<typeof importWorkflow.mutate>[0];
+
+      importWorkflow.mutate(parsed, {
+        onSuccess: (data) => {
+          router.push(`/workflows/${data.id}`);
+        },
+      });
+    } catch {
+      toast.error("Invalid workflow JSON file.");
+    }
+  };
+
   return (
     <>
       {modal}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json,.json"
+        className="hidden"
+        onChange={handleImport}
+      />
       <EntityHeader
         title="Workflows"
         description="Create and manage your Workflows"
@@ -91,6 +137,18 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
         newButtonLabel="New Workflow"
         disabled={disabled}
         isCreating={createWorkflow.isPending}
+        actions={
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={disabled || importWorkflow.isPending}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <UploadIcon className="size-4" />
+            {importWorkflow.isPending ? "Importing..." : "Import"}
+          </Button>
+        }
       />
     </>
   );
@@ -260,6 +318,21 @@ export const WorkflowItem = ({
     }
   };
 
+  const handleCopyPublicLink = async () => {
+    if (!data.publicSlug) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/templates/${data.publicSlug}`,
+      );
+      toast.success("Public workflow link copied.");
+    } catch {
+      toast.error("Failed to copy public workflow link.");
+    }
+  };
+
   const isBusy =
     removeWorkflow.isPending ||
     duplicateWorkflow.isPending ||
@@ -275,15 +348,18 @@ export const WorkflowItem = ({
             Updated <RelativeTime date={data.updatedAt} /> &bull; Created{" "}
             <RelativeTime date={data.createdAt} />
           </div>
-          {data.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {data.tags.map((tag) => (
-                <Badge key={tag} variant="secondary" className="text-[10px]">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          )}
+          <div className="flex flex-wrap gap-1">
+            {data.publicSlug && (
+              <Badge variant="outline" className="text-[10px]">
+                Public
+              </Badge>
+            )}
+            {data.tags.map((tag) => (
+              <Badge key={tag} variant="secondary" className="text-[10px]">
+                {tag}
+              </Badge>
+            ))}
+          </div>
         </div>
       }
       image={
@@ -293,6 +369,34 @@ export const WorkflowItem = ({
       }
       menuActions={
         <>
+          {data.publicSlug && (
+            <>
+              <DropdownMenuItem
+                disabled={isBusy}
+                onSelect={(event) => {
+                  event.stopPropagation();
+                  void handleCopyPublicLink();
+                }}
+              >
+                <Share2Icon className="size-4" />
+                Copy Public Link
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                disabled={isBusy}
+                onSelect={(event) => {
+                  event.stopPropagation();
+                  window.open(
+                    `${window.location.origin}/templates/${data.publicSlug}`,
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                }}
+              >
+                <ExternalLinkIcon className="size-4" />
+                Open Public Page
+              </DropdownMenuItem>
+            </>
+          )}
           <DropdownMenuItem
             disabled={isBusy}
             onSelect={(event) => {

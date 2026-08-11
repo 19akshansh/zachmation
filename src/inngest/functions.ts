@@ -8,7 +8,13 @@ import { ExecutionStatus, NodeType } from "@/generated/prisma/enums";
 import { getExecutor } from "@/features/nodes/executionsNodes/lib/executorRegistry";
 import { Connection, Node, Prisma } from "@/generated/prisma/client";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
-import { PRO_NODES } from "@/config/nodeTypes";
+import {
+  getScheduleTriggerTypes,
+  isConditionalNode,
+  isLoopNode,
+  isProNode,
+  isVisualOnlyNode,
+} from "@/config/nodeTypes";
 import { CHANNELS } from "@/config/channels";
 import { withZachCourseStep } from "./steps/zachcourse";
 import { sendWorkflowExecution } from "./utils";
@@ -188,7 +194,7 @@ const runNodeSequence = async ({
     const node = nodeMap.get(nodeId);
     if (!node) continue;
 
-    if (node.type === NodeType.LOOP) {
+    if (isLoopNode(node.type)) {
       const loopData = node.data as {
         sourceKey?: string;
         variableName?: string;
@@ -271,7 +277,7 @@ const runNodeSequence = async ({
       continue;
     }
 
-    if (node.type === NodeType.CONDITIONAL) {
+    if (isConditionalNode(node.type)) {
       const conditionalData = node.data as ConditionalData;
       const outputLabels =
         conditionalData.mode === "if"
@@ -391,7 +397,7 @@ export const checkScheduledWorkflows = inngest.createFunction(
     const cronNodes = await step.run("findCronNodes", async () => {
       return prisma.node.findMany({
         where: {
-          type: NodeType.CRON_TRIGGER,
+          type: { in: getScheduleTriggerTypes() },
           workflow: { isActive: true },
         },
         select: {
@@ -530,7 +536,7 @@ export const executeWorkflow = inngest.createFunction(
       });
 
       const containsProNodes = workflow.nodes.some((node) =>
-        PRO_NODES.has(node.type),
+        isProNode(node.type),
       );
 
       if (containsProNodes) {
@@ -550,7 +556,7 @@ export const executeWorkflow = inngest.createFunction(
       }
 
       const executableWorkflowNodes = workflow.nodes.filter(
-        (node) => node.type !== NodeType.STICKY_NOTE,
+        (node) => !isVisualOnlyNode(node.type),
       );
 
       const sortedNodes = topologicalSort(

@@ -46,6 +46,7 @@ type EntityHeaderProps = {
   newButtonLabel?: string;
   disabled?: boolean;
   isCreating?: boolean;
+  actions?: ReactNode;
 } & (
   | {
       onNew: () => void;
@@ -69,6 +70,7 @@ export const EntityHeader = ({
   newButtonLabel,
   disabled,
   isCreating,
+  actions,
 }: EntityHeaderProps) => {
   return (
     <div className="flex flex-row items-center justify-between gap-x-4">
@@ -80,20 +82,23 @@ export const EntityHeader = ({
           </p>
         )}
       </div>
-      {onNew && !newButtonHref && (
-        <Button disabled={isCreating || disabled} size="sm" onClick={onNew}>
-          <PlusIcon className="size-4" />
-          {newButtonLabel}
-        </Button>
-      )}
-      {newButtonHref && !onNew && (
-        <Button size="sm" asChild>
-          <Link href={newButtonHref} prefetch>
+      <div className="flex items-center gap-2">
+        {actions}
+        {onNew && !newButtonHref && (
+          <Button disabled={isCreating || disabled} size="sm" onClick={onNew}>
             <PlusIcon className="size-4" />
             {newButtonLabel}
-          </Link>
-        </Button>
-      )}
+          </Button>
+        )}
+        {newButtonHref && !onNew && (
+          <Button size="sm" asChild>
+            <Link href={newButtonHref} prefetch>
+              <PlusIcon className="size-4" />
+              {newButtonLabel}
+            </Link>
+          </Button>
+        )}
+      </div>
     </div>
   );
 };

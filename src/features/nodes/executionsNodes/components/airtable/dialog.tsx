@@ -31,8 +31,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CredentialType } from "@/generated/prisma/enums";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
 
 const formSchema = z.object({
   credentialId: z.string().min(1, "Airtable credential is required."),
@@ -64,9 +64,7 @@ export const AirtableDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: credentials = [], isLoading } = useCredentialsByType(
-    CredentialType.AIRTABLE,
-  );
+  const { data: credentials = [], isLoading } = useCredentialsByNodeType(NodeType.AIRTABLE);
 
   const form = useForm<AirtableFormValues>({
     resolver: zodResolver(formSchema),

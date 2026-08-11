@@ -32,7 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
-import { CredentialType } from "@/generated/prisma/enums";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 
 const ZACHCOURSE_BASE_URL = "https://zachcourse.ai.studio";
 
@@ -105,9 +106,9 @@ export const ZachCourseDialog = ({
   defaultValues = {},
 }: Props) => {
   const { data: credentials = [], isLoading: credentialsLoading } =
-    useCredentialsByType(CredentialType.ZACHCOURSE);
+    useCredentialsByType(getNodeCredentialTypes(NodeType.ZACHCOURSE)[0]);
   const { data: geminiCredentials = [], isLoading: geminiCredentialsLoading } =
-    useCredentialsByType(CredentialType.GEMINI);
+    useCredentialsByType(getNodeCredentialTypes(NodeType.ZACHCOURSE)[1]);
 
   const form = useForm<ZachCourseFormInput, unknown, ZachCourseFormValues>({
     resolver: zodResolver(formSchema),

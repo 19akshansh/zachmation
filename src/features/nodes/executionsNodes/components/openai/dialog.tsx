@@ -32,8 +32,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { OPENAI_MODELS, type OpenAIModelId } from "@/config/ai/openaiModels";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
-import { CredentialType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
 import Image from "next/image";
 
 const OPENAI_MODEL_IDS = OPENAI_MODELS.map((model) => model.id) as [
@@ -75,7 +75,7 @@ export const OpenAIDialog = ({
   defaultValues = {},
 }: Props) => {
   const { data: credentials, isLoading: credentialsLoading } =
-    useCredentialsByType(CredentialType.OPENAI);
+    useCredentialsByNodeType(NodeType.OPENAI);
 
   const form = useForm<OpenAIFormValues>({
     resolver: zodResolver(formSchema),
