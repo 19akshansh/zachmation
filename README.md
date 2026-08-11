@@ -89,18 +89,18 @@ Whether you're creating AI content generators, internal automations, lead-proces
 ## Workflow Triggers
 
 - Manual Trigger
-- Schedule / Cron Trigger
+- Schedule / Cron Trigger (Pro)
 - Google Forms Trigger
 - Stripe Trigger (Pro)
-- Webhook Trigger
+- Webhook Trigger (Pro)
 - Discord Trigger
 - Telegram Trigger
 
 ## Execution Nodes
 
-- **AI:** Gemini Chat, OpenAI Chat (Pro), Anthropic Chat (Pro), Black Labs Image Gen (Pro), Agent (tool-using Gemini agent with memory), Vector Store (semantic memory)
+- **AI:** Gemini Chat, OpenAI Chat (Pro), Anthropic Chat (Pro), Black Labs Image Gen (Pro), Agent (Pro), Vector Store (Pro)
 - **Logic & Data:** If / Switch, Loop, Merge, Filter, Edit Fields, List Shape, Date & Time, Code (sandboxed JS/Python), Wait / Delay
-- **Integrations:** HTTP Request, Google Sheets, Postgres Query, Airtable, Notion, GitHub, Email / SMTP, Slack (Pro), Discord Send, Telegram Send, Zachurl, ZachCourse
+- **Integrations:** HTTP Request, Google Sheets, Postgres Query (Pro), Airtable, Notion, GitHub, Email / SMTP, Slack (Pro), Discord Send, Telegram Send, Zachurl, ZachCourse
 - **Canvas:** Sticky Note
 
 ## Security & Credentials
@@ -218,10 +218,10 @@ Whether you're creating AI content generators, internal automations, lead-proces
 | Node                 | Description                                                    | Pro |
 | -------------------- | ---------------------------------------------------------------- | --- |
 | Manual Trigger        | Runs the flow on clicking a button, good for a first run         |     |
-| Schedule / Cron       | Runs the workflow on a recurring cron schedule                   |     |
+| Schedule / Cron       | Runs the workflow on a recurring cron schedule                   | ✅  |
 | Google Form Trigger   | Triggers on a Google Form submission                              |     |
 | Stripe Event          | Triggers on a Stripe event                                        | ✅  |
-| Webhook Trigger       | Triggers from any incoming webhook POST                           |     |
+| Webhook Trigger       | Triggers from any incoming webhook POST                           | ✅  |
 | Discord Trigger       | Triggers from a Discord interaction or slash command               |     |
 | Telegram Trigger      | Triggers when your Telegram bot receives an update                |     |
 
@@ -233,8 +233,8 @@ Whether you're creating AI content generators, internal automations, lead-proces
 | OpenAI Chat          | Makes an OpenAI chat completion request                        | ✅  |
 | Anthropic Chat       | Makes a Claude (Anthropic) chat completion request              | ✅  |
 | Black Labs Image Gen | Generates images via Black Forest Labs                          | ✅  |
-| Agent                | Runs a tool-using Gemini agent with optional vector memory      |     |
-| Vector Store         | Stores and searches workflow memory using semantic embeddings   |     |
+| Agent                | Runs a tool-using Gemini agent with optional vector memory      | ✅  |
+| Vector Store         | Stores and searches workflow memory using semantic embeddings   | ✅  |
 
 ## Logic & Data
 
@@ -256,7 +256,7 @@ Whether you're creating AI content generators, internal automations, lead-proces
 | ---------------- | -------------------------------------------------------------- | --- |
 | HTTP Request      | Makes an HTTP request                                           |     |
 | Google Sheets     | Reads or appends spreadsheet rows                                |     |
-| Postgres Query    | Runs a parameterized SELECT or INSERT query                     |     |
+| Postgres Query    | Runs a parameterized SELECT or INSERT query                     | ✅  |
 | Airtable          | Lists, creates, updates, or deletes Airtable records              |     |
 | Notion            | Queries databases and creates or updates Notion pages           |     |
 | GitHub            | Creates, lists, comments on, or closes GitHub issues              |     |
