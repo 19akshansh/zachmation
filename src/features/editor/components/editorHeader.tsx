@@ -176,15 +176,14 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
   );
 };
 
-
 export const EditorWorkflowActions = ({
   workflowId,
 }: {
   workflowId: string;
-  }) => {
+}) => {
   const router = useRouter();
- const duplicateWorkflow = useDuplicateWorkflow();
- const exportWorkflow = useExportWorkflow();
+  const duplicateWorkflow = useDuplicateWorkflow();
+  const exportWorkflow = useExportWorkflow();
 
   const handleDuplicate = async () => {
     const duplicated = await duplicateWorkflow.mutateAsync({ workflowId });

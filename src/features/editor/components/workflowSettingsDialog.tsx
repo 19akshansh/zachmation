@@ -77,7 +77,8 @@ export const WorkflowSettingsDialog = ({
             Workflow Settings
           </DialogTitle>
           <DialogDescription>
-            Control whether this workflow can run and what should happen when it fails.
+            Control whether this workflow can run and what should happen when it
+            fails.
           </DialogDescription>
         </DialogHeader>
 
@@ -89,7 +90,8 @@ export const WorkflowSettingsDialog = ({
                 Workflow status
               </p>
               <p className="text-xs text-muted-foreground">
-                Deactivate this workflow to stop trigger events from starting new executions.
+                Deactivate this workflow to stop trigger events from starting
+                new executions.
               </p>
             </div>
             <Switch
@@ -98,7 +100,9 @@ export const WorkflowSettingsDialog = ({
               onCheckedChange={(isActive) =>
                 setWorkflowActive.mutate({ id: workflowId, isActive })
               }
-              aria-label={workflow.isActive ? "Deactivate workflow" : "Activate workflow"}
+              aria-label={
+                workflow.isActive ? "Deactivate workflow" : "Activate workflow"
+              }
             />
           </div>
         </div>
