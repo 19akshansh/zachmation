@@ -41,6 +41,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { toast } from "sonner";
+import { credentialTypeOptions as configuredCredentialTypes } from "@/config/credentialTypes";
 
 const formSchema = z
   .object({
@@ -100,78 +101,11 @@ interface CredentialFormProps {
   };
 }
 
-const credentialTypeOptions = [
-  {
-    value: CredentialType.OPENAI,
-    label: "OpenAI",
-    logo: "/openai.svg",
-  },
-  {
-    value: CredentialType.GEMINI,
-    label: "GEMINI",
-    logo: "/gemini.svg",
-  },
-  {
-    value: CredentialType.ANTHROPIC,
-    label: "Anthropic",
-    logo: "/anthropic.svg",
-  },
-  {
-    value: CredentialType.HUGGING_FACE,
-    label: "Hugging Face",
-    logo: "/huggingface.svg",
-  },
-  {
-    value: CredentialType.IMG_BB,
-    label: "Image BB",
-    logo: "/imgbb.png",
-  },
-  {
-    value: CredentialType.TELEGRAM_BOT,
-    label: "Telegram Bot",
-    logo: "/telegram.svg",
-  },
-  {
-    value: CredentialType.ZACHURL,
-    label: "Zachurl",
-    logo: "/zachurl.svg",
-  },
-  {
-    value: CredentialType.ZACHCOURSE,
-    label: "Zachcourse",
-    logo: "/zachcourse.svg",
-  },
-  {
-    value: CredentialType.SMTP,
-    label: "SMTP",
-    logo: "/smtp.svg",
-  },
-  {
-    value: CredentialType.GOOGLE_SHEETS,
-    label: "Google Sheets",
-    logo: "/googleSheets.svg",
-  },
-  {
-    value: CredentialType.POSTGRES,
-    label: "Postgres",
-    logo: "/postgres.svg",
-  },
-  {
-    value: CredentialType.AIRTABLE,
-    label: "Airtable",
-    logo: "/airtable.svg",
-  },
-  {
-    value: CredentialType.NOTION,
-    label: "Notion",
-    logo: "/notion.svg",
-  },
-  {
-    value: CredentialType.GITHUB,
-    label: "GitHub",
-    logo: "/github.svg",
-  },
-];
+const credentialTypeOptions = configuredCredentialTypes.map((option) => ({
+  value: option.type,
+  label: option.label,
+  logo: option.logo,
+}));
 
 export const CredentialForm = ({ initialData }: CredentialFormProps) => {
   const router = useRouter();

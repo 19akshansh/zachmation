@@ -31,8 +31,8 @@ import { FileSpreadsheetIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CredentialType } from "@/generated/prisma/enums";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
 
 const formSchema = z
   .object({
@@ -68,9 +68,7 @@ export const GoogleSheetsDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: credentials = [], isLoading } = useCredentialsByType(
-    CredentialType.GOOGLE_SHEETS,
-  );
+  const { data: credentials = [], isLoading } = useCredentialsByNodeType(NodeType.GOOGLE_SHEETS);
 
   const form = useForm<GoogleSheetsFormValues>({
     resolver: zodResolver(formSchema),

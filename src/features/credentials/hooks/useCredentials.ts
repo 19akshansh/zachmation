@@ -8,7 +8,8 @@ import {
 import { toast } from "sonner";
 import { useCredentialsParams } from "./useCredentialsParams";
 import { PAGINATION } from "@/config/constants";
-import { CredentialType } from "@/generated/prisma/enums";
+import { CredentialType, NodeType } from "@/generated/prisma/enums";
+import { getPrimaryNodeCredentialType } from "@/config/nodeTypes";
 
 export const useSuspenseCredentials = () => {
   const trpc = useTRPC();
@@ -93,4 +94,8 @@ export const useCredentialsByType = (type: CredentialType) => {
   const trpc = useTRPC();
 
   return useQuery(trpc.credentials.getByType.queryOptions({ type }));
+};
+
+export const useCredentialsByNodeType = (nodeType: NodeType) => {
+  return useCredentialsByType(getPrimaryNodeCredentialType(nodeType));
 };

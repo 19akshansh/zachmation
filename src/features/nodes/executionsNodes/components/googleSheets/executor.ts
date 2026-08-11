@@ -1,6 +1,8 @@
 import Handlebars from "handlebars";
 import { NonRetriableError } from "inngest";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt, encrypt } from "@/lib/encryption";
 import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { googleSheetsChannel } from "@/inngest/channels/executions/googleSheets";
@@ -116,7 +118,7 @@ export const GoogleSheetsExecutor: NodeExecutor<GoogleSheetsData> = async ({
   try {
     const result = await step.run(`google-sheets-${nodeId}`, async () => {
       const credential = await prisma.credential.findFirst({
-        where: { id: credentialId, userId, type: "GOOGLE_SHEETS" },
+        where: { id: credentialId, userId, type: getNodeCredentialTypes(NodeType.GOOGLE_SHEETS)[0] },
       });
 
       if (!credential) {

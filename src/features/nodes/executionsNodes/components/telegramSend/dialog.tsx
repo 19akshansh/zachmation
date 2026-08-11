@@ -27,8 +27,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
-import { CredentialType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -61,7 +61,7 @@ export const TelegramSendDialog = ({
   defaultValues = {},
 }: Props) => {
   const { data: credentials = [], isLoading: credentialsLoading } =
-    useCredentialsByType(CredentialType.TELEGRAM_BOT);
+    useCredentialsByNodeType(NodeType.TELEGRAM_SEND);
 
   const form = useForm<TelegramSendFormValues>({
     resolver: zodResolver(formSchema),

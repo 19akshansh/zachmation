@@ -32,7 +32,8 @@ import {
   type BlackForestModelId,
 } from "@/config/ai/blackforestModels";
 import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
-import { CredentialType } from "@/generated/prisma/enums";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useEffect } from "react";
@@ -77,11 +78,9 @@ export const BlackForestDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: hfCredentials, isLoading: hfLoading } = useCredentialsByType(
-    CredentialType.HUGGING_FACE,
-  );
+  const { data: hfCredentials, isLoading: hfLoading } = useCredentialsByType(getNodeCredentialTypes(NodeType.BLACK_LABS)[0]);
   const { data: imgbbCredentials, isLoading: imgbbLoading } =
-    useCredentialsByType(CredentialType.IMG_BB);
+    useCredentialsByType(getNodeCredentialTypes(NodeType.BLACK_LABS)[1]);
 
   const form = useForm<BlackForestFormValues>({
     resolver: zodResolver(formSchema),

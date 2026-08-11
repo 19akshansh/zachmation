@@ -36,6 +36,7 @@ import {
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const WorkflowSettingsDialog = ({
   workflowId,
@@ -173,6 +174,17 @@ export const WorkflowSettingsDialog = ({
         </div>
 
         <div className="rounded-lg border bg-muted/30 p-4">
+          <Alert variant="destructive" className="mb-4">
+            <ShieldAlertIcon className="size-4" />
+            <AlertTitle>Review the workflow before publishing</AlertTitle>
+            <AlertDescription>
+              Stored credentials are removed automatically, but secrets manually
+              entered into URLs, headers, queries, prompts, or other workflow
+              fields can still be part of the public template. Anyone with the
+              link can download it.
+            </AlertDescription>
+          </Alert>
+
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="flex items-center gap-2 text-sm font-medium">

@@ -1,3 +1,4 @@
+import { NodeType } from "@/generated/prisma/enums";
 import { checkRateLimit } from "@/helpers/rateLimit";
 import { sendWorkflowExecution } from "@/inngest/utils";
 import prisma from "@/lib/db";
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
   }
 
   const trigger = await prisma.node.findFirst({
-    where: { workflowId, type: "DISCORD_TRIGGER" },
+    where: { workflowId, type: NodeType.DISCORD_TRIGGER },
     select: { data: true },
   });
   const data = trigger?.data as { publicKey?: string } | null | undefined;

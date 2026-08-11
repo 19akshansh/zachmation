@@ -1,4 +1,4 @@
-import { PRO_NODES } from "@/config/nodeTypes";
+import { isProNode } from "@/config/nodeTypes";
 import { NodeType } from "@/generated/prisma/enums";
 import { auth } from "@/lib/auth";
 import { getSubscriptionStatus } from "@/lib/subscriptions";
@@ -89,7 +89,7 @@ export const proNodesProcedure = proProcedure.use(
     };
 
     const containsProNodes =
-      input.nodes?.some((node) => PRO_NODES.has(node.type)) ?? false;
+      input.nodes?.some((node) => isProNode(node.type)) ?? false;
 
     if (containsProNodes && !ctx.hasPro) {
       throw new TRPCError({

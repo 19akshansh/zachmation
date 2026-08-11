@@ -3,6 +3,8 @@ import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { NonRetriableError } from "inngest";
 import { zachurlChannel } from "@/inngest/channels/executions/zachurl";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import ky from "ky";
 
@@ -39,7 +41,7 @@ export const ZachurlExecutor: NodeExecutor<ZachurlData> = async ({
   try {
     const result = await step.run(`zachurl-${nodeId}`, async () => {
       const credential = await prisma.credential.findFirst({
-        where: { id: data.credentialId, userId, type: "ZACHURL" },
+        where: { id: data.credentialId, userId, type: getNodeCredentialTypes(NodeType.ZACHURL)[0] },
       });
 
       if (!credential) {

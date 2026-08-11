@@ -1,6 +1,8 @@
 import { NonRetriableError } from "inngest";
 import Handlebars from "handlebars";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { vectorStoreChannel } from "@/inngest/channels/executions/vectorStore";
@@ -53,7 +55,7 @@ export const VectorStoreExecutor: NodeExecutor<VectorStoreData> = async ({
         where: {
           id: data.credentialId,
           userId,
-          type: "GEMINI",
+          type: getNodeCredentialTypes(NodeType.VECTOR_STORE)[0],
         },
       });
 

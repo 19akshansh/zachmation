@@ -1,3 +1,4 @@
+import { NodeType } from "@/generated/prisma/enums";
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { checkRateLimit } from "@/helpers/rateLimit";
 import prisma from "@/lib/db";
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
       where: {
         id: nodeId,
         workflowId,
-        type: "TELEGRAM_TRIGGER",
+        type: NodeType.TELEGRAM_TRIGGER,
       },
       select: { data: true },
     });

@@ -28,8 +28,8 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { GOOGLE_MODELS, type GoogleModelId } from "@/config/ai/geminiModels";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
-import { CredentialType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { useEffect } from "react";
@@ -76,7 +76,7 @@ export const GeminiDialog = ({
   defaultValues = {},
 }: Props) => {
   const { data: credentials, isLoading: credentialsLoading } =
-    useCredentialsByType(CredentialType.GEMINI);
+    useCredentialsByNodeType(NodeType.GEMINI);
 
   const form = useForm<GeminiFormValues>({
     resolver: zodResolver(formSchema),

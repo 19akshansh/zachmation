@@ -14,7 +14,11 @@ import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma/enums";
 import { sendWorkflowExecution } from "@/inngest/utils";
 import { TRPCError } from "@trpc/server";
-import { PINNABLE_NODES, PRO_NODES } from "@/config/nodeTypes";
+import {
+  getNodeCredentialTypes,
+  isPinnableNode,
+  isProNode,
+} from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import { envSchem } from "@/config/envSchema";
 import { buildPublicWorkflowExport } from "../lib/publicTemplate";
@@ -49,7 +53,7 @@ export const workflowsRouter = createTRPCRouter({
         where: {
           id: input.credentialId,
           userId: ctx.auth.user.id,
-          type: "TELEGRAM_BOT",
+          type: getNodeCredentialTypes(NodeType.TELEGRAM_TRIGGER)[0],
         },
       });
 
@@ -119,7 +123,7 @@ export const workflowsRouter = createTRPCRouter({
       });
 
       const containsProNodes = workflow.nodes.some((node) =>
-        PRO_NODES.has(node.type),
+        isProNode(node.type),
       );
 
       if (containsProNodes && !ctx.hasPro) {
@@ -667,7 +671,7 @@ export const workflowsRouter = createTRPCRouter({
         });
       }
 
-      if (!PINNABLE_NODES.has(node.type)) {
+      if (!isPinnableNode(node.type)) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "This node type cannot be pinned.",

@@ -3,6 +3,8 @@ import type { NodeExecutor } from "@/features/nodes/executionsNodes/types";
 import { NonRetriableError } from "inngest";
 import { zachcourseChannel } from "@/inngest/channels/executions/zachcourse";
 import prisma from "@/lib/db";
+import { NodeType } from "@/generated/prisma/enums";
+import { getNodeCredentialTypes } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import ky from "ky";
 
@@ -66,13 +68,13 @@ export const ZachCourseExecutor: NodeExecutor<ZachCourseData> = async ({
       `zachcourse-credentials-${nodeId}`,
       async () => {
         const credential = await prisma.credential.findFirst({
-          where: { id: data.credentialId, userId, type: "ZACHCOURSE" },
+          where: { id: data.credentialId, userId, type: getNodeCredentialTypes(NodeType.ZACHCOURSE)[0] },
         });
         const geminiCredential = await prisma.credential.findFirst({
           where: {
             id: data.geminiCredentialId,
             userId,
-            type: "GEMINI",
+            type: getNodeCredentialTypes(NodeType.ZACHCOURSE)[1],
           },
         });
 

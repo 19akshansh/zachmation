@@ -19,9 +19,12 @@ import { useHasActivePROSubscription } from "@/features/subscriptions/hooks/useS
 import { cn } from "@/lib/utils";
 
 import {
-  type NodeTypeOption,
-  triggerNodes,
   executionNodes,
+  isInitialNode,
+  isSingletonNode,
+  isTriggerNode,
+  NodeTypeOption,
+  triggerNodes,
 } from "@/config/nodeTypes";
 
 interface NodeSelectorProps {
@@ -40,17 +43,17 @@ export function NodeSelector({
 
   const hasTrigger = useMemo(() => {
     const nodes = getNodes();
-    return nodes.some((node) => triggerNodes.some((t) => t.type === node.type));
+    return nodes.some((node) => isTriggerNode(node.type as import("@/generated/prisma/enums").NodeType));
   }, [getNodes, open]);
 
   const nodeOptions = hasTrigger ? executionNodes : triggerNodes;
 
   const handleNodeSelect = useCallback(
     (selection: NodeTypeOption) => {
-      if (selection.type === NodeType.MANUAL_TRIGGER) {
+      if (isSingletonNode(selection.type)) {
         const nodes = getNodes();
         const hasManualTrigger = nodes.some(
-          (node) => node.type === NodeType.MANUAL_TRIGGER,
+          (node) => node.type === selection.type,
         );
 
         if (hasManualTrigger) {
@@ -61,7 +64,7 @@ export function NodeSelector({
 
       setNodes((nodes) => {
         const hasInitialTrigger = nodes.some(
-          (node) => node.type === NodeType.INITIAL,
+          (node) => isInitialNode(node.type as NodeType),
         );
 
         const centerX = window.innerWidth / 2;

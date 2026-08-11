@@ -16,8 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CredentialType } from "@/generated/prisma/enums";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
 import { useTRPC } from "@/trpc/client";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
@@ -46,7 +46,7 @@ export const TelegramTriggerDialog = ({
     credentialId ?? "",
   );
   const { data: credentials = [], isLoading: credentialsLoading } =
-    useCredentialsByType(CredentialType.TELEGRAM_BOT);
+    useCredentialsByNodeType(NodeType.TELEGRAM_TRIGGER);
   const trpc = useTRPC();
 
   const registerWebhook = useMutation(

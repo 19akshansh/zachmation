@@ -32,8 +32,8 @@ import { BrainCircuitIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CredentialType } from "@/generated/prisma/enums";
-import { useCredentialsByType } from "@/features/credentials/hooks/useCredentials";
+import { NodeType } from "@/generated/prisma/enums";
+import { useCredentialsByNodeType } from "@/features/credentials/hooks/useCredentials";
 
 const formSchema = z
   .object({
@@ -78,9 +78,7 @@ export const VectorStoreDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: credentials = [], isLoading } = useCredentialsByType(
-    CredentialType.GEMINI,
-  );
+  const { data: credentials = [], isLoading } = useCredentialsByNodeType(NodeType.VECTOR_STORE);
 
   const form = useForm<VectorStoreFormValues>({
     resolver: zodResolver(formSchema),

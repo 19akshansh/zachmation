@@ -1,5 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { NodeType } from "@/generated/prisma/enums";
+import { getPublicExportFields } from "@/config/nodeTypes";
 
 type WorkflowNode = {
   id: string;
@@ -53,44 +54,35 @@ const alwaysSensitiveKeys = new Set([
   "webhook_url",
 ]);
 
-const nodeSensitiveKeys: Partial<Record<NodeType, Set<string>>> = {
-  [NodeType.DISCORD_SEND]: new Set(["webhookUrl"]),
-  [NodeType.SLACK]: new Set(["webhookUrl"]),
-  [NodeType.TELEGRAM_TRIGGER]: new Set(["telegramSecretToken"]),
-};
-
-const isSensitiveKey = (key: string, type: NodeType) => {
-  const normalizedKey = key.toLowerCase();
-
-  if (alwaysSensitiveKeys.has(normalizedKey)) {
-    return true;
-  }
-
-  const sensitiveKeys = nodeSensitiveKeys[type];
-  if (sensitiveKeys) {
-    return [...sensitiveKeys].some(
-      (sensitiveKey) => sensitiveKey.toLowerCase() === normalizedKey,
-    );
-  }
-
-  return false;
-};
-
-const sanitizeValue = (value: unknown, type: NodeType): unknown => {
+const sanitizeValue = (
+  value: unknown,
+  allowedFields: readonly string[],
+  nested = false,
+): unknown => {
   if (Array.isArray(value)) {
-    return value.map((item) => sanitizeValue(item, type));
+    return value.map((item) => sanitizeValue(item, allowedFields, true));
   }
 
   if (!value || typeof value !== "object") {
     return value;
   }
 
+  const allowed = new Set(allowedFields);
+
   return Object.fromEntries(
-    Object.entries(value).flatMap(([key, item]) =>
-      isSensitiveKey(key, type)
-        ? []
-        : [[key, sanitizeValue(item, type)]],
-    ),
+    Object.entries(value).flatMap(([key, item]) => {
+      const normalizedKey = key.toLowerCase();
+
+      if (alwaysSensitiveKeys.has(normalizedKey)) {
+        return [];
+      }
+
+      if (!nested && !allowed.has(key)) {
+        return [];
+      }
+
+      return [[key, sanitizeValue(item, allowedFields, true)]];
+    }),
   );
 };
 
@@ -98,7 +90,7 @@ export const sanitizePublicNodeData = (
   type: NodeType,
   data: unknown,
 ): Record<string, unknown> => {
-  const sanitized = sanitizeValue(data ?? {}, type);
+  const sanitized = sanitizeValue(data ?? {}, getPublicExportFields(type));
 
   if (!sanitized || typeof sanitized !== "object" || Array.isArray(sanitized)) {
     return {};
@@ -107,9 +99,7 @@ export const sanitizePublicNodeData = (
   return sanitized as Record<string, unknown>;
 };
 
-export const buildPublicWorkflowExport = (
-  workflow: WorkflowForExport,
-) => {
+export const buildPublicWorkflowExport = (workflow: WorkflowForExport) => {
   const idMap = new Map<string, string>();
 
   for (const node of workflow.nodes) {
