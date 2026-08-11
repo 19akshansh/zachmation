@@ -2,6 +2,7 @@
 
 import { Settings2Icon, ShieldAlertIcon, PowerIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -21,6 +22,7 @@ import {
   useErrorWorkflows,
   useSetErrorWorkflow,
   useSetWorkflowActive,
+  useSetWorkflowTags,
   useSuspenseWorkflow,
 } from "@/features/workflows/hooks/useWorkflows";
 import { useEffect, useState } from "react";
@@ -34,27 +36,48 @@ export const WorkflowSettingsDialog = ({
   const [open, setOpen] = useState(false);
   const { data: workflow } = useSuspenseWorkflow(workflowId);
   const { data: workflows } = useErrorWorkflows();
+  const workflowTags =
+    (workflow as typeof workflow & { tags: string[] }).tags ?? [];
+  const workflowTagsValue = workflowTags.join(", ");
   const setErrorWorkflow = useSetErrorWorkflow();
   const setWorkflowActive = useSetWorkflowActive();
+  const setWorkflowTags = useSetWorkflowTags();
   const [errorWorkflowId, setErrorWorkflowId] = useState<string>(
     workflow.errorWorkflowId ?? "none",
   );
+  const [tags, setTags] = useState("");
 
   useEffect(() => {
     if (open) {
       setErrorWorkflowId(workflow.errorWorkflowId ?? "none");
+      setTags(workflowTagsValue);
     }
-  }, [open, workflow.errorWorkflowId]);
+  }, [open, workflow.errorWorkflowId, workflowTagsValue]);
 
   const handleSave = async () => {
     try {
+      const parsedTags = [
+        ...new Set(
+          tags
+            .split(",")
+            .map((tag) => tag.trim().toLowerCase())
+            .filter(Boolean),
+        ),
+      ];
+
       await setErrorWorkflow.mutateAsync({
         id: workflowId,
         errorWorkflowId: errorWorkflowId === "none" ? null : errorWorkflowId,
       });
+
+      await setWorkflowTags.mutateAsync({
+        id: workflowId,
+        tags: parsedTags,
+      });
+
       setOpen(false);
     } catch {
-      // Mutation hook displays the error toast.
+      // Mutation hooks display the error toast.
     }
   };
 
@@ -109,6 +132,21 @@ export const WorkflowSettingsDialog = ({
 
         <div className="rounded-lg border bg-muted/30 p-4">
           <div className="mb-3">
+            <p className="text-sm font-medium">Tags</p>
+            <p className="text-xs text-muted-foreground">
+              Add comma-separated tags to organize and filter your workflows.
+            </p>
+          </div>
+          <Input
+            value={tags}
+            onChange={(event) => setTags(event.target.value)}
+            placeholder="e.g. discord, reporting, production"
+            disabled={setWorkflowTags.isPending}
+          />
+        </div>
+
+        <div className="rounded-lg border bg-muted/30 p-4">
+          <div className="mb-3">
             <p className="text-sm font-medium">On failure</p>
             <p className="text-xs text-muted-foreground">
               Automatically run another workflow when this workflow execution
@@ -142,8 +180,13 @@ export const WorkflowSettingsDialog = ({
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={setErrorWorkflow.isPending}>
-            {setErrorWorkflow.isPending ? "Saving..." : "Save"}
+          <Button
+            onClick={handleSave}
+            disabled={setErrorWorkflow.isPending || setWorkflowTags.isPending}
+          >
+            {setErrorWorkflow.isPending || setWorkflowTags.isPending
+              ? "Saving..."
+              : "Save"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -17,6 +17,7 @@ export const useSuspenseWorkflows = () => {
     page: params.page ?? PAGINATION.DEFAULT_PAGE,
     pageSize: params.pageSize ?? PAGINATION.DEFAULT_PAGE_SIZE,
     search: params.search ?? "",
+    tag: params.tag ?? "",
   };
 
   return useSuspenseQuery(trpc.workflows.getMany.queryOptions(normalized));
@@ -146,6 +147,33 @@ export const useSetWorkflowActive = () => {
       },
     }),
   );
+};
+
+export const useSetWorkflowTags = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.setTags.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Tags for "${data.name}" updated!`);
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
+        );
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+        queryClient.invalidateQueries(trpc.workflows.getTags.queryOptions());
+      },
+      onError: (error) => {
+        toast.error(`Failed to update workflow tags: ${error.message}`);
+      },
+    }),
+  );
+};
+
+export const useWorkflowTags = () => {
+  const trpc = useTRPC();
+
+  return useQuery(trpc.workflows.getTags.queryOptions());
 };
 
 export const useUpdateWorkflowName = () => {

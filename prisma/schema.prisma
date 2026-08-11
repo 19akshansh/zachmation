@@ -106,6 +106,7 @@ model Workflow {
   id String @id @default(cuid())
   name String
   isActive Boolean @default(false)
+  tags String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

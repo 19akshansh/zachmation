@@ -18,6 +18,7 @@ import {
   useExportWorkflow,
   useRemoveWorkflow,
   useSuspenseWorkflows,
+  useWorkflowTags,
 } from "../hooks/useWorkflows";
 import { useUpgradeModal } from "@/hooks/useUpgradeModal";
 import { useRouter } from "next/navigation";
@@ -25,6 +26,8 @@ import { useWorkflowsParams } from "../hooks/useWorkflowsParams";
 import { UseEntitySearch } from "@/hooks/useEnititySearch";
 import type { Workflow as WorkflowType } from "@/generated/prisma/browser";
 import { CopyIcon, DownloadIcon, WorkflowIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { RelativeTime } from "@/components/relativeTime";
 import { toast } from "sonner";
@@ -99,13 +102,48 @@ export const WorkflowsSearch = () => {
     params,
     setParams,
   });
+  const { data: tags } = useWorkflowTags();
+
+  const handleTagChange = (tag: string) => {
+    setParams({
+      ...params,
+      tag: params.tag === tag ? "" : tag,
+      page: 1,
+    });
+  };
 
   return (
-    <EntitySearch
-      value={searchValue}
-      onChange={onSearchChange}
-      placeholder="Search Workflows"
-    />
+    <div className="space-y-3">
+      <EntitySearch
+        value={searchValue}
+        onChange={onSearchChange}
+        placeholder="Search Workflows"
+      />
+
+      {tags && tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={!params.tag ? "secondary" : "outline"}
+            onClick={() => setParams({ ...params, tag: "", page: 1 })}
+          >
+            All
+          </Button>
+          {tags.map((tag) => (
+            <Button
+              key={tag}
+              type="button"
+              size="sm"
+              variant={params.tag === tag ? "secondary" : "outline"}
+              onClick={() => handleTagChange(tag)}
+            >
+              {tag}
+            </Button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -179,7 +217,11 @@ export const WorkflowsEmpty = () => {
   );
 };
 
-export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
+export const WorkflowItem = ({
+  data,
+}: {
+  data: WorkflowType & { tags: string[] };
+}) => {
   const removeWorkflow = useRemoveWorkflow();
   const duplicateWorkflow = useDuplicateWorkflow();
   const exportWorkflow = useExportWorkflow();
@@ -228,10 +270,21 @@ export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
       href={`/workflows/${data.id}`}
       title={data.name}
       subtitle={
-        <>
-          Updated <RelativeTime date={data.updatedAt} /> &bull; Created{" "}
-          <RelativeTime date={data.createdAt} />
-        </>
+        <div className="space-y-1">
+          <div>
+            Updated <RelativeTime date={data.updatedAt} /> &bull; Created{" "}
+            <RelativeTime date={data.createdAt} />
+          </div>
+          {data.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {data.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-[10px]">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
       }
       image={
         <div className="size-8 flex items-center justify-center">

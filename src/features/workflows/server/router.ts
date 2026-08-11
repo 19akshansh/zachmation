@@ -179,11 +179,12 @@ export const workflowsRouter = createTRPCRouter({
         idMap.set(node.id, createId());
       }
 
-      return prisma.workflow.create({
+      const duplicate = await prisma.workflow.create({
         data: {
           name: `${original.name} (copy)`,
           userId: ctx.auth.user.id,
           isActive: false,
+          tags: original.tags,
           nodes: {
             create: original.nodes.map((node) => ({
               id: idMap.get(node.id)!,
@@ -205,6 +206,8 @@ export const workflowsRouter = createTRPCRouter({
           },
         },
       });
+
+      return duplicate;
     }),
   exportJson: protectedProcedure
     .input(z.object({ workflowId: z.string() }))
@@ -221,6 +224,7 @@ export const workflowsRouter = createTRPCRouter({
       return {
         version: 1,
         name: workflow.name,
+        tags: workflow.tags,
         nodes: workflow.nodes.map((node) => ({
           exportId: node.id,
           name: node.name,
@@ -262,11 +266,51 @@ export const workflowsRouter = createTRPCRouter({
         data: { isActive: input.isActive },
       });
     }),
+  setTags: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        tags: z
+          .array(z.string().trim().min(1).max(50))
+          .max(20)
+          .transform((tags) => [
+            ...new Set(tags.map((tag) => tag.toLowerCase())),
+          ]),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.auth.user.id,
+        },
+        select: { id: true },
+      });
+
+      if (!workflow) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Workflow not found.",
+        });
+      }
+
+      return prisma.workflow.update({
+        where: { id: input.id },
+        data: { tags: input.tags },
+      });
+    }),
   update: proNodesProcedure
     .input(
       z.object({
         id: z.string(),
         errorWorkflowId: z.string().nullable().optional(),
+        tags: z
+          .array(z.string().trim().min(1).max(50))
+          .max(20)
+          .transform((tags) => [
+            ...new Set(tags.map((tag) => tag.toLowerCase())),
+          ])
+          .optional(),
         nodes: z.array(
           z.object({
             id: z.string(),
@@ -365,6 +409,7 @@ export const workflowsRouter = createTRPCRouter({
             ...(input.errorWorkflowId !== undefined
               ? { errorWorkflowId: input.errorWorkflowId }
               : {}),
+            ...(input.tags !== undefined ? { tags: input.tags } : {}),
           },
         });
 
@@ -456,6 +501,7 @@ export const workflowsRouter = createTRPCRouter({
         id: workflow.id,
         name: workflow.name,
         isActive: workflow.isActive,
+        tags: workflow.tags,
         errorWorkflowId: workflow.errorWorkflowId,
         edges,
         nodes,
@@ -568,6 +614,14 @@ export const workflowsRouter = createTRPCRouter({
 
       return { nodeId: node.id, pinned: false };
     }),
+  getTags: protectedProcedure.query(async ({ ctx }) => {
+    const rows = await prisma.workflow.findMany({
+      where: { userId: ctx.auth.user.id },
+      select: { tags: true },
+    });
+
+    return [...new Set(rows.flatMap((workflow) => workflow.tags))].sort();
+  }),
   getMany: protectedProcedure
     .input(
       z.object({
@@ -578,34 +632,32 @@ export const workflowsRouter = createTRPCRouter({
           .max(PAGINATION.MAX_PAGE_SIZE)
           .default(PAGINATION.DEFAULT_PAGE_SIZE),
         search: z.string().default(""),
+        tag: z.string().default(""),
       }),
     )
     .query(async ({ ctx, input }) => {
-      const { page, pageSize, search } = input;
+      const { page, pageSize, search, tag } = input;
+
+      const where = {
+        userId: ctx.auth.user.id,
+        name: {
+          contains: search,
+          mode: "insensitive" as const,
+        },
+        ...(tag ? { tags: { has: tag } } : {}),
+      };
 
       const [items, totalCount] = await Promise.all([
         prisma.workflow.findMany({
           skip: (page - 1) * pageSize,
           take: pageSize,
-          where: {
-            userId: ctx.auth.user.id,
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
+          where,
           orderBy: {
             updatedAt: "desc",
           },
         }),
         prisma.workflow.count({
-          where: {
-            userId: ctx.auth.user.id,
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
+          where,
         }),
       ]);
 
