@@ -179,6 +179,14 @@ export const workflowsRouter = createTRPCRouter({
         data: { name: input.name },
       });
     }),
+  setActive: protectedProcedure
+    .input(z.object({ id: z.string(), isActive: z.boolean() }))
+    .mutation(({ ctx, input }) => {
+      return prisma.workflow.update({
+        where: { id: input.id, userId: ctx.auth.user.id },
+        data: { isActive: input.isActive },
+      });
+    }),
   update: proNodesProcedure
     .input(
       z.object({
@@ -372,6 +380,7 @@ export const workflowsRouter = createTRPCRouter({
       return {
         id: workflow.id,
         name: workflow.name,
+        isActive: workflow.isActive,
         errorWorkflowId: workflow.errorWorkflowId,
         edges,
         nodes,

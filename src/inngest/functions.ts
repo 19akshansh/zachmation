@@ -369,7 +369,10 @@ export const checkScheduledWorkflows = inngest.createFunction(
   async ({ step }) => {
     const cronNodes = await step.run("findCronNodes", async () => {
       return prisma.node.findMany({
-        where: { type: NodeType.CRON_TRIGGER },
+        where: {
+          type: NodeType.CRON_TRIGGER,
+          workflow: { isActive: true },
+        },
         select: {
           id: true,
           workflowId: true,

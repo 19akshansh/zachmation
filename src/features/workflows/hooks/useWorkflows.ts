@@ -90,6 +90,30 @@ export const useSetErrorWorkflow = () => {
   );
 };
 
+export const useSetWorkflowActive = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.setActive.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(
+          data.isActive
+            ? `Workflow "${data.name}" activated!`
+            : `Workflow "${data.name}" deactivated!`,
+        );
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
+        );
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+      },
+      onError: (error) => {
+        toast.error(`Failed to update Workflow: ${error.message}!`);
+      },
+    }),
+  );
+};
+
 export const useUpdateWorkflowName = () => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
@@ -155,7 +179,11 @@ export const useExecuteWorkflow = () => {
   return useMutation(
     trpc.workflows.execute.mutationOptions({
       onSuccess: (data) => {
-        toast.success(`Workflow "${data.name}" executed!`);
+        toast.success(
+          data.isActive
+            ? `Workflow "${data.name}" executed!`
+            : `Workflow "${data.name}" is inactive; execution skipped.`,
+        );
         queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
         queryClient.invalidateQueries(
           trpc.workflows.getOne.queryOptions({ id: data.id }),

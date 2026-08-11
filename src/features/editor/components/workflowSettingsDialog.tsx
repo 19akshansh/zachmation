@@ -1,6 +1,6 @@
 "use client";
 
-import { Settings2Icon, ShieldAlertIcon } from "lucide-react";
+import { Settings2Icon, ShieldAlertIcon, PowerIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,9 +20,11 @@ import {
 import {
   useErrorWorkflows,
   useSetErrorWorkflow,
+  useSetWorkflowActive,
   useSuspenseWorkflow,
 } from "@/features/workflows/hooks/useWorkflows";
 import { useEffect, useState } from "react";
+import { Switch } from "@/components/ui/switch";
 
 export const WorkflowSettingsDialog = ({
   workflowId,
@@ -33,6 +35,7 @@ export const WorkflowSettingsDialog = ({
   const { data: workflow } = useSuspenseWorkflow(workflowId);
   const { data: workflows } = useErrorWorkflows();
   const setErrorWorkflow = useSetErrorWorkflow();
+  const setWorkflowActive = useSetWorkflowActive();
   const [errorWorkflowId, setErrorWorkflowId] = useState<string>(
     workflow.errorWorkflowId ?? "none",
   );
@@ -74,9 +77,31 @@ export const WorkflowSettingsDialog = ({
             Workflow Settings
           </DialogTitle>
           <DialogDescription>
-            Configure what should happen when this workflow fails.
+            Control whether this workflow can run and what should happen when it fails.
           </DialogDescription>
         </DialogHeader>
+
+        <div className="rounded-lg border bg-muted/30 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="flex items-center gap-2 text-sm font-medium">
+                <PowerIcon className="size-4" />
+                Workflow status
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Deactivate this workflow to stop trigger events from starting new executions.
+              </p>
+            </div>
+            <Switch
+              checked={workflow.isActive}
+              disabled={setWorkflowActive.isPending}
+              onCheckedChange={(isActive) =>
+                setWorkflowActive.mutate({ id: workflowId, isActive })
+              }
+              aria-label={workflow.isActive ? "Deactivate workflow" : "Activate workflow"}
+            />
+          </div>
+        </div>
 
         <div className="rounded-lg border bg-muted/30 p-4">
           <div className="mb-3">
