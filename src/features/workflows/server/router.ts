@@ -1,4 +1,5 @@
 import { generateSlug } from "random-word-slugs";
+import { createId } from "@paralleldrive/cuid2";
 import type { Edge, Node } from "@xyflow/react";
 import prisma from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
@@ -161,6 +162,80 @@ export const workflowsRouter = createTRPCRouter({
       },
     });
   }),
+  duplicate: protectedProcedure
+    .input(z.object({ workflowId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const original = await prisma.workflow.findUnique({
+        where: { id: input.workflowId },
+        include: { nodes: true, connections: true },
+      });
+
+      if (!original || original.userId !== ctx.auth.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const idMap = new Map<string, string>();
+      for (const node of original.nodes) {
+        idMap.set(node.id, createId());
+      }
+
+      return prisma.workflow.create({
+        data: {
+          name: `${original.name} (copy)`,
+          userId: ctx.auth.user.id,
+          isActive: false,
+          nodes: {
+            create: original.nodes.map((node) => ({
+              id: idMap.get(node.id)!,
+              name: node.name,
+              type: node.type,
+              position: node.position as Prisma.InputJsonValue,
+              data: (node.data ?? {}) as Prisma.InputJsonValue,
+              pinnedData: node.pinnedData ?? Prisma.JsonNull,
+              credentialId: node.credentialId,
+            })),
+          },
+          connections: {
+            create: original.connections.map((connection) => ({
+              fromNodeId: idMap.get(connection.fromNodeId)!,
+              toNodeId: idMap.get(connection.toNodeId)!,
+              fromOutput: connection.fromOutput,
+              toInput: connection.toInput,
+            })),
+          },
+        },
+      });
+    }),
+  exportJson: protectedProcedure
+    .input(z.object({ workflowId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUnique({
+        where: { id: input.workflowId },
+        include: { nodes: true, connections: true },
+      });
+
+      if (!workflow || workflow.userId !== ctx.auth.user.id) {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      return {
+        version: 1,
+        name: workflow.name,
+        nodes: workflow.nodes.map((node) => ({
+          exportId: node.id,
+          name: node.name,
+          type: node.type,
+          position: node.position,
+          data: node.data,
+        })),
+        connections: workflow.connections.map((connection) => ({
+          fromExportId: connection.fromNodeId,
+          toExportId: connection.toNodeId,
+          fromOutput: connection.fromOutput,
+          toInput: connection.toInput,
+        })),
+      };
+    }),
   remove: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {

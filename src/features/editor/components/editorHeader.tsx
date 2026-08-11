@@ -11,13 +11,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
+  useDuplicateWorkflow,
+  useExportWorkflow,
   useSuspenseWorkflow,
   useUpdateWorkflow,
   useUpdateWorkflowName,
 } from "@/features/workflows/hooks/useWorkflows";
 import { useAtomValue } from "jotai";
-import { SaveIcon } from "lucide-react";
+import { CopyIcon, DownloadIcon, SaveIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { editorAtom } from "../store/atoms";
 import { NodeType } from "@/generated/prisma/enums";
@@ -173,6 +176,62 @@ export const EditorBreadcrumbs = ({ workflowId }: { workflowId: string }) => {
   );
 };
 
+
+export const EditorWorkflowActions = ({
+  workflowId,
+}: {
+  workflowId: string;
+  }) => {
+  const router = useRouter();
+ const duplicateWorkflow = useDuplicateWorkflow();
+ const exportWorkflow = useExportWorkflow();
+
+  const handleDuplicate = async () => {
+    const duplicated = await duplicateWorkflow.mutateAsync({ workflowId });
+    router.push(`/workflows/${duplicated.id}`);
+  };
+
+  const handleExport = async () => {
+    const exported = await exportWorkflow.mutateAsync({ workflowId });
+    const blob = new Blob([JSON.stringify(exported, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `${exported.name.replace(/[^a-z0-9-_]+/gi, "-") || "workflow"}.json`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={duplicateWorkflow.isPending || exportWorkflow.isPending}
+        onClick={handleDuplicate}
+        title="Duplicate workflow"
+      >
+        <CopyIcon className="size-4" />
+        Duplicate
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={duplicateWorkflow.isPending || exportWorkflow.isPending}
+        onClick={handleExport}
+        title="Export workflow JSON"
+      >
+        <DownloadIcon className="size-4" />
+        Export
+      </Button>
+    </div>
+  );
+};
+
 export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
   return (
     <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
@@ -182,6 +241,7 @@ export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
         <EditorBreadcrumbs workflowId={workflowId} />
 
         <div className="flex items-center gap-2">
+          <EditorWorkflowActions workflowId={workflowId} />
           <WorkflowSettingsDialog workflowId={workflowId} />
           <EditorSaveButton workflowId={workflowId} />
         </div>

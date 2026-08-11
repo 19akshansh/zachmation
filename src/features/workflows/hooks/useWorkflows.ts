@@ -1,6 +1,7 @@
 import { useTRPC } from "@/trpc/client";
 import {
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from "@tanstack/react-query";
@@ -42,6 +43,39 @@ export const useCreateWorkflow = () => {
       },
     }),
   );
+};
+
+export const useDuplicateWorkflow = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.duplicate.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Workflow "${data.name}" duplicated!`);
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+      },
+      onError: (error) => {
+        toast.error(`Failed to duplicate Workflow: ${error.message}!`);
+      },
+    }),
+  );
+};
+
+export const useExportWorkflow = () => {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ workflowId }: { workflowId: string }) => {
+      return queryClient.fetchQuery(
+        trpc.workflows.exportJson.queryOptions({ workflowId }),
+      );
+    },
+    onError: (error) => {
+      toast.error(`Failed to export Workflow: ${error.message}!`);
+    },
+  });
 };
 
 export const useRemoveWorkflow = () => {

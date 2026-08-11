@@ -14,6 +14,8 @@ import {
 } from "@/components/entityComponents";
 import {
   useCreateWorkflow,
+  useDuplicateWorkflow,
+  useExportWorkflow,
   useRemoveWorkflow,
   useSuspenseWorkflows,
 } from "../hooks/useWorkflows";
@@ -22,8 +24,10 @@ import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/useWorkflowsParams";
 import { UseEntitySearch } from "@/hooks/useEnititySearch";
 import type { Workflow as WorkflowType } from "@/generated/prisma/browser";
-import { WorkflowIcon } from "lucide-react";
+import { CopyIcon, DownloadIcon, WorkflowIcon } from "lucide-react";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { RelativeTime } from "@/components/relativeTime";
+import { toast } from "sonner";
 
 export const WorkflowsList = () => {
   const workflows = useSuspenseWorkflows();
@@ -177,12 +181,47 @@ export const WorkflowsEmpty = () => {
 
 export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
   const removeWorkflow = useRemoveWorkflow();
+  const duplicateWorkflow = useDuplicateWorkflow();
+  const exportWorkflow = useExportWorkflow();
 
   const handleRemove = () => {
     removeWorkflow.mutate({
       id: data.id,
     });
   };
+
+  const handleDuplicate = () => {
+    duplicateWorkflow.mutate({ workflowId: data.id });
+  };
+
+  const handleExport = async () => {
+    try {
+      const result = await exportWorkflow.mutateAsync({ workflowId: data.id });
+
+      const blob = new Blob([JSON.stringify(result, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `${data.name.replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "workflow"}.json`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(
+        `Failed to export Workflow: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      );
+    }
+  };
+
+  const isBusy =
+    removeWorkflow.isPending ||
+    duplicateWorkflow.isPending ||
+    exportWorkflow.isPending;
 
   return (
     <EntityItem
@@ -198,6 +237,30 @@ export const WorkflowItem = ({ data }: { data: WorkflowType }) => {
         <div className="size-8 flex items-center justify-center">
           <WorkflowIcon className="size-5 text-muted-foreground" />
         </div>
+      }
+      menuActions={
+        <>
+          <DropdownMenuItem
+            disabled={isBusy}
+            onSelect={(event) => {
+              event.stopPropagation();
+              handleDuplicate();
+            }}
+          >
+            <CopyIcon className="size-4" />
+            Duplicate
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={isBusy}
+            onSelect={(event) => {
+              event.stopPropagation();
+              void handleExport();
+            }}
+          >
+            <DownloadIcon className="size-4" />
+            Export
+          </DropdownMenuItem>
+        </>
       }
       onRemove={handleRemove}
       isRemoving={removeWorkflow.isPending}
