@@ -240,6 +240,8 @@ model Execution {
   inngestEventId String @unique
 
   output Json?
+  initialData Json?
+  lastKnownContext Json?
 
   @@index([workflowId, startedAt(sort: Desc)])
 } 
