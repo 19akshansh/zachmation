@@ -79,6 +79,23 @@ export const useExportWorkflow = () => {
   });
 };
 
+export const useImportWorkflow = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.importJson.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(`Workflow "${data.name}" imported!`);
+        queryClient.invalidateQueries(trpc.workflows.getMany.queryOptions({}));
+      },
+      onError: (error) => {
+        toast.error(`Failed to import Workflow: ${error.message}!`);
+      },
+    }),
+  );
+};
+
 export const useRemoveWorkflow = () => {
   const queryClient = useQueryClient();
   const trpc = useTRPC();
@@ -120,6 +137,29 @@ export const useSetErrorWorkflow = () => {
       },
       onError: (error) => {
         toast.error(`Failed to update error workflow: ${error.message}`);
+      },
+    }),
+  );
+};
+
+export const useSetWorkflowPublic = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.workflows.setPublic.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(
+          data.publicSlug
+            ? "Workflow is now publicly shareable."
+            : "Workflow is no longer public.",
+        );
+        queryClient.invalidateQueries(
+          trpc.workflows.getOne.queryOptions({ id: data.id }),
+        );
+      },
+      onError: (error) => {
+        toast.error(`Failed to update workflow sharing: ${error.message}`);
       },
     }),
   );

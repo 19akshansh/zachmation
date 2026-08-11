@@ -1,6 +1,13 @@
 "use client";
 
-import { Settings2Icon, ShieldAlertIcon, PowerIcon } from "lucide-react";
+import {
+  CopyIcon,
+  ExternalLinkIcon,
+  PowerIcon,
+  Settings2Icon,
+  Share2Icon,
+  ShieldAlertIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,10 +29,12 @@ import {
   useErrorWorkflows,
   useSetErrorWorkflow,
   useSetWorkflowActive,
+  useSetWorkflowPublic,
   useSetWorkflowTags,
   useSuspenseWorkflow,
 } from "@/features/workflows/hooks/useWorkflows";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 
 export const WorkflowSettingsDialog = ({
@@ -41,6 +50,7 @@ export const WorkflowSettingsDialog = ({
   const workflowTagsValue = workflowTags.join(", ");
   const setErrorWorkflow = useSetErrorWorkflow();
   const setWorkflowActive = useSetWorkflowActive();
+  const setWorkflowPublic = useSetWorkflowPublic();
   const setWorkflowTags = useSetWorkflowTags();
   const [errorWorkflowId, setErrorWorkflowId] = useState<string>(
     workflow.errorWorkflowId ?? "none",
@@ -53,6 +63,23 @@ export const WorkflowSettingsDialog = ({
       setTags(workflowTagsValue);
     }
   }, [open, workflow.errorWorkflowId, workflowTagsValue]);
+
+  const publicUrl = workflow.publicSlug
+    ? `${process.env.NEXT_PUBLIC_APP_URL}/templates/${workflow.publicSlug}`
+    : "";
+
+  const handleCopyPublicUrl = async () => {
+    if (!publicUrl) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      toast.success("Public workflow link copied.");
+    } catch {
+      toast.error("Failed to copy public workflow link.");
+    }
+  };
 
   const handleSave = async () => {
     try {
@@ -143,6 +170,70 @@ export const WorkflowSettingsDialog = ({
             placeholder="e.g. discord, reporting, production"
             disabled={setWorkflowTags.isPending}
           />
+        </div>
+
+        <div className="rounded-lg border bg-muted/30 p-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="flex items-center gap-2 text-sm font-medium">
+                <Share2Icon className="size-4" />
+                Public template
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Share a downloadable workflow template. Credentials and known
+                secret fields are always removed.
+              </p>
+            </div>
+            <Switch
+              checked={Boolean(workflow.publicSlug)}
+              disabled={setWorkflowPublic.isPending}
+              onCheckedChange={(isPublic) =>
+                setWorkflowPublic.mutate({
+                  id: workflowId,
+                  isPublic,
+                })
+              }
+              aria-label={
+                workflow.publicSlug
+                  ? "Make workflow private"
+                  : "Make workflow public"
+              }
+            />
+          </div>
+
+          {workflow.publicSlug && (
+            <div className="mt-4 space-y-2">
+              <div className="flex gap-2">
+                <Input
+                  value={publicUrl}
+                  readOnly
+                  className="font-mono text-xs"
+                />
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={handleCopyPublicUrl}
+                  aria-label="Copy public workflow link"
+                >
+                  <CopyIcon className="size-4" />
+                </Button>
+                <Button asChild size="icon" variant="outline">
+                  <a
+                    href={publicUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Open public workflow page"
+                  >
+                    <ExternalLinkIcon className="size-4" />
+                  </a>
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Anyone with this link can download the sanitized workflow JSON.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="rounded-lg border bg-muted/30 p-4">

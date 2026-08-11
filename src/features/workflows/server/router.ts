@@ -17,6 +17,7 @@ import { TRPCError } from "@trpc/server";
 import { PINNABLE_NODES, PRO_NODES } from "@/config/nodeTypes";
 import { decrypt } from "@/lib/encryption";
 import { envSchem } from "@/config/envSchema";
+import { buildPublicWorkflowExport } from "../lib/publicTemplate";
 
 export const workflowsRouter = createTRPCRouter({
   registerTelegramWebhook: protectedProcedure
@@ -221,24 +222,111 @@ export const workflowsRouter = createTRPCRouter({
         throw new TRPCError({ code: "FORBIDDEN" });
       }
 
-      return {
-        version: 1,
-        name: workflow.name,
-        tags: workflow.tags,
-        nodes: workflow.nodes.map((node) => ({
-          exportId: node.id,
-          name: node.name,
-          type: node.type,
-          position: node.position,
-          data: node.data,
-        })),
-        connections: workflow.connections.map((connection) => ({
-          fromExportId: connection.fromNodeId,
-          toExportId: connection.toNodeId,
-          fromOutput: connection.fromOutput,
-          toInput: connection.toInput,
-        })),
-      };
+      return buildPublicWorkflowExport(workflow);
+    }),
+  importJson: proNodesProcedure
+    .input(
+      z.object({
+        version: z.literal(1),
+        name: z.string().trim().min(1).max(100),
+        tags: z
+          .array(z.string().trim().min(1).max(50))
+          .max(20)
+          .transform((tags) => [
+            ...new Set(tags.map((tag) => tag.toLowerCase())),
+          ]),
+        nodes: z
+          .array(
+            z.object({
+              exportId: z.string().min(1),
+              name: z.string().min(1),
+              type: z.enum(NodeType),
+              position: z.object({
+                x: z.number(),
+                y: z.number(),
+              }),
+              data: z.record(z.string(), z.any()).default({}),
+            }),
+          )
+          .min(1),
+        connections: z.array(
+          z.object({
+            fromExportId: z.string().min(1),
+            toExportId: z.string().min(1),
+            fromOutput: z.string(),
+            toInput: z.string(),
+          }),
+        ),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const workflowCount = await prisma.workflow.count({
+        where: {
+          userId: ctx.auth.user.id,
+        },
+      });
+
+      if (workflowCount >= ctx.limits.workflows) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Workflow limit reached. UPGRADE TO PRO.",
+        });
+      }
+
+      const nodeIds = new Set<string>();
+      const idMap = new Map<string, string>();
+
+      for (const node of input.nodes) {
+        if (nodeIds.has(node.exportId)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Duplicate node ID "${node.exportId}" in workflow file.`,
+          });
+        }
+
+        nodeIds.add(node.exportId);
+        idMap.set(node.exportId, createId());
+      }
+
+      for (const connection of input.connections) {
+        if (
+          !nodeIds.has(connection.fromExportId) ||
+          !nodeIds.has(connection.toExportId)
+        ) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Workflow file contains an invalid connection.",
+          });
+        }
+      }
+
+      return prisma.workflow.create({
+        data: {
+          name: input.name,
+          userId: ctx.auth.user.id,
+          isActive: false,
+          tags: input.tags,
+          nodes: {
+            create: input.nodes.map((node) => ({
+              id: idMap.get(node.exportId)!,
+              name: node.name,
+              type: node.type,
+              position: node.position,
+              data: node.data,
+              pinnedData: Prisma.JsonNull,
+              credentialId: null,
+            })),
+          },
+          connections: {
+            create: input.connections.map((connection) => ({
+              fromNodeId: idMap.get(connection.fromExportId)!,
+              toNodeId: idMap.get(connection.toExportId)!,
+              fromOutput: connection.fromOutput,
+              toInput: connection.toInput,
+            })),
+          },
+        },
+      });
     }),
   remove: protectedProcedure
     .input(z.object({ id: z.string() }))
@@ -264,6 +352,47 @@ export const workflowsRouter = createTRPCRouter({
       return prisma.workflow.update({
         where: { id: input.id, userId: ctx.auth.user.id },
         data: { isActive: input.isActive },
+      });
+    }),
+  setPublic: protectedProcedure
+    .input(z.object({ id: z.string(), isPublic: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUnique({
+        where: {
+          id: input.id,
+          userId: ctx.auth.user.id,
+        },
+        select: {
+          id: true,
+          publicSlug: true,
+        },
+      });
+
+      if (!workflow) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Workflow not found.",
+        });
+      }
+
+      if (!input.isPublic) {
+        return prisma.workflow.update({
+          where: { id: workflow.id },
+          data: { publicSlug: null },
+        });
+      }
+
+      if (workflow.publicSlug) {
+        return prisma.workflow.findUniqueOrThrow({
+          where: { id: workflow.id },
+        });
+      }
+
+      const publicSlug = createId();
+
+      return prisma.workflow.update({
+        where: { id: workflow.id },
+        data: { publicSlug },
       });
     }),
   setTags: protectedProcedure
@@ -502,6 +631,7 @@ export const workflowsRouter = createTRPCRouter({
         name: workflow.name,
         isActive: workflow.isActive,
         tags: workflow.tags,
+        publicSlug: workflow.publicSlug,
         errorWorkflowId: workflow.errorWorkflowId,
         edges,
         nodes,
