@@ -1,6 +1,7 @@
 import toposort from "toposort";
 import { inngest } from "./client";
 import { createId } from "@paralleldrive/cuid2";
+import prisma from "@/lib/db";
 
 export const topologicalSort = <T extends { id: string }>(
   nodes: T[],
@@ -89,6 +90,19 @@ export const sendWorkflowExecution = async (data: {
   workflowId: string;
   [key: string]: any;
 }) => {
+  const workflow = await prisma.workflow.findUnique({
+    where: { id: data.workflowId },
+    select: { isActive: true },
+  });
+
+  if (!workflow) {
+    throw new Error(`Workflow ${data.workflowId} not found`);
+  }
+
+  if (!workflow.isActive) {
+    return { skipped: true, reason: "workflow_inactive" as const };
+  }
+
   return inngest.send({
     name: "workflows/workflow.exec",
     data,

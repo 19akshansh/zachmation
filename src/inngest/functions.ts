@@ -43,6 +43,7 @@ type RunNodeSequenceParams = {
   connections: ExecutableConnection[];
   context: WorkflowContext;
   userId: string;
+  executionId: string;
   step: WorkflowStepTools;
   stepScope?: string;
 };
@@ -153,10 +154,22 @@ const runNodeSequence = async ({
   connections,
   context: initialContext,
   userId,
+  executionId,
   step,
   stepScope = "workflow",
 }: RunNodeSequenceParams): Promise<WorkflowContext> => {
   let context = initialContext;
+
+  const snapshotContext = async (nodeId: string) => {
+    await step.run(`snapshot-${nodeId}`, async () => {
+      await prisma.execution.update({
+        where: { id: executionId },
+        data: {
+          lastKnownContext: context as Prisma.InputJsonValue,
+        },
+      });
+    });
+  };
   const nodeMap = new Map(nodes.map((node) => [node.id, node]));
   const sortedIds = nodes.map((node) => node.id);
   const outgoing = new Map<string, ExecutableConnection[]>();
@@ -240,6 +253,7 @@ const runNodeSequence = async ({
           connections,
           context: iterationContext,
           userId,
+          executionId,
           step: scopedStep(step, `${stepScope}:loop:${node.id}:${index}`),
           stepScope: `${stepScope}:loop:${node.id}:${index}`,
         });
@@ -251,6 +265,8 @@ const runNodeSequence = async ({
         ...context,
         [variableName]: results,
       };
+
+      await snapshotContext(node.id);
 
       continue;
     }
@@ -331,6 +347,8 @@ const runNodeSequence = async ({
         throw error;
       }
 
+      await snapshotContext(node.id);
+
       continue;
     }
 
@@ -341,6 +359,7 @@ const runNodeSequence = async ({
           ...context,
           [variableName.trim()]: node.pinnedData as unknown[],
         };
+        await snapshotContext(node.id);
         continue;
       }
     }
@@ -354,6 +373,8 @@ const runNodeSequence = async ({
       context,
       step,
     });
+
+    await snapshotContext(node.id);
   }
 
   return context;
@@ -369,7 +390,10 @@ export const checkScheduledWorkflows = inngest.createFunction(
   async ({ step }) => {
     const cronNodes = await step.run("findCronNodes", async () => {
       return prisma.node.findMany({
-        where: { type: NodeType.CRON_TRIGGER },
+        where: {
+          type: NodeType.CRON_TRIGGER,
+          workflow: { isActive: true },
+        },
         select: {
           id: true,
           workflowId: true,
@@ -479,13 +503,19 @@ export const executeWorkflow = inngest.createFunction(
       throw new NonRetriableError("Event ID or Workflow ID is missing");
     }
 
-    await step.run("createExecution", async () => {
-      return prisma.execution.create({
+    const executionId = await step.run("createExecution", async () => {
+      const execution = await prisma.execution.create({
         data: {
           inngestEventId,
           workflowId,
+          initialData: (data.initialData ?? {}) as Prisma.InputJsonValue,
+        },
+        select: {
+          id: true,
         },
       });
+
+      return execution.id;
     });
 
     const preparedWorkflow = await step.run("prepareWorkflow", async () => {
@@ -581,6 +611,7 @@ export const executeWorkflow = inngest.createFunction(
       connections: preparedWorkflow.connections,
       context,
       userId,
+      executionId,
       step: workflowStep,
     });
 

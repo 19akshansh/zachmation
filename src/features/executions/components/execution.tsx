@@ -1,7 +1,11 @@
 "use client";
 
-import { useSuspenseExecution } from "../hooks/useExecutions";
+import {
+  useRetryExecution,
+  useSuspenseExecution,
+} from "../hooks/useExecutions";
 import { useState } from "react";
+import { ExecutionStatus } from "@/generated/prisma/browser";
 import {
   Card,
   CardContent,
@@ -17,7 +21,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { CheckIcon, CopyIcon } from "lucide-react";
+import { CheckIcon, CopyIcon, RotateCcwIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   formatExecutionStatus,
@@ -57,7 +61,9 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
   const { data: execution } = useSuspenseExecution(executionId);
   const [showStackTrace, setShowStackTrace] = useState(false);
   const [copiedSection, setCopiedSection] = useState<string | null>(null);
+  const retryExecution = useRetryExecution();
   const output = JSON.stringify(execution.output, null, 2);
+  const lastKnownContext = JSON.stringify(execution.lastKnownContext, null, 2);
 
   const duration = execution.completedAt
     ? Math.round(
@@ -85,14 +91,29 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
   return (
     <Card className="shadow-none">
       <CardHeader>
-        <div className="flex items-center gap-3">
-          {getExecutionStatusIcon(execution.status)}
-          <div>
-            <CardTitle>{formatExecutionStatus(execution.status)}</CardTitle>
-            <CardDescription>
-              Execution for {execution.workflow.name}
-            </CardDescription>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {getExecutionStatusIcon(execution.status)}
+            <div>
+              <CardTitle>{formatExecutionStatus(execution.status)}</CardTitle>
+              <CardDescription>
+                Execution for {execution.workflow.name}
+              </CardDescription>
+            </div>
           </div>
+
+          {execution.status === ExecutionStatus.FAILED && (
+            <Button
+              variant="outline"
+              onClick={() =>
+                retryExecution.mutate({ executionId: execution.id })
+              }
+              disabled={retryExecution.isPending}
+            >
+              <RotateCcwIcon />
+              {retryExecution.isPending ? "Retrying..." : "Retry"}
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -216,6 +237,34 @@ export const ExecutionView = ({ executionId }: { executionId: string }) => {
               </Collapsible>
             )}
           </div>
+        )}
+
+        {execution.lastKnownContext && (
+          <Collapsible className="mt-6">
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" size="sm">
+                Show Last Known Context
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3">
+              <div className="relative rounded-md bg-muted p-4">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="font-medium">Last Known Context</p>
+
+                  <CopyButton
+                    value={lastKnownContext}
+                    section="last-known-context"
+                    copiedSection={copiedSection}
+                    onCopy={copyText}
+                  />
+                </div>
+
+                <pre className="max-h-96 overflow-auto text-xs font-mono">
+                  {lastKnownContext}
+                </pre>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         )}
 
         {execution.output && (

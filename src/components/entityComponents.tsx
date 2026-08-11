@@ -324,6 +324,7 @@ interface EntityItemProps {
   subtitle?: React.ReactNode;
   image?: React.ReactNode;
   actions?: React.ReactNode;
+  menuActions?: React.ReactNode;
   onRemove?: () => void | Promise<void>;
   isRemoving?: boolean;
   className?: string;
@@ -335,6 +336,7 @@ export const EntityItem = ({
   subtitle,
   image,
   actions,
+  menuActions,
   onRemove,
   isRemoving,
   className,
@@ -398,6 +400,7 @@ export const EntityItem = ({
                       align="end"
                       onClick={(e) => e.stopPropagation()}
                     >
+                      {menuActions}
                       <AlertDialogTrigger asChild>
                         <DropdownMenuItem
                           variant="destructive"

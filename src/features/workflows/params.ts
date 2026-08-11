@@ -9,4 +9,5 @@ export const workflowsParams = {
     .withDefault(PAGINATION.DEFAULT_PAGE_SIZE)
     .withOptions({ clearOnDefault: true }),
   search: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
+  tag: parseAsString.withDefault("").withOptions({ clearOnDefault: true }),
 };

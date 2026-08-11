@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { useExecutionsParams } from "./useExecutionsParams";
 import { PAGINATION } from "@/config/constants";
+import { toast } from "sonner";
 
 export const useSuspenseExecutions = () => {
   const trpc = useTRPC();
@@ -24,4 +25,22 @@ export const useSuspenseExecution = (id: string) => {
   const trpc = useTRPC();
 
   return useSuspenseQuery(trpc.executions.getOne.queryOptions({ id }));
+};
+
+
+export const useRetryExecution = () => {
+  const queryClient = useQueryClient();
+  const trpc = useTRPC();
+
+  return useMutation(
+    trpc.executions.retry.mutationOptions({
+      onSuccess: () => {
+        toast.success("Execution retried!");
+        queryClient.invalidateQueries(trpc.executions.getMany.queryOptions({}));
+      },
+      onError: (error) => {
+        toast.error(`Failed to retry execution: ${error.message}`);
+      },
+    }),
+  );
 };

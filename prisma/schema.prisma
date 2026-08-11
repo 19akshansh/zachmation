@@ -105,6 +105,8 @@ enum CredentialType {
 model Workflow {
   id String @id @default(cuid())
   name String
+  isActive Boolean @default(false)
+  tags String[] @default([])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -238,6 +240,8 @@ model Execution {
   inngestEventId String @unique
 
   output Json?
+  initialData Json?
+  lastKnownContext Json?
 
   @@index([workflowId, startedAt(sort: Desc)])
 } 
