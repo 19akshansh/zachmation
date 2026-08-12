@@ -81,7 +81,8 @@ export const DiscordDialog = ({
         content: defaultValues.content || "A Message sent by Zachmation",
       });
     }
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "myDiscordChat";
   const watchVariableName = form.watch("variableName") || demoVarName;

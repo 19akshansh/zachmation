@@ -101,7 +101,8 @@ export const AnthropicDialog = ({
         userPrompt: defaultValues.userPrompt || "",
       });
     }
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "myClaudeResponse";
 

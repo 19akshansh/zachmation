@@ -103,7 +103,8 @@ export const BlackForestDialog = ({
         prompt: defaultValues.prompt || "",
       });
     }
-  }, [open, form, defaultValues]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "generatedImage";
   const watchVariableName = form.watch("variableName") || demoVarName;

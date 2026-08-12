@@ -85,7 +85,8 @@ export const SandboxedCodeDialog = ({
       variableName: defaultValues.variableName ?? "codeResult",
       code: defaultValues.code ?? DEFAULT_CODE[language],
     });
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const language = form.watch("language");
 

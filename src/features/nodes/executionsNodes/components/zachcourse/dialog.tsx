@@ -144,7 +144,8 @@ export const ZachCourseDialog = ({
         weeklyHours: defaultValues.weeklyHours ?? 5,
         tone: defaultValues.tone || "friendly",
       });
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
