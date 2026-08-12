@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const links = [
-  ["Features", "#features"],
-  ["How it works", "#how-it-works"],
-  ["Integrations", "#integrations"],
-  ["Pricing", "#pricing"],
-  ["FAQ", "#faq"],
+  ["Features", "/#features"],
+  ["How it works", "/#how-it-works"],
+  ["Integrations", "/#integrations"],
+  ["Pricing", "/#pricing"],
+  ["FAQ", "/#faq"],
+  ["Blog", "/blog"],
 ];
 
 export function Nav() {

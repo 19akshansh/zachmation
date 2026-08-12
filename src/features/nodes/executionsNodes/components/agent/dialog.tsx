@@ -62,7 +62,9 @@ export const AgentDialog = ({
   onSubmit,
   defaultValues = {},
 }: Props) => {
-  const { data: credentials = [], isLoading } = useCredentialsByNodeType(NodeType.AGENT);
+  const { data: credentials = [], isLoading } = useCredentialsByNodeType(
+    NodeType.AGENT,
+  );
 
   const form = useForm<AgentFormValues>({
     resolver: zodResolver(formSchema),
@@ -254,8 +256,8 @@ export const AgentDialog = ({
             <div className="rounded-lg border bg-muted/40 p-4 text-sm text-muted-foreground">
               <p className="font-medium text-foreground">Available tools</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
-                <li>Web fetch — read public HTTP(S) pages.</li>
-                <li>Memory search — available only when a namespace is set.</li>
+                <li>Web fetch - read public HTTP(S) pages.</li>
+                <li>Memory search - available only when a namespace is set.</li>
                 <li>No write or mutation tools are exposed in this phase.</li>
               </ul>
             </div>
