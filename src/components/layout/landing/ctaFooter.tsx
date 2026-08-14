@@ -1,8 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/button"
 import { Reveal } from "./reveal";
+
 export function CtaFooter() {
   return (
     <>
@@ -31,9 +32,10 @@ export function CtaFooter() {
             Zachmation
           </Link>
           <nav className="flex gap-5 text-sm text-muted-foreground">
-            <a href="#features">Features</a>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
+            <a href="/#features">Features</a>
+            <a href="/#pricing">Pricing</a>
+            <a href="/#faq">FAQ</a>
+            <Link href="/blog">Blog</Link>
             <Link href="/signin">Sign in</Link>
           </nav>
           <p className="text-xs text-muted-foreground">

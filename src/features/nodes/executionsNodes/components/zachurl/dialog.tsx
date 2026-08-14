@@ -74,7 +74,8 @@ export const ZachurlDialog = ({
         originalUrl: defaultValues.originalUrl || "",
         customSlug: defaultValues.customSlug || "",
       });
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

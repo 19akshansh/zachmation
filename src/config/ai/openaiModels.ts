@@ -1,33 +1,20 @@
-// GENERATED WITH AI!!!
-
+// Updated 14 Aug 2026. GPT-4.1(-mini/nano), GPT-4o(-mini), o3, and o4-mini are
+// all superseded by the GPT-5.x line, and o4-mini / gpt-4.1-nano / gpt-4o are
+// already on OpenAI's Oct 23, 2026 deprecation schedule. o3 and the original
+// gpt-5 snapshots are on the Dec 11, 2026 schedule. Moved straight to the
+// current GPT-5.6 family so nothing here is already living on borrowed time.
 export const OPENAI_MODELS = [
   {
-    id: "gpt-4.1",
-    label: "GPT-4.1",
+    id: "gpt-5.6-sol",
+    label: "GPT-5.6 Sol",
   },
   {
-    id: "gpt-4.1-mini",
-    label: "GPT-4.1 Mini",
+    id: "gpt-5.6-terra",
+    label: "GPT-5.6 Terra",
   },
   {
-    id: "gpt-4.1-nano",
-    label: "GPT-4.1 Nano",
-  },
-  {
-    id: "gpt-4o",
-    label: "GPT-4o",
-  },
-  {
-    id: "gpt-4o-mini",
-    label: "GPT-4o Mini",
-  },
-  {
-    id: "o3",
-    label: "o3",
-  },
-  {
-    id: "o4-mini",
-    label: "o4 Mini",
+    id: "gpt-5.6-luna",
+    label: "GPT-5.6 Luna",
   },
 ] as const;
 

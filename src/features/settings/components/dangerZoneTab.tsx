@@ -52,7 +52,7 @@ export const DangerZoneTab = () => {
           </ItemMedia>
           <ItemContent>
             <ItemTitle>Delete account</ItemTitle>
-            <ItemDescription>
+            <ItemDescription className="line-clamp-none">
               Permanently delete your account, workflows, credentials, and
               execution history. This cannot be undone.
             </ItemDescription>

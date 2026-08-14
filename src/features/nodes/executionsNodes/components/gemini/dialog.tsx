@@ -99,7 +99,8 @@ export const GeminiDialog = ({
         userPrompt: defaultValues.userPrompt || "",
       });
     }
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "myGeminiChat";
   const watchVariableName = form.watch("variableName") || demoVarName;
@@ -222,7 +223,7 @@ export const GeminiDialog = ({
                   <FormDescription>
                     Sets the behaviour of assistant. Use{" "}
                     {"{{variableName.[0]}}"} for simple values or{" "}
-                    {"{{json.variableName.[0]}}"} to stringify objects
+                    {"{{json variableName.[0]}}"} to stringify objects
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -243,7 +244,7 @@ export const GeminiDialog = ({
                   </FormControl>
                   <FormDescription>
                     This prompt is sent to the AI. Use {"{{aiResponse.[0]}}"}{" "}
-                    for simple values or {"{{json.aiResponse.[0]}}"} to
+                    for simple values or {"{{json aiResponse.[0]}}"} to
                     stringify objects
                   </FormDescription>
                   <FormMessage />

@@ -80,7 +80,8 @@ export const TelegramSendDialog = ({
         chatId: defaultValues.chatId || "{{telegram.[0].message.chat.id}}",
         message: defaultValues.message || "Got it!",
       });
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
   const variableName = form.watch("variableName") || "telegramSend";
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

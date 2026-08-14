@@ -201,9 +201,9 @@ export const ConditionalDialog = ({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="if">If — true / false</SelectItem>
+                      <SelectItem value="if">If - true / false</SelectItem>
                       <SelectItem value="switch">
-                        Switch — multiple cases
+                        Switch - multiple cases
                       </SelectItem>
                     </SelectContent>
                   </Select>

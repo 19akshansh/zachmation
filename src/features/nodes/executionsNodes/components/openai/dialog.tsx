@@ -98,7 +98,8 @@ export const OpenAIDialog = ({
         userPrompt: defaultValues.userPrompt || "",
       });
     }
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "myOpenAi";
 
@@ -232,7 +233,7 @@ export const OpenAIDialog = ({
                   <FormDescription>
                     Sets the behavior of the assistant. Use{" "}
                     {"{{variableName.[0]}}"} for simple values or{" "}
-                    {"{{json.variableName.[0]}}"} to stringify objects.
+                    {"{{json variableName.[0]}}"} to stringify objects.
                   </FormDescription>
 
                   <FormMessage />
@@ -257,7 +258,7 @@ export const OpenAIDialog = ({
 
                   <FormDescription>
                     This prompt is sent to the AI. Use {"{{aiResponse.[0]}}"}{" "}
-                    for simple values or {"{{json.aiResponse.[0]}}"} to
+                    for simple values or {"{{json aiResponse.[0]}}"} to
                     stringify objects.
                   </FormDescription>
 

@@ -73,7 +73,8 @@ export const SlackDialog = ({
         content: defaultValues.content || "A Message sent by Zachmation",
       });
     }
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "mySlackChat";
   const watchVariableName = form.watch("variableName") || demoVarName;

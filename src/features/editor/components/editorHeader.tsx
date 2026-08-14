@@ -76,7 +76,7 @@ export const EditorSaveButton = ({ workflowId }: { workflowId: string }) => {
     <div className="ml-auto">
       <Button size="sm" onClick={handleSave} disabled={saveWorkflow.isPending}>
         <SaveIcon className="size-4" />
-        Save
+        <span className="hidden sm:inline">Save</span>
       </Button>
     </div>
   );
@@ -149,7 +149,7 @@ export const EditorNameInput = ({ workflowId }: { workflowId: string }) => {
   return (
     <BreadcrumbItem
       onClick={() => setIsEditing(true)}
-      className="cursor-pointer hover:text-foreground transition-colors"
+      className="cursor-pointer hover:text-foreground transition-colors max-w-[40vw] truncate sm:max-w-xs"
     >
       {workflow.name}
     </BreadcrumbItem>
@@ -215,7 +215,7 @@ export const EditorWorkflowActions = ({
         title="Duplicate workflow"
       >
         <CopyIcon className="size-4" />
-        Duplicate
+        <span className="hidden sm:inline">Duplicate</span>
       </Button>
       <Button
         variant="ghost"
@@ -225,7 +225,7 @@ export const EditorWorkflowActions = ({
         title="Export workflow JSON"
       >
         <DownloadIcon className="size-4" />
-        Export
+        <span className="hidden sm:inline">Export</span>
       </Button>
     </div>
   );
@@ -233,13 +233,15 @@ export const EditorWorkflowActions = ({
 
 export const EditorHeader = ({ workflowId }: { workflowId: string }) => {
   return (
-    <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4 bg-background">
+    <header className="flex h-14 shrink-0 items-center gap-2 border-b px-2 sm:px-4 bg-background">
       <SidebarTrigger />
 
-      <div className="flex flex-row items-center justify-between gap-x-4 w-full">
-        <EditorBreadcrumbs workflowId={workflowId} />
+      <div className="flex flex-row items-center justify-between gap-x-2 sm:gap-x-4 w-full min-w-0">
+        <div className="min-w-0 overflow-hidden">
+          <EditorBreadcrumbs workflowId={workflowId} />
+        </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           <EditorWorkflowActions workflowId={workflowId} />
           <WorkflowSettingsDialog workflowId={workflowId} />
           <EditorSaveButton workflowId={workflowId} />

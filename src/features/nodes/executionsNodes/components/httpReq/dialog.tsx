@@ -82,7 +82,8 @@ export const HTTPReqDialog = ({
         body: defaultValues.body || "",
       });
     }
-  }, [open, defaultValues, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const demoVarName = "_myFirstAPICall1";
   const watchVariableName = form.watch("variableName") || demoVarName;

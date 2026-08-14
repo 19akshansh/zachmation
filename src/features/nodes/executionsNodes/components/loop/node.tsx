@@ -76,7 +76,7 @@ export const LoopNode = (props: NodeProps<LoopNodeType>) => {
                 {sourceKey || "source"}
               </span>
               <span className="shrink-0 truncate font-mono text-[11px] text-muted-foreground">
-                → {variableName || "—"}
+                → {variableName || "-"}
               </span>
             </div>
 

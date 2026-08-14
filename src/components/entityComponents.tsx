@@ -73,8 +73,8 @@ export const EntityHeader = ({
   actions,
 }: EntityHeaderProps) => {
   return (
-    <div className="flex flex-row items-center justify-between gap-x-4">
-      <div className="flex flex-col">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-x-4">
+      <div className="flex flex-col min-w-0">
         <h1 className="text-lg md:text-xl font-semibold">{title}</h1>
         {description && (
           <p className="text-sm md:text-sm text-muted-foreground">
@@ -82,7 +82,7 @@ export const EntityHeader = ({
           </p>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         {actions}
         {onNew && !newButtonHref && (
           <Button disabled={isCreating || disabled} size="sm" onClick={onNew}>
@@ -117,7 +117,7 @@ export const EntityContainer = ({
   pagination,
 }: EntityContainerProps) => {
   return (
-    <div className="p-4 md:px-10 md:py-6 h-full">
+    <div className="p-3 sm:p-4 md:px-10 md:py-6 h-full">
       <div className="mx-auto max-w-screen-xl w-full flex flex-col gap-y-8 h-full">
         {header}
         <div className="flex flex-col gap-y-4 h-full">
@@ -368,11 +368,13 @@ export const EntityItem = ({
           className,
         )}
       >
-        <CardContent className="flex flex-row items-center justify-between p-0">
-          <div className="flex items-center gap-3">
+        <CardContent className="flex flex-row items-center justify-between gap-3 p-0">
+          <div className="flex items-center gap-3 min-w-0">
             {image}
-            <div>
-              <CardTitle className="text-base font-medium">{title}</CardTitle>
+            <div className="min-w-0">
+              <CardTitle className="text-base font-medium truncate">
+                {title}
+              </CardTitle>
               {!!subtitle && (
                 <CardDescription className="text-xs">
                   {subtitle}
@@ -381,7 +383,7 @@ export const EntityItem = ({
             </div>
           </div>
           {(actions || onRemove) && (
-            <div className="flex gap-x-4 items-center">
+            <div className="flex gap-x-4 items-center shrink-0">
               {actions}
               {onRemove && (
                 <AlertDialog>
