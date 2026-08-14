@@ -1,4 +1,10 @@
-// GENERATED WITH AI!!!!!! Interfere with CAUTION.
+// Updated 14 Aug 2026. Gemini 2.5 Pro / Flash / Flash-Lite are all on Google's
+// deprecation schedule (shutdown Oct 16, 2026 per the Gemini API deprecations
+// page), so they're removed entirely per the "don't ship models that are
+// already scheduled to die" rule. Gemini 3 Pro Preview and the 2.0 Flash line
+// are already fully shut down and removed. Imagen 4 is deprecated (shutdown
+// Aug 17, 2026) in favor of the Nano Banana 2 family. Everything below is
+// current per ai.google.dev/gemini-api/docs/models (last checked today).
 
 export type GoogleModelCategory =
   | "chat"
@@ -47,8 +53,8 @@ export const GOOGLE_MODELS = [
   // =========================
 
   {
-    id: "gemini-2.5-pro",
-    label: "Gemini 2.5 Pro",
+    id: "gemini-3.7-flash",
+    label: "Gemini 3.7 Flash",
     provider: "google",
     category: "chat",
     releaseChannel: "stable",
@@ -59,13 +65,30 @@ export const GOOGLE_MODELS = [
     supportsStreaming: true,
     supportsReasoning: true,
     supportsJson: true,
-    contextWindow: 1_000_000,
+    contextWindow: 2_000_000,
     availableInSDK: true,
     recommended: true,
   },
   {
-    id: "gemini-2.5-flash",
-    label: "Gemini 2.5 Flash",
+    id: "gemini-3.1-pro-preview",
+    label: "Gemini 3.1 Pro",
+    provider: "google",
+    category: "chat",
+    releaseChannel: "preview",
+    supportsTextInput: true,
+    supportsTextOutput: true,
+    supportsVision: true,
+    supportsTools: true,
+    supportsStreaming: true,
+    supportsReasoning: true,
+    supportsJson: true,
+    contextWindow: 2_000_000,
+    availableInSDK: true,
+    recommended: true,
+  },
+  {
+    id: "gemini-3.6-flash",
+    label: "Gemini 3.6 Flash",
     provider: "google",
     category: "chat",
     releaseChannel: "stable",
@@ -76,23 +99,7 @@ export const GOOGLE_MODELS = [
     supportsStreaming: true,
     supportsReasoning: true,
     supportsJson: true,
-    contextWindow: 1_000_000,
-    availableInSDK: true,
-    recommended: true,
-  },
-  {
-    id: "gemini-2.5-flash-lite",
-    label: "Gemini 2.5 Flash Lite",
-    provider: "google",
-    category: "chat",
-    releaseChannel: "stable",
-    supportsTextInput: true,
-    supportsTextOutput: true,
-    supportsVision: true,
-    supportsTools: true,
-    supportsStreaming: true,
-    supportsJson: true,
-    contextWindow: 1_000_000,
+    contextWindow: 2_000_000,
     availableInSDK: true,
   },
   {
@@ -110,22 +117,35 @@ export const GOOGLE_MODELS = [
     supportsJson: true,
     contextWindow: 2_000_000,
     availableInSDK: true,
-    recommended: true,
   },
   {
-    id: "gemini-3.1-pro-preview",
-    label: "Gemini 3.1 Pro Preview",
+    id: "gemini-3.5-flash-lite",
+    label: "Gemini 3.5 Flash-Lite",
     provider: "google",
     category: "chat",
-    releaseChannel: "preview",
+    releaseChannel: "stable",
     supportsTextInput: true,
     supportsTextOutput: true,
     supportsVision: true,
     supportsTools: true,
     supportsStreaming: true,
-    supportsReasoning: true,
     supportsJson: true,
-    contextWindow: 2_000_000,
+    contextWindow: 1_000_000,
+    availableInSDK: true,
+  },
+  {
+    id: "gemini-3.1-flash-lite",
+    label: "Gemini 3.1 Flash-Lite",
+    provider: "google",
+    category: "chat",
+    releaseChannel: "stable",
+    supportsTextInput: true,
+    supportsTextOutput: true,
+    supportsVision: true,
+    supportsTools: true,
+    supportsStreaming: true,
+    supportsJson: true,
+    contextWindow: 1_000_000,
     availableInSDK: true,
   },
 
@@ -134,8 +154,8 @@ export const GOOGLE_MODELS = [
   // =========================
 
   {
-    id: "gemini-2.5-flash-image",
-    label: "Nano Banana",
+    id: "gemini-3.1-flash-image",
+    label: "Nano Banana 2",
     provider: "google",
     category: "image",
     releaseChannel: "stable",
@@ -148,22 +168,23 @@ export const GOOGLE_MODELS = [
     recommended: true,
   },
   {
-    id: "imagen-4",
-    label: "Imagen 4",
+    id: "gemini-3-pro-image",
+    label: "Nano Banana Pro",
     provider: "google",
     category: "image",
     releaseChannel: "stable",
     supportsTextInput: true,
     supportsTextOutput: false,
     supportsImageGeneration: true,
+    supportsImageEditing: true,
     availableInSDK: true,
   },
   {
-    id: "gemini-3-pro-image-preview",
-    label: "Nano Banana Pro",
+    id: "gemini-3.1-flash-lite-image",
+    label: "Nano Banana 2 Lite",
     provider: "google",
     category: "image",
-    releaseChannel: "preview",
+    releaseChannel: "stable",
     supportsTextInput: true,
     supportsTextOutput: false,
     supportsImageGeneration: true,
@@ -216,6 +237,17 @@ export const GOOGLE_MODELS = [
     supportsVideoInput: false,
     availableInSDK: false,
   },
+  {
+    id: "veo-3.1-lite-generate-preview",
+    label: "Veo 3.1 Lite",
+    provider: "google",
+    category: "video",
+    releaseChannel: "preview",
+    supportsTextInput: true,
+    supportsTextOutput: false,
+    supportsVideoInput: false,
+    availableInSDK: false,
+  },
 
   // =========================
   // MUSIC
@@ -232,32 +264,32 @@ export const GOOGLE_MODELS = [
     supportsMusicGeneration: true,
     availableInSDK: false,
   },
+  {
+    id: "lyria-3-clip-preview",
+    label: "Lyria 3 Clip",
+    provider: "google",
+    category: "music",
+    releaseChannel: "preview",
+    supportsTextInput: true,
+    supportsTextOutput: false,
+    supportsMusicGeneration: true,
+    availableInSDK: false,
+  },
 
   // =========================
   // EMBEDDINGS
   // =========================
 
   {
-    id: "gemini-embedding-2",
+    id: "gemini-embedding-2-preview",
     label: "Gemini Embedding 2",
     provider: "google",
     category: "embedding",
-    releaseChannel: "stable",
+    releaseChannel: "preview",
     supportsTextInput: true,
     supportsTextOutput: false,
     availableInSDK: true,
     recommended: true,
-  },
-
-  {
-    id: "gemini-embedding-001",
-    label: "Gemini Embedding 001",
-    provider: "google",
-    category: "embedding",
-    releaseChannel: "stable",
-    supportsTextInput: true,
-    supportsTextOutput: false,
-    availableInSDK: true,
   },
 
   // =========================
@@ -267,6 +299,19 @@ export const GOOGLE_MODELS = [
   {
     id: "deep-research-preview-04-2026",
     label: "Gemini Deep Research",
+    provider: "google",
+    category: "agent",
+    releaseChannel: "preview",
+    supportsTextInput: true,
+    supportsTextOutput: true,
+    supportsTools: true,
+    supportsReasoning: true,
+    availableInSDK: false,
+  },
+
+  {
+    id: "deep-research-max-preview-04-2026",
+    label: "Gemini Deep Research Max",
     provider: "google",
     category: "agent",
     releaseChannel: "preview",
