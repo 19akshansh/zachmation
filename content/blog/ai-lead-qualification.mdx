@@ -1,11 +1,11 @@
 ---
-title: "AI Lead Qualification: Google Forms + Gemini + Discord"
+title: "AI Lead Qualification: Google Forms + Gemini + Sandboxed Code + Discord"
 description: "Score every inbound lead automatically and notify your team on Discord, using a free Zachmation template you can import in one click."
 date: "2026-08-12"
 author: "Akshansh"
 authorGithub: "19akshansh"
 tags: ["templates", "ai", "lead-gen"]
-template: "ai-lead-qualification"
+template: "lead-qualification-gform-gemini"
 draft: false
 ---
 
@@ -16,9 +16,11 @@ result straight to your team's Discord channel.
 ## What this workflow does
 
 1. **Google Form Trigger** fires when someone submits your form.
-2. **Gemini** reads the response and scores the lead from 1–10 with a short
-   reason.
-3. **Discord Send** notifies your team with the score.
+2. **Gemini** reads the response and returns a structured JSON verdict - a
+   score from 1–10, a short reason, and a `low` / `medium` / `high` priority.
+3. **Sandboxed Code** parses Gemini's JSON output (stripping any stray
+   markdown fences) so the fields below can be used directly.
+4. **Discord Send** notifies your team with the score, reason, and priority.
 
 ## Import it
 
@@ -29,5 +31,6 @@ and a Gemini credential connected before running it.
 ## Customizing it
 
 Swap the Discord node for Slack, Telegram, or an Email/SMTP node if that's
-where your team lives. You can also add a **Filter** node after Gemini to
-only notify on leads scoring above a threshold.
+where your team lives. You can also add a **Filter** node after the
+Sandboxed Code step to only notify on leads scoring above a threshold, or
+route on `priority` instead of raw score.
