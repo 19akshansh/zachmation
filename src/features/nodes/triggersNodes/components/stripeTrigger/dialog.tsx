@@ -89,7 +89,7 @@ export const StripeDialogTrigger = ({ open, onOpenChange }: Props) => {
               </li>
               <li>
                 <code className="bg-background px-1 py-0.5 rounded">
-                  {"{{json.stripe.[0]}}"}
+                  {"{{json stripe.[0]}}"}
                 </code>{" "}
                 - Full event data as JSON
               </li>

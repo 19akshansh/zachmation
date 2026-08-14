@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "name": "ai-lead-qualification",
+  "tags": [],
+  "nodes": [
+    {
+      "exportId": "wtd4l97jj1x9qy727wdjv0bj",
+      "name": "GOOGLE_FORM_TRIGGER",
+      "type": "GOOGLE_FORM_TRIGGER",
+      "position": { "x": 300, "y": 340 },
+      "data": {}
+    },
+    {
+      "exportId": "hlihg3wnz30nimddzld3whf1",
+      "name": "GEMINI",
+      "type": "GEMINI",
+      "position": { "x": 420, "y": 350 },
+      "data": {
+        "model": "gemini-3.1-pro-preview",
+        "credentialId": "REPLACE_WITH_YOUR_GEMINI_CREDENTIAL_ID",
+        "userPrompt": "Lead submission:\n{{json googleForm.[0].responses}}",
+        "systemPrompt": "You are a sales qualification assistant for a B2B SaaS company.\n\nScore the incoming lead's fit and intent on a scale of 1-10, where 1-3 is a poor fit or low intent, 4-6 is worth nurturing, and 7-10 is sales-ready.\n\nBase the score only on the information provided - do not assume details that aren't stated.\n\nRespond with ONLY a valid JSON object in this exact shape, no markdown formatting, no extra text:\n\n{\"score\": <integer 1-10>, \"reason\": \"<one sentence, under 20 words>\", \"priority\": \"<low|medium|high>\"}",
+        "variableName": "qualification"
+      }
+    },
+    {
+      "exportId": "pk29fj0zx1r7bq83wveu6m2h",
+      "name": "PARSE_QUALIFICATION",
+      "type": "SANDBOXED_CODE",
+      "position": { "x": 475, "y": 355 },
+      "data": {
+        "language": "javascript",
+        "variableName": "lead",
+        "code": "const raw = context.qualification[0].text;\nconst cleaned = raw.replace(/```json\\n?|```/g, '').trim();\nreturn JSON.parse(cleaned);"
+      }
+    },
+    {
+      "exportId": "xak4ibhw70t0htzoacfk8zoh",
+      "name": "DISCORD_SEND",
+      "type": "DISCORD_SEND",
+      "position": { "x": 530, "y": 360 },
+      "data": {
+        "webhookUrl": "REPLACE_WITH_YOUR_DISCORD_WEBHOOK_URL",
+        "content": "🎯 **New Lead Qualified — {{lead.[0].priority}} priority**\n\n**Score:** {{lead.[0].score}}/10\n**Reason:** {{lead.[0].reason}}\n\n📋 View submission: {{json googleForm.[0].responses}}",
+        "username": "leads",
+        "variableName": "leadNotif"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "fromExportId": "wtd4l97jj1x9qy727wdjv0bj",
+      "toExportId": "hlihg3wnz30nimddzld3whf1",
+      "fromOutput": "source-1",
+      "toInput": "target-1"
+    },
+    {
+      "fromExportId": "hlihg3wnz30nimddzld3whf1",
+      "toExportId": "pk29fj0zx1r7bq83wveu6m2h",
+      "fromOutput": "source-1",
+      "toInput": "target-1"
+    },
+    {
+      "fromExportId": "pk29fj0zx1r7bq83wveu6m2h",
+      "toExportId": "xak4ibhw70t0htzoacfk8zoh",
+      "fromOutput": "source-1",
+      "toInput": "target-1"
+    }
+  ]
+}

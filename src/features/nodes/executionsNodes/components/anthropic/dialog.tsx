@@ -237,7 +237,7 @@ export const AnthropicDialog = ({
                   <FormDescription>
                     Sets the behavior of the assistant. Use{" "}
                     {"{{variableName.[0]}}"} for simple values or{" "}
-                    {"{{json.variableName.[0]}}"} to stringify objects.
+                    {"{{json variableName.[0]}}"} to stringify objects.
                   </FormDescription>
 
                   <FormMessage />
@@ -262,7 +262,7 @@ export const AnthropicDialog = ({
 
                   <FormDescription>
                     This prompt is sent to the AI. Use {"{{aiResponse.[0]}}"}{" "}
-                    for simple values or {"{{json.aiResponse.[0]}}"} to
+                    for simple values or {"{{json aiResponse.[0]}}"} to
                     stringify objects.
                   </FormDescription>
 
